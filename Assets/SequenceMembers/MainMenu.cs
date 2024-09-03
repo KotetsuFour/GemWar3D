@@ -17,8 +17,6 @@ public class MainMenu : SequenceMember
 
     public GameObject instructions;
 
-    public Unit unit;
-
     private GameObject currentMenu;
     private MenuPage currentPage;
 
@@ -96,7 +94,7 @@ public class MainMenu : SequenceMember
                 {
                     SaveMechanism.saveGame(file);
                 }
-                SaveMechanism.loadGame(file, unit);
+                SaveMechanism.loadGame(file);
                 if (StaticData.scene < 0)
                 {
                     //TODO go to base

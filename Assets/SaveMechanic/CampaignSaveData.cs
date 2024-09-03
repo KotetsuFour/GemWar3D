@@ -54,6 +54,8 @@ public class CampaignSaveData
 
 	public string[][] deathQuote;
 
+	public float[][] palette;
+
 	public int[] supportId1;
 	public int[] supportId2;
 	public int[] fusionSkill1;
@@ -103,6 +105,8 @@ public class CampaignSaveData
 	public bool[] pisExhausted;
 
 	public string[][] pdeathQuote;
+
+	public float[][] ppalette;
 
 	public int[] psupportId1;
 	public int[] psupportId2;
@@ -174,6 +178,8 @@ public class CampaignSaveData
 
 		deathQuote = new string[StaticData.members.Count][];
 
+		palette = new float[StaticData.members.Count][];
+
 		supportId1 = new int[StaticData.members.Count];
 		supportId2 = new int[StaticData.members.Count];
 		fusionSkill1 = new int[StaticData.members.Count];
@@ -228,6 +234,14 @@ public class CampaignSaveData
 
 			deathQuote[q] = m.deathQuote;
 
+			palette[q] = new float[m.palette.Count * 3];
+			for (int w = 0; w < m.palette.Count; w++)
+            {
+				palette[q][w * 3] = m.palette[q].r;
+				palette[q][(w * 3) + 1] = m.palette[q].g;
+				palette[q][(w * 3) + 2] = m.palette[q].b;
+			}
+
 			supportId1[q] = m.supportId1;
 			supportId2[q] = m.supportId2;
 			fusionSkill1[q] = (int)m.fusionSkill1;
@@ -278,6 +292,8 @@ public class CampaignSaveData
 		pisExhausted = new bool[StaticData.prisoners.Count];
 
 		pdeathQuote = new string[StaticData.prisoners.Count][];
+
+		ppalette = new float[StaticData.members.Count][];
 
 		psupportId1 = new int[StaticData.prisoners.Count];
 		psupportId2 = new int[StaticData.prisoners.Count];
@@ -333,6 +349,14 @@ public class CampaignSaveData
 
 			pdeathQuote[q] = m.deathQuote;
 
+			ppalette[q] = new float[m.palette.Count * 3];
+			for (int w = 0; w < m.palette.Count; w++)
+			{
+				ppalette[q][w * 3] = m.palette[q].r;
+				ppalette[q][(w * 3) + 1] = m.palette[q].g;
+				ppalette[q][(w * 3) + 2] = m.palette[q].b;
+			}
+
 			psupportId1[q] = m.supportId1;
 			psupportId2[q] = m.supportId2;
 			pfusionSkill1[q] = (int)m.fusionSkill1;
@@ -372,11 +396,11 @@ public class CampaignSaveData
 		for (int q = 0; q < unitName.Length; q++)
         {
 			Unit mem = new Unit();
-			mem.constructor(unitName[q], StaticData.getUnitClasses()[unitClass[q]], description[q], maxHP[q], strength[q], magic[q],
+			mem.constructor(unitName[q], UnitClass.unitClassIndex[unitClass[q]], description[q], maxHP[q], strength[q], magic[q],
 			skill[q], speed[q], luck[q], defense[q], resistance[q], constitution[q], movement[q],
 			hpGrowth[q], strengthGrowth[q], magicGrowth[q], skillGrowth[q], speedGrowth[q], luckGrowth[q],
-			defenseGrowth[q], resistanceGrowth[q], personalItemId[q] == -1 ? null : StaticData.getItems()[personalItemId[q]].clone(), (Weapon.WeaponType)weaponType[q], proficiency[q],
-			Unit.UnitTeam.PLAYER, supportId1[q], supportId2[q], (Unit.Affinity)affinity[q], spriteName[q]);
+			defenseGrowth[q], resistanceGrowth[q], personalItemId[q] == -1 ? null : Item.itemIndex[personalItemId[q]].clone(), (Weapon.WeaponType)weaponType[q], proficiency[q],
+			Unit.UnitTeam.PLAYER, supportId1[q], supportId2[q], (Unit.Affinity)affinity[q], palette[q]);
 			mem.currentHP = currentHP[q];
 			mem.level = level[q];
 			mem.experience = experience[q];
@@ -386,12 +410,12 @@ public class CampaignSaveData
             }
 			if (heldWeaponId[q] != -1)
             {
-				mem.heldWeapon = (Weapon)StaticData.items[heldWeaponId[q]].clone();
+				mem.heldWeapon = (Weapon)Item.itemIndex[heldWeaponId[q]].clone();
 				mem.heldWeapon.usesLeft = heldWeaponUsesLeft[q];
             }
 			if (heldItemId[q] != -1)
             {
-				mem.heldItem = StaticData.items[heldItemId[q]].clone();
+				mem.heldItem = Item.itemIndex[heldItemId[q]].clone();
 				mem.heldItem.usesLeft = heldItemUsesLeft[q];
             }
 
@@ -413,11 +437,11 @@ public class CampaignSaveData
 		for (int q = 0; q < punitName.Length; q++)
 		{
 			Unit mem = new Unit();
-			mem.constructor(punitName[q], StaticData.classes[punitClass[q]], pdescription[q], pmaxHP[q], pstrength[q], pmagic[q],
+			mem.constructor(punitName[q], UnitClass.unitClassIndex[punitClass[q]], pdescription[q], pmaxHP[q], pstrength[q], pmagic[q],
 			pskill[q], pspeed[q], pluck[q], pdefense[q], presistance[q], pconstitution[q], pmovement[q],
 			phpGrowth[q], pstrengthGrowth[q], pmagicGrowth[q], pskillGrowth[q], pspeedGrowth[q], pluckGrowth[q],
-			pdefenseGrowth[q], presistanceGrowth[q], ppersonalItemId[q] == -1 ? null : StaticData.items[ppersonalItemId[q]].clone(), (Weapon.WeaponType)pweaponType[q], pproficiency[q],
-			Unit.UnitTeam.ENEMY, psupportId1[q], psupportId2[q], (Unit.Affinity)pAffinity[q], spriteName[q]);
+			pdefenseGrowth[q], presistanceGrowth[q], ppersonalItemId[q] == -1 ? null : Item.itemIndex[ppersonalItemId[q]].clone(), (Weapon.WeaponType)pweaponType[q], pproficiency[q],
+			Unit.UnitTeam.ENEMY, psupportId1[q], psupportId2[q], (Unit.Affinity)pAffinity[q], ppalette[q]);
 			mem.currentHP = currentHP[q];
 			mem.level = plevel[q];
 			mem.experience = pexperience[q];
@@ -427,12 +451,12 @@ public class CampaignSaveData
 			}
 			if (pheldWeaponId[q] != -1)
 			{
-				mem.heldWeapon = (Weapon)StaticData.items[pheldWeaponId[q]].clone();
+				mem.heldWeapon = (Weapon)Item.itemIndex[pheldWeaponId[q]].clone();
 				mem.heldWeapon.usesLeft = pheldWeaponUsesLeft[q];
 			}
 			if (pheldItemId[q] != -1)
 			{
-				mem.heldItem = StaticData.items[pheldItemId[q]].clone();
+				mem.heldItem = Item.itemIndex[pheldItemId[q]].clone();
 				mem.heldItem.usesLeft = pheldItemUsesLeft[q];
 			}
 

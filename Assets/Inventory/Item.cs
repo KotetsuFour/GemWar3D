@@ -42,8 +42,12 @@ public abstract class Item
     public static Weapon guard_shield = new Armor("Guard Shield", -1, 7, 80, 0, 7, 1, 1, -1, 3, false, null, 34);
     public static Weapon iron_blade = new Sword("Iron Blade", 10, 12, 55, 0, 15, 1, 1, 30, false, new UnitClass.UnitType[] { UnitClass.UnitType.QUARTZ }, 35);
 
-
-public Item(string itemName, int uses, int id)
+    public static Item[] itemIndex = new Item[] { rose_shield, pearl_spear, biggs_whip, ocean_club, bismuth_hammer,
+                iron_sword, quartz_axe, palm_laser, ruby_pike, moon_bow, priest_bow, iron_lance,
+                iron_axe, iron_gauntlet, iron_shield, iron_whip, iron_bow, iron_club, currentHP, maxHP,
+                str, mag, skl, spd, lck, def, res, mov, ship_laser, elite_sword, citrine_sword,
+                aventurine_axe, pacifist_gauntlet, topaz_lance, guard_shield, iron_blade };
+    public Item(string itemName, int uses, int id)
     {
         this.itemName = itemName;
         this.uses = uses;

@@ -8,7 +8,7 @@ public abstract class Objective
 
 	public bool checkFailed(GridMap chpt)
     {
-        foreach (Unit u in CampaignData.members)
+        foreach (Unit u in StaticData.members)
         {
             if (u.isLeader && !u.isAlive())
             {

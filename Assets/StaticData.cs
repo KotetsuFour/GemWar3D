@@ -63,6 +63,30 @@ public static class StaticData
         chapterPrep = 0;
         positions = null;
     }
+    public static List<int>[] getConvoyIds()
+    {
+        if (convoyIds[0] == null)
+        {
+            for (int q = 0; q < convoyIds.Length; q++)
+            {
+                convoyIds[q] = new List<int>();
+                convoyDurabilities[q] = new List<int>();
+            }
+        }
+        return convoyIds;
+    }
+    public static List<int>[] getConvoyDurabilities()
+    {
+        if (convoyDurabilities[0] == null)
+        {
+            for (int q = 0; q < convoyIds.Length; q++)
+            {
+                convoyIds[q] = new List<int>();
+                convoyDurabilities[q] = new List<int>();
+            }
+        }
+        return convoyDurabilities;
+    }
 
     public static Transform findDeepChild(Transform parent, string childName)
     {

@@ -21,7 +21,7 @@ public static class SaveMechanism
         stream.Close();
     }
 
-    public static void loadGame(int savefile, Unit unitToInstantiate)
+    public static void loadGame(int savefile)
     {
 //        string path = Application.persistentDataPath + "/gamefile" + savefile + ".save";
         string path = folderPath + "gamefile" + savefile + ".save";
@@ -34,7 +34,7 @@ public static class SaveMechanism
             CampaignSaveData info = formatter.Deserialize(stream) as CampaignSaveData;
             stream.Close();
 
-            info.unload(unitToInstantiate);
+            info.unload();
             StaticData.savefile = savefile;
         }
         else

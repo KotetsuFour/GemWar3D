@@ -29,6 +29,8 @@ public class UnitClass
 	public static UnitClass elite_quartz = new UnitClass("Elite Quartz", 20, 7, 1, 5, 9, 0, 5, 1, 7, 6, new UnitType[] { UnitType.QUARTZ }, 45, 8);
 	public static UnitClass topaz_fusion = new UnitClass("Topaz Fusion", 26, 7, 1, 5, 2, 0, 12, 1, 10, 6, new UnitType[] { }, 45, 9);
 
+	public static UnitClass[] unitClassIndex = new UnitClass[] { lord, servant, soldier, architect, diplomat, guard, priestess, pilot,
+				elite_quartz, topaz_fusion };
 
 	public UnitClass(string className, int minMaxHP, int minStrength, int minMagic, int minSkill,
 			int minSpeed, int minLuck, int minDefense, int minResistance, int minConstitution,

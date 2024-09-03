@@ -6,14 +6,14 @@ using UnityEngine.SceneManagement;
 
 public static class SpecialMenuLogic
 {
-    public static void restartChapter(Unit unit)
+    public static void restartChapter()
     {
-        SaveMechanism.loadGame(CampaignData.savefile, unit);
+        SaveMechanism.loadGame(StaticData.savefile);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-    public static void mainMenu(Unit unit)
+    public static void mainMenu()
     {
-        SaveMechanism.loadGame(CampaignData.savefile, unit);
+        SaveMechanism.loadGame(StaticData.savefile);
         SceneManager.LoadScene("Main Menu");
     }
 }

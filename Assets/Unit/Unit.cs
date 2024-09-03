@@ -49,6 +49,8 @@ public class Unit
 	public Item talkReward;
 	public bool dropsHeldItem;
 
+	public List<Color> palette;
+
 	public int supportId1;
 	public int supportId2;
 	public FusionSkill fusionSkill1;
@@ -60,8 +62,6 @@ public class Unit
 	public AIType ai2;
 	public UnitTeam team;
 
-	public SpriteRenderer outline;
-	public string spriteName;
 	public string talkIconName;
 
 	public static float spriteDimension = (float)1.4;
@@ -72,7 +72,7 @@ public class Unit
 		int skill, int speed, int luck, int defense, int resistance, int constitution, int movement,
 		int hpGrowth, int strengthGrowth, int magicGrowth, int skillGrowth, int speedGrowth, int luckGrowth,
 		int defenseGrowth, int resistanceGrowth, Item personalItem, Weapon.WeaponType weaponType, int weaponProf,
-		UnitTeam team, int supportId1, int supportId2, Affinity aff, string spriteName)
+		UnitTeam team, int supportId1, int supportId2, Affinity aff, float[] colors)
 	{
 		this.unitName = unitName;
 		this.description = description;
@@ -104,7 +104,11 @@ public class Unit
 		this.supportId2 = supportId2;
 		this.affinity = aff;
 		level = 1;
-		this.spriteName = spriteName;
+
+		for (int q = 0; q < colors.Length; q += 3)
+        {
+			palette.Add(new Color(colors[q], colors[q + 1], colors[q + 2]));
+        }
 	}
 	public int getBaseAccuracy()
 	{
