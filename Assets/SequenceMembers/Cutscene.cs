@@ -11,7 +11,7 @@ public class Cutscene : SequenceMember
     private int idx;
     private float timer;
 
-    public void constructor(string[] dialogue, Camera cam)
+    public void constructor(string[] dialogue)
     {
         this.dialogue = dialogue;
         nextSaying();
@@ -60,7 +60,7 @@ public class Cutscene : SequenceMember
     {
         return storyComplete;
     }
-    public new void LEFT_MOUSE(float mouseX, float mouseY)
+    public new void LEFT_MOUSE()
     {
           Z();
     }

@@ -6,11 +6,11 @@ public abstract class SequenceMember : MonoBehaviour
 {
     public abstract bool completed();
 
-    public void LEFT_MOUSE(float mouseX, float mouseY)
+    public void LEFT_MOUSE()
     {
         //nothing
     }
-    public void RIGHT_MOUSE(float mouseX, float mouseY)
+    public void RIGHT_MOUSE()
     {
         //nothing
     }
@@ -22,7 +22,11 @@ public abstract class SequenceMember : MonoBehaviour
     {
         //nothing
     }
-    public void C()
+    public void A()
+    {
+        //nothing
+    }
+    public void S()
     {
         //nothing
     }

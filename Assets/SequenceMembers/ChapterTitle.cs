@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ChapterTitle : SequenceMember
 {
     public float timer;
-    public void constructor(Camera cam, string title)
+    public void constructor(string title)
     {
         StaticData.findDeepChild(transform, "Background").GetComponent<Image>().sprite
             = AssetDictionary.getImage("crystal_gem_star.png");
@@ -36,7 +36,7 @@ public class ChapterTitle : SequenceMember
         return false;
     }
 
-    public new void LEFT_MOUSE(float mouseX, float mouseY)
+    public new void LEFT_MOUSE()
     {
         Z();
     }

@@ -35,11 +35,11 @@ public class MainMenu : SequenceMember
     {
         return false; //We exit by switching scenes
     }
-    public new void LEFT_MOUSE(float mouseX, float mouseY)
+    public new void LEFT_MOUSE()
     {
         //TODO
     }
-    public new void RIGHT_MOUSE(float mouseX, float mouseY)
+    public new void RIGHT_MOUSE()
     {
         //TODO
     }

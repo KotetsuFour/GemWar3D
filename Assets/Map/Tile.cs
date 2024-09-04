@@ -54,8 +54,8 @@ public class Tile : MonoBehaviour
         this.type = type;
 
         float meshHeight = (height + 0.0f) * TILE_HEIGHT_MULTIPLIER;
-        StaticData.findDeepChild(transform, "Stage").Translate(0, meshHeight, 0);
-        StaticData.findDeepChild(transform, "Highlight").Translate(0, meshHeight + 0.05f, 0);
+        getStage().Translate(0, meshHeight, 0);
+        getHighlight().Translate(0, meshHeight + 0.05f, 0);
 
         Mesh mesh = new Mesh
         {
@@ -177,7 +177,71 @@ public class Tile : MonoBehaviour
     {
         return gemstones;
     }
+    public bool hasLoot()
+    {
+        return ironLoot > 0 || steelLoot > 0 || silverLoot > 0 || itemLoot != null;
+    }
 
+    public string takeLoot(Unit retriever)
+    {
+        //You can't have multiple types of loot
+        if (ironLoot > 0)
+        {
+            StaticData.iron += ironLoot;
+            string ret = "You got " + ironLoot + " Iron!";
+            ironLoot = 0;
+            return ret;
+        }
+        if (steelLoot > 0)
+        {
+            StaticData.steel += steelLoot;
+            string ret = "You got " + steelLoot + " Steel!";
+            steelLoot = 0;
+            return ret;
+        }
+        if (silverLoot > 0)
+        {
+            StaticData.silver += silverLoot;
+            string ret = "You got " + silverLoot + " Silver!";
+            silverLoot = 0;
+            return ret;
+        }
+        if (itemLoot is Weapon && retriever.heldWeapon == null)
+        {
+            retriever.heldWeapon = (Weapon)itemLoot.clone();
+            string ret = "You got a(n) " + itemLoot.itemName + "!";
+            itemLoot = null;
+            return ret;
+        }
+        else if (!(itemLoot is Weapon) && retriever.heldItem == null)
+        {
+            retriever.heldItem = itemLoot.clone();
+            string ret = "You got a(n) " + itemLoot.itemName + "!";
+            itemLoot = null;
+            return ret;
+        }
+        else
+        {
+            StaticData.addToConvoy(itemLoot.clone());
+            string ret = "A(n) " + itemLoot.itemName + " was sent to the convoy!";
+            itemLoot = null;
+            return ret;
+        }
+    }
+
+    public void decorate(GameObject deco)
+    {
+        deco.transform.position = getStage().position;
+    }
+
+    public Transform getStage()
+    {
+        return StaticData.findDeepChild(transform, "Stage");
+    }
+    public Transform getHighlight()
+    {
+        return StaticData.findDeepChild(transform, "Highlight");
+    }
     public class TileType
     {
         public string tileName;

@@ -25,7 +25,7 @@ public class GridMap : SequenceMember
 
     private Tile tile;
 
-    private Tile[,] gridArray;
+    private Tile[,] map;
     private List<Tile> healTiles;
 
     private float timer;
@@ -108,6 +108,24 @@ public class GridMap : SequenceMember
     private GameObject instantiatedBreakAndExpPane;
     public GameObject levelUpBackground;
     private GameObject instantiatedLevelUpBackground;
+
+    public void constructor(Tile[,] map,
+        Unit[] playerUnits, Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits,
+        Objective objective, string chapterName, string[] teamNames, int turnPar)
+    {
+        this.map = map;
+
+        player = new List<Unit>(playerUnits);
+        enemy = new List<Unit>(enemyUnits);
+        ally = new List<Unit>(allyUnits);
+        other = new List<Unit>(otherUnits);
+
+        this.objective = objective;
+        this.chapterName = chapterName;
+        this.teamNames = teamNames;
+        this.turnPar = turnPar;
+    }
+
     public override bool completed()
     {
         return objectiveComplete;

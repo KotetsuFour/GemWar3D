@@ -33,7 +33,7 @@ public class Disclaimer : SequenceMember
         }
         return false;
     }
-    public new void LEFT_MOUSE(float mouseX, float mouseY)
+    public new void LEFT_MOUSE()
     {
         Z();
     }

@@ -87,6 +87,101 @@ public static class StaticData
         }
         return convoyDurabilities;
     }
+    public static void addToConvoy(Item item)
+    {
+        if (item is Weapon)
+        {
+            convoyIds[(int)((Weapon)item).weaponType].Add(item.id);
+            convoyDurabilities[(int)((Weapon)item).weaponType].Add(item.usesLeft);
+        }
+        else if (item is UsableItem)
+        {
+            convoyIds[9].Add(item.id);
+            convoyDurabilities[9].Add(item.usesLeft);
+        }
+    }
+    public static Item takeFromConvoy(int type, int idx)
+    {
+        Item ret = Item.itemIndex[getConvoyIds()[type][idx]].clone();
+        ret.usesLeft = getConvoyDurabilities()[type][idx];
+
+        getConvoyIds()[type].RemoveAt(idx);
+        getConvoyDurabilities()[type].RemoveAt(idx);
+
+        return ret;
+    }
+
+    public static void registerSupportUponEscape(Unit escapee, List<Unit> player, int turn)
+    {
+        for (int q = 0; q < player.Count; q++)
+        {
+            if (escapee.supportId1 > -1
+                && player[q] != escapee
+                && (player[q].supportId1 == escapee.supportId1 || player[q].supportId2 == escapee.supportId1))
+            {
+                SupportLog.supportLog[escapee.supportId1].supportAmount += turn;
+            }
+            if (escapee.supportId2 > -1
+                && player[q] != escapee
+                && (player[q].supportId1 == escapee.supportId2 || player[q].supportId2 == escapee.supportId2))
+            {
+                SupportLog.supportLog[escapee.supportId2].supportAmount += turn;
+            }
+        }
+    }
+
+    public static void registerRemainingSupports(List<Unit> player, int turn)
+    {
+        for (int q = 0; q < player.Count; q++)
+        {
+            for (int w = q + 1; w < player.Count; w++)
+            {
+                Unit first = player[q];
+                Unit second = player[w];
+                if (first.supportId1 > -1
+                    && (second.supportId1 == first.supportId1 || second.supportId2 == first.supportId1))
+                {
+                    SupportLog.supportLog[first.supportId1].supportAmount += turn;
+                }
+                if (first.supportId2 > -1
+                    && (second.supportId1 == first.supportId2 || second.supportId2 == first.supportId2))
+                {
+                    SupportLog.supportLog[first.supportId2].supportAmount += turn;
+                }
+            }
+        }
+    }
+    public static void dealWithGemstones()
+    {
+        foreach (Unit u in members)
+        {
+            if (u.heldItem is Gemstone)
+            {
+                Gemstone gem = (Gemstone)u.heldItem;
+                gem.unit.currentHP = gem.unit.maxHP;
+                gem.unit.heldWeapon = null;
+                gem.unit.heldItem = null;
+                if (gem.unit.team == Unit.UnitTeam.ENEMY)
+                {
+                    prisoners.Add(gem);
+                }
+                u.heldItem = null;
+            }
+        }
+    }
+    public static void refreshUnits()
+    {
+        foreach (Unit u in members)
+        {
+            if (u.isAlive() || u.isEssential)
+            {
+                Debug.Log(u.unitName + " " + u.currentHP);
+                u.currentHP = u.maxHP;
+                u.isExhausted = false;
+            }
+        }
+    }
+
 
     public static Transform findDeepChild(Transform parent, string childName)
     {
