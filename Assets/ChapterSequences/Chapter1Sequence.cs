@@ -5,13 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class Chapter1Sequence : Chapter
 {
-    [SerializeField] private GridMap gridmap;
-    [SerializeField] private Cutscene cutScene;
-    [SerializeField] private SaveScreen saveScreen;
-    [SerializeField] private ChapterTitle chapterTitle;
+    [SerializeField] private GridMap gridmap; //object
+    [SerializeField] private Cutscene firstScene; //object
+    [SerializeField] private Cutscene introScene; //object
+    [SerializeField] private Cutscene finalScene; //object
+    [SerializeField] private SaveScreen saveScreen; //prefab
+    [SerializeField] private ChapterTitle chapterTitle; //prefab
+
+    [SerializeField] private Material floor;
+    [SerializeField] private Material rubble;
+    [SerializeField] private Material warp_pad;
 
     [SerializeField] private GameObject pillar;
-    [SerializeField] private GameObject rubble;
+//    [SerializeField] private GameObject rubble;
+
 
     private int sequenceNum;
     private SequenceMember seqMem;
@@ -25,9 +32,15 @@ public class Chapter1Sequence : Chapter
         title.constructor("Chapter 1 - Rebellion");
         seqMem = title;
 
+        materialDictionary = new Dictionary<char, Material>();
+        materialDictionary.Add('_', floor);
+        materialDictionary.Add('|', floor);
+        materialDictionary.Add('R', rubble);
+        materialDictionary.Add('r', warp_pad);
+
         decoDictionary = new Dictionary<char, GameObject>();
         decoDictionary.Add('|', pillar);
-        decoDictionary.Add('R', rubble);
+//        decoDictionary.Add('R', rubble);
 
         tileMap = new string[] {
         "____________",
@@ -150,30 +163,41 @@ public class Chapter1Sequence : Chapter
             sequenceNum++;
             if (sequenceNum == 1)
             {
-                Cutscene firstScene = Instantiate(cutScene);
+/*
+                seqMem.gameObject.SetActive(false);
+                firstScene.gameObject.SetActive(true);
                 firstScene.constructor(opening());
                 seqMem = firstScene;
             }
             else if (sequenceNum == 2)
             {
-                Cutscene introScene = Instantiate(cutScene);
+                seqMem.gameObject.SetActive(false);
+                introScene.gameObject.SetActive(true);
                 introScene.constructor(intro());
+
                 seqMem = introScene;
             }
             else if (sequenceNum == 3)
             {
+*/
+                seqMem.gameObject.SetActive(false);
                 seqMem = makeChapter();
             }
             else if (sequenceNum == 4)
             {
-                playerList = ((GridMap)seqMem).player;
-                turnsTaken = ((GridMap)seqMem).turn;
-                Cutscene finalScene = Instantiate(cutScene);
+                playerList = gridmap.player;
+                turnsTaken = gridmap.turn;
+
+                seqMem.gameObject.SetActive(false);
+                finalScene.gameObject.SetActive(true);
                 finalScene.constructor(ending());
+
                 seqMem = finalScene;
             }
             else if (sequenceNum == 5)
             {
+                seqMem.gameObject.SetActive(false);
+
                 finalize(playerList);
 
                 StaticData.members.Add(makeBismuthRecruit());
@@ -259,7 +283,6 @@ public class Chapter1Sequence : Chapter
                 Unit.Affinity.EARTH, new float[] { });
         rose_quartz.isEssential = true;
         rose_quartz.isLeader = true;
-        StaticData.members.Add(rose_quartz);
 
         return rose_quartz;
     }
@@ -276,7 +299,6 @@ public class Chapter1Sequence : Chapter
                 Item.pearl_spear.clone(), Weapon.WeaponType.SWORD, 0, Unit.UnitTeam.PLAYER, 0, 2,
                 Unit.Affinity.WATER, new float[] { });
         pearl.isEssential = true;
-        StaticData.members.Add(pearl);
 
         return pearl;
     }
@@ -347,21 +369,28 @@ public class Chapter1Sequence : Chapter
 
     public GridMap makeChapter()
     {
-        Unit[] player = { makeRoseQuartz(), makePearl() };
+        Unit rose_quartz = makeRoseQuartz();
+        Unit pearl = makePearl();
+        StaticData.members.Add(rose_quartz);
+        StaticData.members.Add(pearl);
+        Unit[] player = { rose_quartz, pearl };
         Unit[] enemy = {makeBismuthGeneric(), genericQuartz(), genericQuartz(),
             genericQuartz(), genericQuartz(), genericQuartz(),
             genericQuartz(), makeBiggs(), makeOcean(), genericQuartz()};
         Unit[] ally = { };
         Unit[] other = { };
-        int[] loot = { };
         string[] teamNames = { "Rose's Rebels", "Homeworld", "", "" };
 
-        GridMap map = Instantiate(gridmap);
-        map.constructor(createMap(), player, enemy, ally, other,
+        gridmap.gameObject.SetActive(true);
+        Tile[,] mapArray = createMap(StaticData.findDeepChild(gridmap.transform, "MapTransform"));
+        gridmap.constructor(mapArray, player, enemy, ally, other,
             new EscapeObjective(), "Chapter 1 - Rebellion", teamNames, 10);
-        playerList = map.player;
+        playerList = gridmap.player;
 
-        return map;
+//        setUnits(mapArray, enemy, Unit.UnitTeam.ENEMY);
+//        setUnits(mapArray, player, Unit.UnitTeam.PLAYER);
+
+        return gridmap;
 
     }
 }

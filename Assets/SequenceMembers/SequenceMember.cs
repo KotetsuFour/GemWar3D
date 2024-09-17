@@ -4,54 +4,69 @@ using UnityEngine;
 
 public abstract class SequenceMember : MonoBehaviour
 {
+    [SerializeField] private AudioSource sound_effect;
+    [SerializeField] private Camera cam;
+
     public abstract bool completed();
 
-    public void LEFT_MOUSE()
+    public virtual void LEFT_MOUSE()
     {
         //nothing
     }
-    public void RIGHT_MOUSE()
+    public virtual void RIGHT_MOUSE()
     {
         //nothing
     }
-    public void Z()
+    public virtual void Z()
     {
         //nothing
     }
-    public void X()
+    public virtual void X()
     {
         //nothing
     }
-    public void A()
+    public virtual void A()
     {
         //nothing
     }
-    public void S()
+    public virtual void S()
     {
         //nothing
     }
-    public void UP()
+    public virtual void UP()
     {
         //nothing
     }
-    public void LEFT()
+    public virtual void LEFT()
     {
         //nothing
     }
-    public void DOWN()
+    public virtual void DOWN()
     {
         //nothing
     }
-    public void RIGHT()
+    public virtual void RIGHT()
     {
         //nothing
     }
-    public void ENTER()
+    public virtual void ENTER()
     {
         //nothing
     }
-    public void ESCAPE()
+    public virtual void ESCAPE()
     {
         //nothing
     }
+
+    public AudioSource getAudioSource(AudioClip clip)
+    {
+        AudioSource ret = Instantiate(sound_effect);
+        ret.clip = clip;
+        return ret;
+    }
+    public Camera getCamera()
+    {
+        return cam;
+    }
+
 }

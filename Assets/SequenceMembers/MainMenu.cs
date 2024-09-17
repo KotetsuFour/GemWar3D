@@ -35,16 +35,16 @@ public class MainMenu : SequenceMember
     {
         return false; //We exit by switching scenes
     }
-    public new void LEFT_MOUSE()
+    public override void LEFT_MOUSE()
     {
         //TODO
     }
-    public new void RIGHT_MOUSE()
+    public override void RIGHT_MOUSE()
     {
         //TODO
     }
 
-    public new void Z()
+    public override void Z()
     {
         if (currentPage == MenuPage.TITLE)
         {
@@ -148,7 +148,7 @@ public class MainMenu : SequenceMember
             }
         }
     }
-    public new void X()
+    public override void X()
     {
         if (currentPage == MenuPage.FILE || currentPage == MenuPage.CONTROLS || currentPage == MenuPage.EXTRAS)
         {
@@ -179,7 +179,7 @@ public class MainMenu : SequenceMember
             currentPage = MenuPage.FILE;
         }
     }
-    public new void UP()
+    public override void UP()
     {
         if (currentPage == MenuPage.MAIN || currentPage == MenuPage.FILE || currentPage == MenuPage.EXTRAS
             || currentPage == MenuPage.DELETE)
@@ -193,7 +193,7 @@ public class MainMenu : SequenceMember
             currentMenu.transform.GetChild(0).GetChild(menuIdx).GetComponent<TextMeshProUGUI>().color = Color.cyan;
         }
     }
-    public new void DOWN()
+    public override void DOWN()
     {
         if (currentPage == MenuPage.MAIN || currentPage == MenuPage.FILE || currentPage == MenuPage.EXTRAS
             || currentPage == MenuPage.DELETE)
@@ -203,7 +203,7 @@ public class MainMenu : SequenceMember
             currentMenu.transform.GetChild(0).GetChild(menuIdx).GetComponent<TextMeshProUGUI>().color = Color.cyan;
         }
     }
-    public new void ENTER()
+    public override void ENTER()
     {
         if (currentPage == MenuPage.TITLE)
         {

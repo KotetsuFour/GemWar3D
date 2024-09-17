@@ -232,6 +232,7 @@ public class Tile : MonoBehaviour
     public void decorate(GameObject deco)
     {
         deco.transform.position = getStage().position;
+        deco.transform.SetParent(transform);
     }
 
     public Transform getStage()

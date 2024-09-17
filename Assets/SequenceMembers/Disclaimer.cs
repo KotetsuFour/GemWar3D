@@ -33,15 +33,15 @@ public class Disclaimer : SequenceMember
         }
         return false;
     }
-    public new void LEFT_MOUSE()
+    public override void LEFT_MOUSE()
     {
         Z();
     }
-    public new void Z()
+    public override void Z()
     {
         timer = 0;
     }
-    public new void ENTER()
+    public override void ENTER()
     {
         Z();
     }

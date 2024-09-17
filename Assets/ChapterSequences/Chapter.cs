@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Chapter : MonoBehaviour
 {
-    [SerializeField] private Tile tile;
     [SerializeField] private UnitModel model;
+    [SerializeField] private Tile tile;
 
     public string[] tileMap;
     public string[] deployMap;
@@ -15,10 +15,11 @@ public class Chapter : MonoBehaviour
     public int[] loot;
 
     public Dictionary<char, GameObject> decoDictionary;
+    public Dictionary<char, Material> materialDictionary;
 
     public int turnsTaken;
     
-    public Tile[,] createMap()
+    public Tile[,] createMap(Transform mapTransform)
     {
         Tile[,] ret = new Tile[tileMap[0].Length, tileMap.Length];
 
@@ -27,6 +28,7 @@ public class Chapter : MonoBehaviour
         {
             for (int x = 0; x < tileMap[y].Length; x++)
             {
+                Debug.Log($"Tile {x},{y}");
                 Tile toPut = Instantiate(tile, new Vector3(x, 0, y), Quaternion.identity);
                 if (lootMap[y][x] == 'e')
                 {
@@ -52,27 +54,37 @@ public class Chapter : MonoBehaviour
                     height = (h - 'a') + 36;
                 }
 
-                if (tileMap[y][x] == '_')
+                char tileId = tileMap[y][x];
+                if (tileId == '_')
                 {
                     toPut.draw(x, y, height, Tile.FLOOR);
                 }
-                else if (tileMap[y][x] == 'R')
+                else if (tileId == 'R')
                 {
                     toPut.draw(x, y, height, Tile.RUBBLE);
                 }
-                else if (tileMap[y][x] == '|')
+                else if (tileId == '|')
                 {
                     toPut.draw(x, y, height, Tile.PILLAR);
                 }
-                else if (tileMap[y][x] == 'r')
+                else if (tileId == 'r')
                 {
                     toPut.draw(x, y, height, Tile.WARP_PAD);
                 }
+                else
+                {
+                    Debug.Log($"Found unidentified tile: '{tileId}'");
+                }
+
+                toPut.GetComponent<MeshRenderer>().material = materialDictionary[tileId];
 
                 if (decoDictionary.ContainsKey(decoMap[y][x]))
                 {
                     toPut.decorate(Instantiate(decoDictionary[decoMap[y][x]]));
                 }
+
+                toPut.transform.SetParent(mapTransform);
+
                 ret[x, y] = toPut;
             }
         }
@@ -97,7 +109,8 @@ public class Chapter : MonoBehaviour
                 if (deployMap[y][x] == spot)
                 {
                     Transform pos = map[x, y].getStage();
-                    UnitModel myUnit = Instantiate(model, new Vector3(pos.position.x, pos.position.y, pos.position.z), Quaternion.identity);
+                    UnitModel myUnit = Instantiate(model,
+                        new Vector3(pos.position.x, pos.position.y, pos.position.z), Quaternion.identity);
                     myUnit.setUnit(units[idx]);
                     //TODO set rotation
                     idx++;
@@ -112,5 +125,10 @@ public class Chapter : MonoBehaviour
         StaticData.refreshUnits();
         StaticData.registerRemainingSupports(playerList, turnsTaken);
         StaticData.scene++;
+    }
+
+    public UnitModel getUnitModelPrefab()
+    {
+        return model;
     }
 }

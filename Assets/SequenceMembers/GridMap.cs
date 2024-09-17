@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using Unity.AI.Navigation;
 
+[RequireComponent (typeof(NavMeshSurface))]
 public class GridMap : SequenceMember
 {
     private int width;
@@ -23,28 +26,21 @@ public class GridMap : SequenceMember
     public int turn;
     private int turnPar;
 
-    private Tile tile;
-
     private Tile[,] map;
+    private Transform mapTransform;
     private List<Tile> healTiles;
 
     private float timer;
 
-    public GameObject cursor;
-    public GameObject cam;
-    public GameObject menuBackground;
-    public GameObject instantiatedMenuBackground;
-    public float menuSizeX;
-    public List<MenuChoice> menuElements;
-    public int menuIdx;
-    public GameObject forecastBackground;
-    public GameObject instantiatedForecastBackground;
-    public float forecastSize;
+    [SerializeField] private GameObject cursor;
+
+    [SerializeField] private Button menuOption;
+    private List<MenuChoice> menuElements;
 
     public int cursorX;
     public int cursorY;
 
-    public SelectionMode selectionMode = SelectionMode.ROAM;
+    private SelectionMode selectionMode;
 
     public Dictionary<Tile, object> traversableTiles;
     public Dictionary<Tile, object> attackableTiles;
@@ -56,17 +52,7 @@ public class GridMap : SequenceMember
     public Tile targetTile;
     public Unit targetEnemy;
 
-    public GameObject battleBackground;
-    public GameObject instantiatedBattleBackground;
-    public GameObject battleUI;
-    public GameObject instantiatedBattleUI;
-    public GameObject battleTile;
-    public GameObject battleEnemyTile;
-    public GameObject battlePlayerTile;
-    public GameObject battleCombatant;
-    public GameObject battleCombatantEnemy;
-    public GameObject battleCombatantPlayer;
-    public float battleMoveSpeed; //Set in UI
+    [SerializeField] private float battleMoveSpeed;
 
 //    private List<AttackComponent> attackParts;
     private int attackMode; //0 = attack, 1 = return
@@ -86,34 +72,17 @@ public class GridMap : SequenceMember
     private Tile allyStartTile;
     private Tile allyDestTile;
 
-    public GameObject dialogueBox;
-    private GameObject instantiatedDialogueBox;
-    public GameObject speakerPortrait;
-    private List<GameObject> instantiatedSpeakerPortraits;
-//    private DialogueEvent currentDialogue;
     private Tile talkerTile;
-
-    public GameObject statsPageBackground;
-    private GameObject instantiatedStatsPageBackground;
-
-    private Weapon brokenWeapon;
-    private bool showingBrokenWeapon;
-    private bool showingEXP;
-    private bool showingLevelUp;
-    private bool findBattleEndStart;
-    private int expToAdd;
-    private Unit expUnit;
-    private bool[] levelGrowths;
-    public GameObject breakAndExpPane;
-    private GameObject instantiatedBreakAndExpPane;
-    public GameObject levelUpBackground;
-    private GameObject instantiatedLevelUpBackground;
 
     public void constructor(Tile[,] map,
         Unit[] playerUnits, Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits,
         Objective objective, string chapterName, string[] teamNames, int turnPar)
     {
         this.map = map;
+        width = map.GetLength(0);
+        height = map.GetLength(1);
+
+        GetComponent<NavMeshSurface>().BuildNavMesh();
 
         player = new List<Unit>(playerUnits);
         enemy = new List<Unit>(enemyUnits);

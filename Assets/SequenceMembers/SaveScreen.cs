@@ -17,7 +17,7 @@ public class SaveScreen : SequenceMember
     public void selectSaveFile(int file)
     {
         //We'll treat "Continue without saving" like saving to a fourth file
-        SaveMechanism.saveGame(menuIdx + 1);
+        SaveMechanism.saveGame(file + 1);
 
         gameObject.SetActive(false);
         done = true;
@@ -26,11 +26,11 @@ public class SaveScreen : SequenceMember
     {
         return done;
     }
-    public new void Z()
+    public override void Z()
     {
         selectSaveFile(menuIdx);
     }
-    public new void UP()
+    public override void UP()
     {
         StaticData.findDeepChild(saveButtons[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
             .color = Color.white;
@@ -42,7 +42,7 @@ public class SaveScreen : SequenceMember
         StaticData.findDeepChild(saveButtons[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
             .color = Color.cyan;
     }
-    public new void DOWN()
+    public override void DOWN()
     {
         StaticData.findDeepChild(saveButtons[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
             .color = Color.white;
