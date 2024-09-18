@@ -764,6 +764,15 @@ MonoBehaviour:
   seized: 0
   turn: 0
   cursor: {fileID: 5567251825533974625, guid: 275db0d07084d074c873fde4addb5d97, type: 3}
+  unitOrTile:
+    serializedVersion: 2
+    m_Bits: 384
+  unitLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  tileLayer:
+    serializedVersion: 2
+    m_Bits: 128
   menuOption: {fileID: 0}
   cursorX: 0
   cursorY: 0

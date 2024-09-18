@@ -14,9 +14,9 @@ public class Chapter1Sequence : Chapter
 
     [SerializeField] private Material floor;
     [SerializeField] private Material rubble;
-    [SerializeField] private Material warp_pad;
 
     [SerializeField] private GameObject pillar;
+    [SerializeField] private GameObject warp_pad;
 //    [SerializeField] private GameObject rubble;
 
 
@@ -36,10 +36,11 @@ public class Chapter1Sequence : Chapter
         materialDictionary.Add('_', floor);
         materialDictionary.Add('|', floor);
         materialDictionary.Add('R', rubble);
-        materialDictionary.Add('r', warp_pad);
+        materialDictionary.Add('r', floor);
 
         decoDictionary = new Dictionary<char, GameObject>();
         decoDictionary.Add('|', pillar);
+        decoDictionary.Add('r', warp_pad);
 //        decoDictionary.Add('R', rubble);
 
         tileMap = new string[] {
@@ -91,12 +92,12 @@ public class Chapter1Sequence : Chapter
         "000000001100",
         "001000000100",
         "011100000000",
-        "000000011000",
+        "000000110000",
         "000000100000",
         "001000000110",
         "011000000011",
         "001000000000",
-        "000004400000"
+        "000001100000"
         };
         decoMap = new string[] {
         "____________",
@@ -387,8 +388,8 @@ public class Chapter1Sequence : Chapter
             new EscapeObjective(), "Chapter 1 - Rebellion", teamNames, 10);
         playerList = gridmap.player;
 
-//        setUnits(mapArray, enemy, Unit.UnitTeam.ENEMY);
-//        setUnits(mapArray, player, Unit.UnitTeam.PLAYER);
+        setUnits(mapArray, enemy, Unit.UnitTeam.ENEMY);
+        setUnits(mapArray, player, Unit.UnitTeam.PLAYER);
 
         return gridmap;
 

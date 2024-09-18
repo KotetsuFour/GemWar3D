@@ -11,6 +11,7 @@ public abstract class SequenceMember : MonoBehaviour
 
     public virtual void LEFT_MOUSE()
     {
+        Debug.Log("stuck on base");
         //nothing
     }
     public virtual void RIGHT_MOUSE()

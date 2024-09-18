@@ -15,7 +15,7 @@ public class Cutscene : SequenceMember
 
     private Dictionary<string, AudioSource> audioPlaying;
 
-    [SerializeField] private UnitModel[] models;
+    [SerializeField] private CutsceneModel[] models;
     [SerializeField] private Transform[] positions;
 
     private Transform cameraDestination;
@@ -162,7 +162,7 @@ public class Cutscene : SequenceMember
             else if (comm == "animate")
             {
                 int modelIdx = int.Parse(parts[1]);
-                UnitModel model = models[modelIdx];
+                CutsceneModel model = models[modelIdx];
                 Animator anim = model.getAnimator();
 
                 string animationName = parts[2].Replace('_', ' ');
@@ -183,7 +183,7 @@ public class Cutscene : SequenceMember
             else if (comm == "moveCharacter")
             {
                 int modelIdx = int.Parse(parts[1]);
-                UnitModel model = models[modelIdx];
+                CutsceneModel model = models[modelIdx];
 
                 Transform pos = positions[int.Parse(parts[2])];
 
@@ -196,7 +196,7 @@ public class Cutscene : SequenceMember
             else if (comm == "rotateCharacter")
             {
                 int modelIdx = int.Parse(parts[1]);
-                UnitModel model = models[modelIdx];
+                CutsceneModel model = models[modelIdx];
 
                 Transform lookAt = positions[int.Parse(parts[2])];
                 Quaternion rotation = Quaternion.LookRotation(lookAt.position - model.transform.position);
@@ -206,7 +206,7 @@ public class Cutscene : SequenceMember
             else if (comm == "teleportCharacter")
             {
                 int modelIdx = int.Parse(parts[1]);
-                UnitModel model = models[modelIdx];
+                CutsceneModel model = models[modelIdx];
 
                 Transform pos = positions[int.Parse(parts[2])];
                 Transform lookAt = positions[int.Parse(parts[3])];
@@ -287,7 +287,7 @@ public class Cutscene : SequenceMember
         {
             Destroy(source);
         }
-        foreach (UnitModel model in models)
+        foreach (CutsceneModel model in models)
         {
             Destroy(model);
         }

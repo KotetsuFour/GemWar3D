@@ -237,4 +237,18 @@ public static class StaticData
         }
         return null;
     }
+    public static Material getMaterialByName(Material[] materials, string matName)
+    {
+        foreach (Material m in materials)
+        {
+            if (m.name.Replace(" ", "").Replace("1", "").Replace("(Instance)", "")
+                == matName.Replace(" ", "").Replace("1", "").Replace("(Instance)", ""))
+            {
+                return m;
+            }
+        }
+        Debug.Log(matName);
+        return null;
+    }
+
 }

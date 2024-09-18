@@ -68,6 +68,8 @@ public class Unit
 
 	public bool deployed;
 
+	public UnitModel model;
+
 	public void constructor(string unitName, UnitClass unitClass, string description, int maxHP, int strength, int magic,
 		int skill, int speed, int luck, int defense, int resistance, int constitution, int movement,
 		int hpGrowth, int strengthGrowth, int magicGrowth, int skillGrowth, int speedGrowth, int luckGrowth,
@@ -105,6 +107,7 @@ public class Unit
 		this.affinity = aff;
 		level = 1;
 
+		palette = new List<Color>();
 		for (int q = 0; q < colors.Length; q += 3)
         {
 			palette.Add(new Color(colors[q], colors[q + 1], colors[q + 2]));

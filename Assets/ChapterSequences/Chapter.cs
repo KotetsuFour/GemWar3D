@@ -112,6 +112,7 @@ public class Chapter : MonoBehaviour
                     UnitModel myUnit = Instantiate(model,
                         new Vector3(pos.position.x, pos.position.y, pos.position.z), Quaternion.identity);
                     myUnit.setUnit(units[idx]);
+                    map[x, y].setOccupant(myUnit);
                     //TODO set rotation
                     idx++;
                 }

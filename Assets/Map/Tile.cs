@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof(MeshFilter), typeof(MeshRenderer))]
+[RequireComponent (typeof(MeshFilter), typeof(MeshRenderer), typeof(BoxCollider))]
 public class Tile : MonoBehaviour
 {
     [SerializeField] private Material moveHighlight;
@@ -76,6 +76,12 @@ public class Tile : MonoBehaviour
         normals.Add(Vector3.up);
         normals.Add(Vector3.up);
 
+        List<Vector2> uvs = new List<Vector2>();
+        uvs.Add(new Vector2(0, 0));
+        uvs.Add(new Vector2(0, 1));
+        uvs.Add(new Vector2(1, 1));
+        uvs.Add(new Vector2(1, 0));
+
         if (meshHeight > 0)
         {
             //Front
@@ -91,6 +97,11 @@ public class Tile : MonoBehaviour
             normals.Add(new Vector3(0, 0, -1));
             normals.Add(new Vector3(0, 0, -1));
 
+            uvs.Add(new Vector2(0, 1));
+            uvs.Add(new Vector2(1, 1));
+            uvs.Add(new Vector2(0, 0));
+            uvs.Add(new Vector2(1, 0));
+
             //Left
             vertices.Add(new Vector3(-HALF_LENGTH, meshHeight, -HALF_LENGTH)); //8
             vertices.Add(new Vector3(-HALF_LENGTH, meshHeight, HALF_LENGTH)); //9
@@ -103,6 +114,11 @@ public class Tile : MonoBehaviour
             normals.Add(new Vector3(-1, 0, 0));
             normals.Add(new Vector3(-1, 0, 0));
             normals.Add(new Vector3(-1, 0, 0));
+
+            uvs.Add(new Vector2(1, 0));
+            uvs.Add(new Vector2(1, 1));
+            uvs.Add(new Vector2(0, 0));
+            uvs.Add(new Vector2(0, 1));
 
             //Back
             vertices.Add(new Vector3(-HALF_LENGTH, meshHeight, HALF_LENGTH)); //12
@@ -117,6 +133,11 @@ public class Tile : MonoBehaviour
             normals.Add(new Vector3(0, 0, 1));
             normals.Add(new Vector3(0, 0, 1));
 
+            uvs.Add(new Vector2(0, 1));
+            uvs.Add(new Vector2(1, 1));
+            uvs.Add(new Vector2(0, 0));
+            uvs.Add(new Vector2(1, 0));
+
             //Right
             vertices.Add(new Vector3(HALF_LENGTH, meshHeight, HALF_LENGTH)); //16
             vertices.Add(new Vector3(HALF_LENGTH, meshHeight, -HALF_LENGTH)); //17
@@ -129,17 +150,26 @@ public class Tile : MonoBehaviour
             normals.Add(new Vector3(1, 0, 0));
             normals.Add(new Vector3(1, 0, 0));
             normals.Add(new Vector3(1, 0, 0));
+
+            uvs.Add(new Vector2(1, 1));
+            uvs.Add(new Vector2(1, 0));
+            uvs.Add(new Vector2(0, 1));
+            uvs.Add(new Vector2(0, 0));
         }
 
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.normals = normals.ToArray();
+        mesh.SetUVs(0, uvs);
 
         GetComponent<MeshFilter>().mesh = mesh;
+        GetComponent<BoxCollider>().center = new Vector3(0, meshHeight / 2, 0);
+        GetComponent<BoxCollider>().size = new Vector3(HALF_LENGTH * 2, meshHeight + 0.1f, HALF_LENGTH * 2);
     }
     public void setOccupant(UnitModel occupant)
     {
         this.occupant = occupant;
+        occupant.setTile(this);
     }
     public UnitModel getOccupant()
     {
@@ -242,6 +272,25 @@ public class Tile : MonoBehaviour
     public Transform getHighlight()
     {
         return StaticData.findDeepChild(transform, "Highlight");
+    }
+    public void highlightMove()
+    {
+        getHighlight().gameObject.SetActive(true);
+        getHighlight().GetComponent<MeshRenderer>().material = moveHighlight;
+    }
+    public void highlightAttack()
+    {
+        getHighlight().gameObject.SetActive(true);
+        getHighlight().GetComponent<MeshRenderer>().material = attackHighlight;
+    }
+    public void highlightInteract()
+    {
+        getHighlight().gameObject.SetActive(true);
+        getHighlight().GetComponent<MeshRenderer>().material = interactHighlight;
+    }
+    public void unhighlight()
+    {
+        getHighlight().gameObject.SetActive(false);
     }
     public class TileType
     {
