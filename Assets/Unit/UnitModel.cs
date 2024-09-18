@@ -30,7 +30,7 @@ public class UnitModel : MonoBehaviour
     void Update()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, int.MaxValue, tileLayer))
+        if (Physics.Raycast(transform.position + new Vector3(0, 100, 0), Vector3.down, out hit, int.MaxValue, tileLayer))
         {
             transform.position = new Vector3(
                 transform.position.x,
