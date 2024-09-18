@@ -59,6 +59,7 @@ public class UnitModel : MonoBehaviour
                 float currentX = path[currentDest].x;
                 float currentZ = path[currentDest].z;
                 Vector3 direction = new Vector3(currentX - transform.position.x, 0, currentZ - transform.position.z);
+                transform.rotation = Quaternion.LookRotation(direction);
                 direction = direction.normalized * mapMoveSpeed * Time.deltaTime;
                 transform.Translate(direction.x, 0, direction.z);
             }
