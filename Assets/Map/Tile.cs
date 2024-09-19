@@ -170,7 +170,10 @@ public class Tile : MonoBehaviour
     public void setOccupant(UnitModel occupant)
     {
         this.occupant = occupant;
-        occupant.setTile(this);
+        if (occupant != null)
+        {
+            occupant.setTile(this);
+        }
     }
     public UnitModel getOccupant()
     {

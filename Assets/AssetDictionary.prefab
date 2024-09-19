@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9098878066110088085}
   - component: {fileID: 5356606004304510711}
-  - component: {fileID: 9206711944814635867}
   m_Layer: 0
   m_Name: AssetDictionary
   m_TagString: Untagged
@@ -45,8 +44,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2519c60f5cd300f428af0f94a5372af1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageKeys: []
-  imageValues: []
+  imageKeys:
+  - Rose Quartz
+  - Pearl
+  - Bismuth
+  - Biggs
+  - Ocean
+  - Turquoise
+  - Nephrite
+  - Citrine
+  - Aventurine
+  - Chert
+  - Flint
+  - Quartz
+  - Priestess
+  - Guard
+  - Topaz
+  - Noble
+  - Elite
+  imageValues:
+  - {fileID: 21300000, guid: 5d21a8ff6d9c67d4da065d3015918b21, type: 3}
+  - {fileID: 21300000, guid: 2bf5e4a84745aa94ab2d85f712347b41, type: 3}
+  - {fileID: 21300000, guid: e91bcbc9608f0e24f8e796b042f9e6d4, type: 3}
+  - {fileID: 21300000, guid: 739954bbdb975f6408e53508db5b5189, type: 3}
+  - {fileID: 21300000, guid: 8605bbffb96853149846b30f0e1b518f, type: 3}
+  - {fileID: 21300000, guid: 143f995fbb8b16f4a90abd5c3c9b0b62, type: 3}
+  - {fileID: 21300000, guid: cbe16c20e0fa6a44f8c729e95f2d60bb, type: 3}
+  - {fileID: 21300000, guid: 7f5f7222395f5a84084f574e8071c59b, type: 3}
+  - {fileID: 21300000, guid: a2dbc5f1a2d5db14ea6c126c23321942, type: 3}
+  - {fileID: 21300000, guid: 8d8e032371bb02d4299d1e8ff7133ea1, type: 3}
+  - {fileID: 21300000, guid: 2d14d66fe7352264894da8422f01efa1, type: 3}
+  - {fileID: 21300000, guid: 11a742339ffe7bd48aab64d8c59192d7, type: 3}
+  - {fileID: 21300000, guid: 3cfdea7dd405bb04196ef0e7341ad1a9, type: 3}
+  - {fileID: 21300000, guid: f7455810d77c366459b0ebc82337f13f, type: 3}
+  - {fileID: 21300000, guid: 3e829ca05f4df434695da370a077aac2, type: 3}
+  - {fileID: 21300000, guid: 7fba06c6a17c63748a376c363ae37a09, type: 3}
+  - {fileID: 21300000, guid: fb1a7d95f0bc8a6448e72ad75a29f45b, type: 3}
   modelValues:
   - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
   - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
@@ -66,34 +99,3 @@ MonoBehaviour:
   audioValues:
   - {fileID: 8300000, guid: 87f4d4c1f429e1e42b1237cb43a4fc0d, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
---- !u!114 &9206711944814635867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9039809095753327854}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AgentTypeID: 0
-  m_CollectObjects: 0
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_UseGeometry: 0
-  m_DefaultArea: 0
-  m_GenerateLinks: 0
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
-  m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 0}
-  m_BuildHeightMesh: 0

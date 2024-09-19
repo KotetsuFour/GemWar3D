@@ -38,15 +38,14 @@ public class Battle
      */
 	public static int[] getForecast(UnitModel atk, UnitModel dfd,
         List<Unit> atkAllies, List<Unit> dfdAllies,
-        Weapon atkWep, Weapon dfdWep)
+        Weapon atkWep, Weapon dfdWep, Tile atkTile, Tile dfdTile)
     {
-        Tile atkTile = atk.getTile();
-        Tile dfdTile = dfd.getTile();
 		int distance = Mathf.Abs(atkTile.x - dfdTile.x) + Mathf.Abs(atkTile.y - dfdTile.y);
+		Debug.Log($"Distance: {distance}");
 		Unit atkUnit = atk.getUnit();
 		Unit dfdUnit = dfd.getUnit();
 
-        int[] ret = new int[10];
+        int[] ret = new int[12];
 
         //atkHP
         ret[ATKHP] = atkUnit.currentHP;
@@ -105,9 +104,9 @@ public class Battle
     }
     public Battle(UnitModel atk, UnitModel dfd,
         List<Unit> atkAllies, List<Unit> dfdAllies,
-        Weapon atkWep, Weapon dfdWep)
+        Weapon atkWep, Weapon dfdWep, Tile atkTile, Tile dfdTile)
     {
-		int[] forecast = getForecast(atk, dfd, atkAllies, dfdAllies, atkWep, dfdWep);
+		int[] forecast = getForecast(atk, dfd, atkAllies, dfdAllies, atkWep, dfdWep, atkTile, dfdTile);
 
 		Unit atkUnit = atk.getUnit();
 		Unit dfdUnit = dfd.getUnit();

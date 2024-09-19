@@ -41,6 +41,7 @@ public class GridMap : SequenceMember
     private List<Button> menuOptions;
     private List<MenuChoice> menuElements;
     private int menuIdx;
+    private int specialMenuIdx;
 
     public int cursorX;
     public int cursorY;
@@ -98,6 +99,8 @@ public class GridMap : SequenceMember
         this.teamNames = teamNames;
         this.turnPar = turnPar;
 
+        menuOptions = new List<Button>();
+
         interactableUnits = new List<Tile>();
         cursor = Instantiate(cursorPrefab);
     }
@@ -105,11 +108,16 @@ public class GridMap : SequenceMember
     {
         Tile tile = player[0].model.getTile();
         setCursor(tile);
+        setCameraPosition();
     }
 
     public override bool completed()
     {
         return objectiveComplete;
+    }
+    private void enableChild(string hudName, bool enable)
+    {
+        StaticData.findDeepChild(transform, hudName).gameObject.SetActive(enable);
     }
 
     private void setCursor(int x, int y)
@@ -182,11 +190,11 @@ public class GridMap : SequenceMember
         }
         else if (selectionMode == SelectionMode.TRAVEL)
         {
-            cancelTravel();
+            cancelTravel(true);
         }
         else if (selectionMode == SelectionMode.MENU)
         {
-            cancelMenu();
+            cancelMenu(true);
         }
     }
 
@@ -209,14 +217,166 @@ public class GridMap : SequenceMember
             Tile currentTile = map[cursorX, cursorY];
             initiateTravel(currentTile);
         }
-        else if (selectionMode == SelectionMode.MENU)
+        else if (selectionMode == SelectionMode.MENU || selectionMode == SelectionMode.MAP_MENU
+            || selectionMode == SelectionMode.ITEM_MENU || selectionMode == SelectionMode.SELECT_WEAPON
+            || selectionMode == SelectionMode.SELECT_GEM)
         {
             selectMenuOption(menuIdx);
         }
+        else if (selectionMode == SelectionMode.SELECT_ENEMY)
+        {
+            createForecast();
+        }
+        else if (selectionMode == SelectionMode.FORECAST)
+        {
+            finalizeMove();
+            startBattle();
+        }
+        else if (selectionMode == SelectionMode.SELECT_TALKER)
+        {
+            talkerTile = interactableUnits[interactIdx];
+
+            enableChild("Menu", false);
+
+            unfillAttackableTiles();
+            finalizeMove();
+
+            performTalk();
+        }
+        else if (selectionMode == SelectionMode.IN_CONVO)
+        {
+            /*
+            if (!nextSaying())
+            {
+                deconstructConversation();
+                if (talkerTile.getOccupant() != null)
+                {
+                    talkerTile.getOccupant().talkConvo = null;
+                }
+                selectionMode = SelectionMode.ROAM;
+            }
+            */
+        }
+        else if (selectionMode == SelectionMode.SELECT_TRADER)
+        {
+            Unit trader = interactableUnits[interactIdx].getOccupant().getUnit();
+
+            enableChild("Menu", false);
+
+            unfillAttackableTiles();
+            finalizeMove();
+
+            tradeItem(trader);
+        }
+        else if (selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
+        {
+            Unit trader = interactableUnits[interactIdx].getOccupant().getUnit();
+
+            enableChild("Menu", false);
+
+            unfillAttackableTiles();
+            finalizeMove();
+
+            tradeWeapon(trader);
+        }
+        else if (selectionMode == SelectionMode.GAMEOVER || selectionMode == SelectionMode.ESCAPE_MENU)
+        {
+            if (specialMenuIdx == 0)
+            {
+                SpecialMenuLogic.restartChapter();
+            }
+            else if (specialMenuIdx == 1)
+            {
+                SpecialMenuLogic.mainMenu();
+            }
+        }
+
     }
     public override void X()
     {
-        RIGHT_MOUSE();
+        if (selectionMode == SelectionMode.ROAM)
+        {
+            //TODO options menu
+        }
+        else if (selectionMode == SelectionMode.MOVE)
+        {
+            cancelMove();
+        }
+        else if (selectionMode == SelectionMode.TRAVEL)
+        {
+            cancelTravel(false);
+        }
+        else if (selectionMode == SelectionMode.MENU)
+        {
+            cancelMenu(false);
+        }
+        else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
+            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
+        {
+            cancelOtherUnitSelection();
+        }
+        else if (selectionMode == SelectionMode.SELECT_WEAPON || selectionMode == SelectionMode.SELECT_GEM
+            || selectionMode == SelectionMode.ITEM_MENU)
+        {
+            initiateMenu();
+        }
+        else if (selectionMode == SelectionMode.FORECAST)
+        {
+            enableChild("Forecast", false);
+
+            getAttackOptions();
+        }
+        else if (selectionMode == SelectionMode.MAP_MENU)
+        {
+            /*
+            Destroy(instantiatedMenuBackground);
+            foreach (TextMeshProUGUI t in menuOptions)
+            {
+                Destroy(t);
+            }
+            selectionMode = SelectionMode.ROAM;
+            */
+        }
+        else if (selectionMode == SelectionMode.STATS_PAGE)
+        {
+            /*
+            deconstructStatsPage();
+
+            selectionMode = SelectionMode.ROAM;
+            */
+        }
+        else if (selectionMode == SelectionMode.CONTROLS)
+        {
+            /*
+            controlsPage.SetActive(false);
+            Camera camCam = cam.GetComponent<Camera>();
+            camCam.orthographicSize = cameraOrthographicSize;
+            setCameraPosition(cursorX, cursorY);
+            instantiatedMapHUD.SetActive(true);
+
+            selectionMode = SelectionMode.ROAM;
+            */
+        }
+        else if (selectionMode == SelectionMode.STATUS)
+        {
+            /*
+            statusPage.SetActive(false);
+            Camera camCam = cam.GetComponent<Camera>();
+            camCam.orthographicSize = cameraOrthographicSize;
+            setCameraPosition(cursorX, cursorY);
+            instantiatedMapHUD.SetActive(true);
+
+            selectionMode = SelectionMode.ROAM;
+            */
+        }
+        else if (selectionMode == SelectionMode.ESCAPE_MENU)
+        {
+            /*
+            Destroy(instantiatedSpecialMenu);
+            instantiatedMapHUD.SetActive(true);
+            selectionMode = SelectionMode.ROAM;
+            */
+        }
     }
     public override void A()
     {
@@ -244,7 +404,7 @@ public class GridMap : SequenceMember
                 menuIdx = menuOptions.Count - 1;
             }
             StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text")
-                .GetComponent<TextMeshProUGUI>().color = Color.green;
+                .GetComponent<TextMeshProUGUI>().color = Color.cyan;
         }
         else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
             || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
@@ -279,7 +439,7 @@ public class GridMap : SequenceMember
                  .GetComponent<TextMeshProUGUI>().color = Color.black;
             menuIdx = (menuIdx + 1) % menuOptions.Count;
             StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text")
-                .GetComponent<TextMeshProUGUI>().color = Color.green;
+                .GetComponent<TextMeshProUGUI>().color = Color.cyan;
         }
         else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
             || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
@@ -374,9 +534,13 @@ public class GridMap : SequenceMember
             selectionMode = SelectionMode.MOVE;
         }
     }
-    private void cancelTravel()
+    private void cancelTravel(bool mouse)
     {
         setCursor(selectedTile);
+        if (!mouse)
+        {
+            setCameraPosition();
+        }
         initiateMove(selectedTile);
     }
     private void initiateTravel(Tile tile)
@@ -384,7 +548,8 @@ public class GridMap : SequenceMember
         setCursor(tile);
 
         if (selectedUnit.team == Unit.UnitTeam.PLAYER && traversableTiles.ContainsKey(tile)
-            && (tile.getOccupant() == null || tile.getOccupant().getUnit() == selectedUnit))
+            && (tile.getOccupant() == null || tile.getOccupant().getUnit() == selectedUnit)
+            && (!selectedUnit.isExhausted || testingMode))
         {
             moveDest = tile;
 
@@ -395,10 +560,10 @@ public class GridMap : SequenceMember
             selectionMode = SelectionMode.TRAVEL;
         }
     }
-    private void cancelMenu()
+    private void cancelMenu(bool mouse)
     {
         StaticData.findDeepChild(transform, "Menu").gameObject.SetActive(false);
-        cancelTravel();
+        cancelTravel(mouse);
     }
     private void initiateMenu()
     {
@@ -407,15 +572,51 @@ public class GridMap : SequenceMember
 
         selectionMode = SelectionMode.MENU;
     }
+    private void cancelOtherUnitSelection()
+    {
+        unfillAttackableTiles();
+        initiateMenu();
 
+        selectionMode = SelectionMode.MENU;
+    }
+    private void tradeItem(Unit trader)
+    {
+        Item temp = trader.heldItem;
+        trader.heldItem = selectedUnit.heldItem;
+        selectedUnit.heldItem = temp;
+
+        selectionMode = SelectionMode.ROAM;
+    }
+    private void tradeWeapon(Unit trader)
+    {
+        Weapon temp = trader.heldWeapon;
+        trader.heldWeapon = selectedUnit.heldWeapon;
+        selectedUnit.heldWeapon = temp;
+
+        selectionMode = SelectionMode.ROAM;
+    }
+    public void getAttackOptions()
+    {
+        Dictionary<Tile, object> attackable = getAttackableBattlegroundTilesFromDestination(selectedUnit, moveDest);
+        interactableUnits = getAttackableTilesWithEnemies(attackable, selectedUnit);
+        foreach (Tile t in interactableUnits)
+        {
+            t.highlightAttack();
+        }
+        interactIdx = 0;
+        setCursor(interactableUnits[interactIdx].x, interactableUnits[interactIdx].y);
+
+        selectionMode = SelectionMode.SELECT_ENEMY;
+    }
     public void getMenuOptions()
     {
         Transform mi = StaticData.findDeepChild(transform, "MenuItems");
-        menuOptions = new List<Button>();
-        for (int q = 0; q < mi.childCount; q++)
+        foreach (Button b in menuOptions)
         {
-            Destroy(mi.GetChild(q).gameObject);
+            Destroy(b);
         }
+        mi.DetachChildren();
+        menuOptions = new List<Button>();
         menuElements = new List<MenuChoice>();
         fillAttackableTiles();
         if (selectedUnit.isLeader && moveDest.getType() == Tile.SEIZE_POINT)
@@ -511,12 +712,484 @@ public class GridMap : SequenceMember
                 .color = Color.black;
         }
         StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
-            .color = Color.green;
+            .color = Color.cyan;
+    }
+    private void finalizeMove()
+    {
+        selectedTile.setOccupant(null);
+        moveDest.setOccupant(selectedUnit.model);
+        selectedUnit.isExhausted = true;
+        //TODO change outline to grey
+    }
+    private void tryTakeLoot(Unit taker, Tile takeFrom)
+    {
+        if (moveDest.hasLoot() && Random.Range(0, 100) < selectedUnit.luck) //OR selectedUnit is a thief
+        {
+            string note = takeFrom.takeLoot(taker);
+            makeNotification(note, null);
+            timer = 2;
+
+            selectionMode = SelectionMode.NOTIFICATION;
+        }
+        else
+        {
+            selectionMode = SelectionMode.ROAM;
+        }
+    }
+    private void makeNotification(string note, AudioClip soundEffect)
+    {
+        //TODO
+        if (soundEffect != null)
+        {
+            //TODO
+        }
     }
     public void selectMenuOption(int idx)
     {
-        //TODO
         Debug.Log($"selected option {idx}, {menuElements[idx]}");
+
+        MenuChoice choice = menuElements[idx];
+
+        if (choice == MenuChoice.TALK)
+        {
+            unfillAttackableTiles();
+            interactableUnits = getTalkableTiles(moveDest, selectedUnit);
+            foreach (Tile t in interactableUnits)
+            {
+                t.highlightInteract();
+            }
+            interactIdx = 0;
+            setCursor(interactableUnits[interactIdx].x, cursorY = interactableUnits[interactIdx].y);
+
+            enableChild("Menu", false);
+
+            selectionMode = SelectionMode.SELECT_TALKER;
+
+        }
+        else if (choice == MenuChoice.ATTACK)
+        {
+            enableChild("Menu", false);
+            unfillAttackableTiles();
+
+            getAttackOptions();
+        }
+        else if (choice == MenuChoice.WEAPON)
+        {
+            Transform mi = StaticData.findDeepChild(transform, "MenuItems");
+
+            foreach (Button t in menuOptions)
+            {
+                Destroy(t);
+            }
+            mi.DetachChildren();
+            menuOptions.Clear();
+            menuElements.Clear();
+            if (selectedUnit.personalItem is Weapon)
+            {
+                Button wep = Instantiate(menuOption, mi);
+                StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
+                    .text = "Equip " + selectedUnit.personalItem.itemName;
+                StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
+                    .fontSize = 13;
+                if (selectedUnit.equipped == 0)
+                {
+                    StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
+                        .color = Color.cyan;
+                }
+                menuOptions.Add(wep);
+                menuElements.Add(MenuChoice.EQUIP_PERSONAL);
+            }
+            if (selectedUnit.heldWeapon != null)
+            {
+                if (selectedUnit.weaponType == selectedUnit.heldWeapon.weaponType
+                    && selectedUnit.proficiency >= selectedUnit.heldWeapon.proficiency)
+                {
+                    Button wep = Instantiate(menuOption, mi);
+                    StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
+                        .text = "Equip " + selectedUnit.heldWeapon.itemName;
+                    StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
+                        .fontSize = 13;
+                    if (selectedUnit.equipped == 1)
+                    {
+                        StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
+                            .color = Color.cyan;
+                    }
+                    menuOptions.Add(wep);
+                    menuElements.Add(MenuChoice.EQUIP_HELD);
+                }
+                if (getAdjacentTilesWithAllies(moveDest, selectedUnit).Count > 0)
+                {
+                    Button wep = Instantiate(menuOption, mi);
+                    StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
+                        .text = "Trade " + selectedUnit.heldWeapon.itemName;
+                    StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
+                        .fontSize = 13;
+                    menuOptions.Add(wep);
+                    menuElements.Add(MenuChoice.TRADE_WEAPON);
+                }
+                Button drop = Instantiate(menuOption, mi);
+                StaticData.findDeepChild(drop.transform, "Text").GetComponent<TextMeshProUGUI>()
+                    .text = "Drop " + selectedUnit.heldWeapon.itemName;
+                StaticData.findDeepChild(drop.transform, "Text").GetComponent<TextMeshProUGUI>()
+                    .fontSize = 13;
+                menuOptions.Add(drop);
+                menuElements.Add(MenuChoice.DROP_WEAPON);
+            }
+            Button none = Instantiate(menuOption, mi);
+            StaticData.findDeepChild(none.transform, "Text").GetComponent<TextMeshProUGUI>()
+                .text = "Equip None";
+            StaticData.findDeepChild(none.transform, "Text").GetComponent<TextMeshProUGUI>()
+                .fontSize = 13;
+            menuOptions.Add(none);
+            menuElements.Add(MenuChoice.EQUIP_NONE);
+
+            menuIdx = 0;
+
+            StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
+                .color = Color.cyan;
+
+            selectionMode = SelectionMode.SELECT_WEAPON;
+        }
+        else if (choice == MenuChoice.EQUIP_PERSONAL)
+        {
+            selectedUnit.equip(0);
+            unfillAttackableTiles();
+            fillAttackableTiles();
+        }
+        else if (choice == MenuChoice.EQUIP_HELD)
+        {
+            selectedUnit.equip(1);
+            unfillAttackableTiles();
+            fillAttackableTiles();
+        }
+        else if (choice == MenuChoice.EQUIP_NONE)
+        {
+            selectedUnit.equip(2);
+            unfillAttackableTiles();
+            fillAttackableTiles();
+        }
+        else if (choice == MenuChoice.ESCAPE)
+        {
+            unfillAttackableTiles();
+
+            player.Remove(selectedUnit);
+            StaticData.registerSupportUponEscape(selectedUnit, player, turn);
+            selectedTile.setOccupant(null);
+            Destroy(selectedUnit.model);
+
+            //TODO play warp animation
+
+            enableChild("Menu", false);
+
+            selectionMode = SelectionMode.ROAM;
+        }
+        else if (choice == MenuChoice.ITEM)
+        {
+            Transform mi = StaticData.findDeepChild(transform, "MenuItems");
+
+            foreach (Button t in menuOptions)
+            {
+                Destroy(t);
+            }
+            mi.DetachChildren();
+            menuOptions.Clear();
+            menuElements.Clear();
+            if (selectedUnit.personalItem is UsableItem)
+            {
+                Button pers = Instantiate(menuOption, mi);
+                TextMeshProUGUI text =
+                    StaticData.findDeepChild(pers.transform, "Text").GetComponent<TextMeshProUGUI>();
+                    text.text = "Use " + selectedUnit.personalItem.itemName;
+                if (text.text.Length > 7)
+                {
+                    text.fontSize = 13;
+                }
+                menuOptions.Add(pers);
+                menuElements.Add(MenuChoice.USE_PERSONAL);
+            }
+            if (selectedUnit.heldItem is UsableItem)
+            {
+                Button held = Instantiate(menuOption, mi);
+                TextMeshProUGUI text =
+                    StaticData.findDeepChild(held.transform, "Text").GetComponent<TextMeshProUGUI>();
+                text.text = "Use " + selectedUnit.heldItem.itemName;
+                if (text.text.Length > 7)
+                {
+                    text.fontSize = 13;
+                }
+                menuOptions.Add(held);
+                menuElements.Add(MenuChoice.USE_HELD);
+            }
+            if (selectedUnit.heldItem != null)
+            {
+                if (getAdjacentTilesWithAllies(moveDest, selectedUnit).Count > 0)
+                {
+                    Button trade = Instantiate(menuOption, mi);
+                    TextMeshProUGUI text =
+                        StaticData.findDeepChild(trade.transform, "Text").GetComponent<TextMeshProUGUI>();
+                    text.text = "Trade Items";
+                    if (text.text.Length > 7)
+                    {
+                        text.fontSize = 13;
+                    }
+                    menuOptions.Add(trade);
+                    menuElements.Add(MenuChoice.TRADE);
+                }
+                Button drop = Instantiate(menuOption, mi);
+                TextMeshProUGUI dropText =
+                    StaticData.findDeepChild(drop.transform, "Text").GetComponent<TextMeshProUGUI>();
+                dropText.text = "Drop " + selectedUnit.heldItem.itemName;
+                if (dropText.text.Length > 7)
+                {
+                    dropText.fontSize = 13;
+                }
+                menuOptions.Add(drop);
+                menuElements.Add(MenuChoice.DROP);
+            }
+
+            menuIdx = 0;
+            StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
+                .color = Color.cyan;
+
+            selectionMode = SelectionMode.ITEM_MENU;
+
+        }
+        else if (choice == MenuChoice.USE_PERSONAL)
+        {
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+
+            finalizeMove();
+
+            ((UsableItem)selectedUnit.personalItem).use(selectedUnit);
+
+            selectionMode = SelectionMode.USE_ITEM;
+        }
+        else if (choice == MenuChoice.USE_HELD)
+        {
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+
+            finalizeMove();
+
+            ((UsableItem)selectedUnit.heldItem).use(selectedUnit);
+            if (selectedUnit.heldItem.usesLeft <= 0)
+            {
+                selectedUnit.heldItem = null;
+            }
+
+            tryTakeLoot(selectedUnit, moveDest);
+        }
+        else if (choice == MenuChoice.TRADE)
+        {
+            unfillAttackableTiles();
+            interactableUnits = getAdjacentTilesWithAllies(moveDest, selectedUnit);
+            foreach (Tile t in interactableUnits)
+            {
+                t.highlightInteract();
+            }
+            interactIdx = 0;
+            setCursor(interactableUnits[interactIdx].x, interactableUnits[interactIdx].y);
+
+            enableChild("Menu", false);
+
+            selectionMode = SelectionMode.SELECT_TRADER;
+        }
+        else if (choice == MenuChoice.TRADE_WEAPON)
+        {
+            unfillAttackableTiles();
+            interactableUnits = getAdjacentTilesWithAllies(moveDest, selectedUnit);
+            foreach (Tile t in interactableUnits)
+            {
+                t.highlightInteract();
+            }
+            interactIdx = 0;
+            setCursor(interactableUnits[interactIdx].x, interactableUnits[interactIdx].y);
+
+            enableChild("Menu", false);
+
+            selectionMode = SelectionMode.SELECT_WEAPON_TRADER;
+        }
+        else if (choice == MenuChoice.DROP)
+        {
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+
+            finalizeMove();
+
+            if (selectedUnit.heldItem is Gemstone)
+            {
+                moveDest.getGemstones().Add((Gemstone)selectedUnit.heldItem);
+            }
+            selectedUnit.heldItem = null;
+
+            tryTakeLoot(selectedUnit, moveDest);
+        }
+        else if (choice == MenuChoice.DROP_WEAPON)
+        {
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+
+            finalizeMove();
+
+            selectedUnit.heldWeapon = null;
+
+            tryTakeLoot(selectedUnit, moveDest);
+        }
+        else if (choice == MenuChoice.CHEST)
+        {
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+
+            finalizeMove();
+
+            string note = moveDest.takeLoot(selectedUnit);
+            makeNotification(note, null);
+            timer = 2;
+
+            selectionMode = SelectionMode.NOTIFICATION;
+        }
+        else if (choice == MenuChoice.SEIZE)
+        {
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+            menuOptions.Clear();
+
+            finalizeMove();
+
+            seized = true;
+
+            selectionMode = SelectionMode.ROAM;
+
+        }
+        else if (choice == MenuChoice.GEM)
+        {
+            Transform mi = StaticData.findDeepChild(transform, "MenuItems");
+            foreach (Button t in menuOptions)
+            {
+                Destroy(t);
+            }
+            mi.DetachChildren();
+            menuOptions.Clear();
+            menuElements.Clear();
+            for (int q = 0; q < moveDest.getGemstones().Count; q++)
+            {
+                Gemstone gem = moveDest.getGemstones()[q];
+                Button take = Instantiate(menuOption, mi);
+                TextMeshProUGUI text =
+                    StaticData.findDeepChild(take.transform, "Text").GetComponent<TextMeshProUGUI>();
+                text.text = gem.unit.unitName;
+                if (text.text.Length > 7)
+                {
+                    text.fontSize = 13;
+                }
+                menuOptions.Add(take);
+                menuElements.Add(MenuChoice.PICKED_GEM);
+            }
+            menuIdx = 0;
+            StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text")
+                .GetComponent<TextMeshProUGUI>().color = Color.cyan;
+
+            selectionMode = SelectionMode.SELECT_GEM;
+
+        }
+        else if (choice == MenuChoice.PICKED_GEM)
+        {
+            selectedUnit.heldItem = moveDest.getGemstones()[menuIdx];
+            moveDest.getGemstones().Remove((Gemstone)selectedUnit.heldItem);
+
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+
+            finalizeMove();
+
+            selectionMode = SelectionMode.ROAM;
+
+        }
+        else if (choice == MenuChoice.WAIT)
+        {
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+
+            finalizeMove();
+
+            tryTakeLoot(selectedUnit, moveDest);
+        }
+        else if (choice == MenuChoice.STATUS)
+        {
+            /*
+            //TODO show status page
+            Destroy(instantiatedMenuBackground);
+            foreach (TextMeshProUGUI t in menuOptions)
+            {
+                Destroy(t);
+            }
+
+            cam.transform.position = new Vector3(0, 0, CAMERA_LAYER);
+            Camera camCam = cam.GetComponent<Camera>();
+            camCam.orthographicSize = (float)17.5;
+            instantiatedMapHUD.SetActive(false);
+            statusPage.SetActive(true);
+            Transform canvas = statusPage.transform.GetChild(0);
+            canvas.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = chapterName;
+            canvas.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = teamNames[0] + ": " + player.Count;
+            canvas.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = teamNames[1] + ": " + enemy.Count;
+            canvas.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = teamNames[2] + (ally.Count > 0 ? (": " + ally.Count) : "");
+            canvas.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = "Objective: " + objective.getName() + "\n\nDefeat: " + objective.getFailure();
+            canvas.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = "Turn " + turn;
+            canvas.transform.GetChild(6).GetComponent<TextMeshProUGUI>().text = "(Par: " + turnPar + ")";
+            canvas.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = "Iron: " + CampaignData.iron
+                + "\nSteel: " + CampaignData.steel
+                + "\nSilver: " + CampaignData.silver;
+
+            selectionMode = SelectionMode.STATUS;
+        }
+        else if (choice == MenuChoice.CONTROLS)
+        {
+            //TODO show controls page
+            Destroy(instantiatedMenuBackground);
+            foreach (TextMeshProUGUI t in menuOptions)
+            {
+                Destroy(t);
+            }
+            cam.transform.position = new Vector3(0, 0, CAMERA_LAYER);
+            Camera camCam = cam.GetComponent<Camera>();
+            camCam.orthographicSize = (float)17.5;
+            instantiatedMapHUD.SetActive(false);
+            controlsPage.SetActive(true);
+
+            selectionMode = SelectionMode.CONTROLS;
+        }
+        else if (choice == MenuChoice.END)
+        {
+            Destroy(instantiatedMenuBackground);
+            foreach (TextMeshProUGUI t in menuOptions)
+            {
+                Destroy(t);
+            }
+
+            foreach (Tile t in healTiles)
+            {
+                if (t.getOccupant() != null && t.getOccupant().team == Unit.UnitTeam.ENEMY)
+                {
+                    t.getOccupant().heal(10);
+                }
+            }
+            enemyIdx = -1; //ENEMYPHASE_SELECT_UNIT increments it to 0 first
+            instantiatedMapHUD.transform.GetChild(0).GetChild(2).GetComponent<Image>().color = Color.red;
+            selectionMode = SelectionMode.ENEMYPHASE_SELECT_UNIT;
+
+            */
+        }
+
     }
 
     private void fillTraversableTiles(Unit u, int x, int y)
@@ -873,6 +1546,103 @@ public class GridMap : SequenceMember
         return new Vector3[] { moveDest.getStage().position };
     }
 
+    private void createForecast()
+    {
+        unfillAttackableTiles();
+        targetTile = map[cursorX, cursorY];
+        targetEnemy = targetTile.getOccupant().getUnit();
+
+        int[] forecast = Battle.getForecast(selectedUnit.model, targetEnemy.model, player, enemy,
+            selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(), moveDest, targetTile);
+
+        if (selectedUnit.fusionSkillBonus == Unit.FusionSkill.FUTURE_VISION
+            ||selectedUnit.fusionSkill1 == Unit.FusionSkill.FUTURE_VISION
+            || selectedUnit.fusionSkill2 == Unit.FusionSkill.FUTURE_VISION)
+        {
+            Battle result = new Battle(selectedUnit.model, targetEnemy.model, player, enemy,
+                selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(), moveDest, targetTile);
+            //TODO
+        }
+        else
+        {
+            enableChild("Forecast", true);
+
+            StaticData.findDeepChild(transform, "PlayerName").GetComponent<TextMeshProUGUI>()
+                .text = selectedUnit.unitName;
+            StaticData.findDeepChild(transform, "PlayerPortrait").GetComponent<Image>()
+                .sprite = AssetDictionary.getImage(selectedUnit.unitName);
+            StaticData.findDeepChild(transform, "PlayerHP").GetComponent<TextMeshProUGUI>()
+                .text = "" + forecast[0];
+            StaticData.findDeepChild(transform, "PlayerATK").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[1] - forecast[8])}" + (forecast[5] != 1 ? $" x {forecast[5]}" : "");
+            StaticData.findDeepChild(transform, "PlayerHIT").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[3])}";
+            StaticData.findDeepChild(transform, "PlayerCRIT").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[4])}";
+            if (selectedUnit.getEquippedWeapon() == null)
+            {
+                StaticData.findDeepChild(transform, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
+                    .text = "-";
+                //TODO set image
+                StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
+                    .sprite = null;
+            }
+            else
+            {
+                StaticData.findDeepChild(transform, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
+                    .text = selectedUnit.getEquippedWeapon().itemName;
+                //TODO set image
+                StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
+                    .sprite = null;
+            }
+
+
+            StaticData.findDeepChild(transform, "EnemyName").GetComponent<TextMeshProUGUI>()
+                .text = targetEnemy.unitName;
+            StaticData.findDeepChild(transform, "EnemyPortrait").GetComponent<Image>()
+                .sprite = AssetDictionary.getImage(targetEnemy.unitName);
+            StaticData.findDeepChild(transform, "EnemyHP").GetComponent<TextMeshProUGUI>()
+                .text = "" + forecast[6];
+            StaticData.findDeepChild(transform, "EnemyATK").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[7] - forecast[2])}" + (forecast[11] != 1 ? $" x {forecast[11]}" : "");
+            StaticData.findDeepChild(transform, "EnemyHIT").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[9])}";
+            StaticData.findDeepChild(transform, "EnemyCRIT").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[10])}";
+            if (targetEnemy.getEquippedWeapon() == null)
+            {
+                StaticData.findDeepChild(transform, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
+                    .text = "-";
+                //TODO set image
+                StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
+                    .sprite = null;
+            }
+            else
+            {
+                StaticData.findDeepChild(transform, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
+                    .text = targetEnemy.getEquippedWeapon().itemName;
+                //TODO set image
+                StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
+                    .sprite = null;
+            }
+        }
+
+        selectionMode = SelectionMode.FORECAST;
+    }
+    private void startBattle()
+    {
+        //TODO
+
+        selectionMode = SelectionMode.BATTLE;
+    }
+
+    private void performTalk()
+    {
+        //TODO
+
+        selectionMode = SelectionMode.IN_CONVO;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -892,7 +1662,7 @@ public class GridMap : SequenceMember
     public enum SelectionMode
     {
         ROAM, MOVE, TRAVEL, MENU, SELECT_ENEMY, SELECT_TALKER, SELECT_WEAPON, FORECAST, BATTLE, MAP_MENU, IN_CONVO,
-        SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, NOTIFICATION, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER,
+        SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, NOTIFICATION, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER, USE_ITEM,
         ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
         ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
         STANDBY, GAMEOVER, ESCAPE_MENU
@@ -900,7 +1670,7 @@ public class GridMap : SequenceMember
 
     public enum MenuChoice
     {
-        TALK, ATTACK, ESCAPE, SEIZE, ITEM, WEAPON, GEM, CHEST, WAIT, STATUS, CONTROLS, END,
+        TALK, ATTACK, ESCAPE, SEIZE, ITEM, WEAPON, GEM, PICKED_GEM, CHEST, WAIT, STATUS, CONTROLS, END,
         USE_PERSONAL, USE_HELD, TRADE, DROP, EQUIP_PERSONAL, EQUIP_HELD, EQUIP_NONE, TRADE_WEAPON,
         DROP_WEAPON
     }

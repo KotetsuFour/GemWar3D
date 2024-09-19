@@ -29,6 +29,11 @@ public class UnitModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (model != null)
+        {
+            model.transform.position = transform.position;
+        }
+
         RaycastHit hit;
         if (Physics.Raycast(transform.position + new Vector3(0, 100, 0), Vector3.down, out hit, int.MaxValue, tileLayer))
         {
@@ -58,10 +63,10 @@ public class UnitModel : MonoBehaviour
                 playMove();
                 float currentX = path[currentDest].x;
                 float currentZ = path[currentDest].z;
-                Vector3 direction = new Vector3(currentX - transform.position.x, 0, currentZ - transform.position.z);
-                transform.rotation = Quaternion.LookRotation(direction);
-                direction = direction.normalized * mapMoveSpeed * Time.deltaTime;
-                transform.Translate(direction.x, 0, direction.z);
+                Vector3 dest = new Vector3(currentX, transform.position.y, currentZ);
+                transform.rotation = Quaternion.LookRotation(dest - transform.position);
+                Vector3 direction = transform.forward * mapMoveSpeed * Time.deltaTime;
+                transform.position += direction;
             }
         }
     }

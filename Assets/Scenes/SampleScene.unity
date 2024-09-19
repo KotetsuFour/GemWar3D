@@ -627,11 +627,31 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 649281620849512183, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
+      propertyPath: m_Name
+      value: EnemyCRIT
+      objectReference: {fileID: 0}
     - target: {fileID: 1691563182706159357, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
       propertyPath: m_Name
       value: GridMap
       objectReference: {fileID: 0}
     - target: {fileID: 1691563182706159357, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6580434363467766311, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
+      propertyPath: m_Name
+      value: EnemyHIT
+      objectReference: {fileID: 0}
+    - target: {fileID: 6763109430847855345, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
+      propertyPath: testingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6800707616749649309, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
+      propertyPath: m_Name
+      value: EnemyATK
+      objectReference: {fileID: 0}
+    - target: {fileID: 7694877505451227999, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
