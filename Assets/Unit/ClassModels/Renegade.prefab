@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4819223349682164798, guid: 28008037d9c34814e99bbb66970f81f6, type: 3}
+      propertyPath: m_Name
+      value: model
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 28008037d9c34814e99bbb66970f81f6, type: 3}
       propertyPath: m_Name
       value: Renegade

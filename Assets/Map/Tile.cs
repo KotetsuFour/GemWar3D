@@ -22,6 +22,9 @@ public class Tile : MonoBehaviour
 
     public static float HALF_LENGTH = 0.5f;
     public static float TILE_HEIGHT_MULTIPLIER = 0.25f;
+    public static float MAX_DECORATION_HEIGHT = 100;
+
+    private Vector3 cursorPosition;
 
     public static TileType PLAIN = new TileType("PLAIN", 1, 1, 0);
     public static TileType FLOOR = new TileType("FLOOR", 1, 5, 0);
@@ -40,22 +43,16 @@ public class Tile : MonoBehaviour
     public static TileType HOUSE = new TileType("HOUSE", 1, 1, 10);
     public static TileType CLIFF = new TileType("CLIFF", int.MaxValue, 1, 0);
 
-    /*
-    private void OnEnable()
-    {
-        draw(0, 0, 1, PLAIN);
-    }
-    */
     public void draw(int x, int y, int height, TileType type)
     {
         this.x = x;
         this.y = y;
         this.height = height;
         this.type = type;
+        gemstones = new List<Gemstone>();
 
         float meshHeight = (height + 0.0f) * TILE_HEIGHT_MULTIPLIER;
-        getStage().Translate(0, meshHeight, 0);
-        getHighlight().Translate(0, meshHeight + 0.05f, 0);
+        setUtilityPositions(meshHeight);
 
         Mesh mesh = new Mesh
         {
@@ -166,6 +163,10 @@ public class Tile : MonoBehaviour
         GetComponent<BoxCollider>().center = new Vector3(0, meshHeight / 2, 0);
         GetComponent<BoxCollider>().size = new Vector3(HALF_LENGTH * 2, meshHeight + 0.1f, HALF_LENGTH * 2);
     }
+    public TileType getType()
+    {
+        return type;
+    }
     public void setOccupant(UnitModel occupant)
     {
         this.occupant = occupant;
@@ -222,21 +223,21 @@ public class Tile : MonoBehaviour
             ironLoot = 0;
             return ret;
         }
-        if (steelLoot > 0)
+        else if (steelLoot > 0)
         {
             StaticData.steel += steelLoot;
             string ret = "You got " + steelLoot + " Steel!";
             steelLoot = 0;
             return ret;
         }
-        if (silverLoot > 0)
+        else if (silverLoot > 0)
         {
             StaticData.silver += silverLoot;
             string ret = "You got " + silverLoot + " Silver!";
             silverLoot = 0;
             return ret;
         }
-        if (itemLoot is Weapon && retriever.heldWeapon == null)
+        else if (itemLoot is Weapon && retriever.heldWeapon == null)
         {
             retriever.heldWeapon = (Weapon)itemLoot.clone();
             string ret = "You got a(n) " + itemLoot.itemName + "!";
@@ -263,6 +264,9 @@ public class Tile : MonoBehaviour
     {
         deco.transform.position = getStage().position;
         deco.transform.SetParent(transform);
+        RaycastHit hit;
+        Physics.Raycast(getStage().position + new Vector3(0, MAX_DECORATION_HEIGHT, 0), Vector3.down, out hit, int.MaxValue);
+        setUtilityPositions(hit.point.y);
     }
 
     public Transform getStage()
@@ -272,6 +276,16 @@ public class Tile : MonoBehaviour
     public Transform getHighlight()
     {
         return StaticData.findDeepChild(transform, "Highlight");
+    }
+    public Vector3 getCursorPosition()
+    {
+        return cursorPosition;
+    }
+    private void setUtilityPositions(float stageHeight)
+    {
+        getStage().Translate(0, stageHeight - getStage().position.y, 0);
+        getHighlight().Translate(0, getStage().position.y + 0.05f - getHighlight().position.y, 0);
+        cursorPosition = getHighlight().position + new Vector3(0, 0.01f, 0);
     }
     public void highlightMove()
     {

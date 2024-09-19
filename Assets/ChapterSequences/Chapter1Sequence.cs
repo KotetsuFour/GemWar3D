@@ -118,46 +118,7 @@ public class Chapter1Sequence : Chapter
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            seqMem.LEFT_MOUSE();
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            seqMem.RIGHT_MOUSE();
-        }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            seqMem.UP();
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            seqMem.DOWN();
-        }
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            seqMem.Z();
-        }
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            seqMem.X();
-        }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            seqMem.A();
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            seqMem.S();
-        }
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            seqMem.ENTER();
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            seqMem.ESCAPE();
-        }
+        handleInput(seqMem);
 
         if (seqMem.completed())
         {
@@ -388,8 +349,9 @@ public class Chapter1Sequence : Chapter
             new EscapeObjective(), "Chapter 1 - Rebellion", teamNames, 10);
         playerList = gridmap.player;
 
-        setUnits(mapArray, enemy, Unit.UnitTeam.ENEMY);
-        setUnits(mapArray, player, Unit.UnitTeam.PLAYER);
+        setUnits(mapArray, enemy, Unit.UnitTeam.ENEMY, Quaternion.Euler(0, 180, 0));
+        setUnits(mapArray, player, Unit.UnitTeam.PLAYER, Quaternion.identity);
+        gridmap.initializeCursorPosition();
 
         return gridmap;
 

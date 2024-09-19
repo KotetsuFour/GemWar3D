@@ -19,6 +19,58 @@ public class Chapter : MonoBehaviour
 
     public int turnsTaken;
     
+    public void handleInput(SequenceMember seqMem)
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            seqMem.LEFT_MOUSE();
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            seqMem.RIGHT_MOUSE();
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            seqMem.UP();
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            seqMem.DOWN();
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            seqMem.LEFT();
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            seqMem.RIGHT();
+        }
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            seqMem.Z();
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            seqMem.X();
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            seqMem.A();
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            seqMem.S();
+        }
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            seqMem.ENTER();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            seqMem.ESCAPE();
+        }
+    }
+
     public Tile[,] createMap(Transform mapTransform)
     {
         Tile[,] ret = new Tile[tileMap[0].Length, tileMap.Length];
@@ -93,7 +145,7 @@ public class Chapter : MonoBehaviour
         return ret;
     }
 
-    public void setUnits(Tile[,] map, Unit[] units, Unit.UnitTeam team)
+    public void setUnits(Tile[,] map, Unit[] units, Unit.UnitTeam team, Quaternion rotation)
     {
         char spot = team == Unit.UnitTeam.PLAYER ? '*' : team == Unit.UnitTeam.ENEMY ? 'x'
             : team == Unit.UnitTeam.ALLY ? 'o' : '-';
@@ -113,7 +165,7 @@ public class Chapter : MonoBehaviour
                         new Vector3(pos.position.x, pos.position.y, pos.position.z), Quaternion.identity);
                     myUnit.setUnit(units[idx]);
                     map[x, y].setOccupant(myUnit);
-                    //TODO set rotation
+                    myUnit.setStandingRotation(rotation);
                     idx++;
                 }
             }

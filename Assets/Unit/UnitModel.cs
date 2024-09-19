@@ -76,9 +76,11 @@ public class UnitModel : MonoBehaviour
     }
     private void setPalette(List<Color> palette)
     {
+        Material[] materials = StaticData.findDeepChild(model.transform, "model")
+            .GetComponent<SkinnedMeshRenderer>().materials;
         for (int q = 0; q < palette.Count; q++)
         {
-            Material mat = StaticData.getMaterialByName(model.GetComponent<SkinnedMeshRenderer>().materials, "Palette" + q);
+            Material mat = StaticData.getMaterialByName(materials, "Palette" + (q % materials.Length));
             mat.color = palette[q];
         }
     }
@@ -97,7 +99,7 @@ public class UnitModel : MonoBehaviour
     }
     public void setStandingRotation(Quaternion rot)
     {
-        this.standingRotation = rot;
+        standingRotation = rot;
         transform.rotation = rot;
     }
 
@@ -125,6 +127,7 @@ public class UnitModel : MonoBehaviour
         path = null;
         transform.position = tile.getStage().position;
         transform.rotation = standingRotation;
+        playIdle();
     }
     public bool reachedDestination()
     {

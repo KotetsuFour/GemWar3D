@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 216146803748634033}
   - component: {fileID: 1240436002351948789}
   - component: {fileID: 3101735925399215302}
-  - component: {fileID: 5954764317570680754}
+  - component: {fileID: 5853453434636946266}
   m_Layer: 0
   m_Name: Crystals
   m_TagString: Untagged
@@ -117,8 +117,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &5954764317570680754
-CapsuleCollider:
+--- !u!65 &5853453434636946266
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -135,10 +135,8 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2, z: 1.0000002}
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &8893244292031239960
 GameObject:
