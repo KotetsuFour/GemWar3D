@@ -99,3 +99,21 @@ MonoBehaviour:
   audioValues:
   - {fileID: 8300000, guid: 87f4d4c1f429e1e42b1237cb43a4fc0d, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
+  wepKeys:
+  - Rose Quartz Shield
+  - Pearl Spear
+  - Bismuth Hammer
+  - Jasper Whip
+  - Jasper Mace
+  - Quartz Axe
+  - Iron Sword
+  - Palm Laser
+  wepValues:
+  - {fileID: 4190665577435114927, guid: 17c81c96ce94fa348b0015c0f13edb0c, type: 3}
+  - {fileID: 2963021186469151553, guid: d77a6f03bd9a6154e9cc83e3f0824605, type: 3}
+  - {fileID: 4117868439418428377, guid: 4f2d0c800269bee41a664d9dbc58411d, type: 3}
+  - {fileID: 1818709242100799459, guid: 5eab0c7a890d83546a21841d7a3d02ed, type: 3}
+  - {fileID: 1301421361255426747, guid: 12b6b555f12c73d408a6fcdd59d7e3e8, type: 3}
+  - {fileID: 8426119381123584788, guid: 12ba200fede50964abf19662268d474c, type: 3}
+  - {fileID: 6381576260851221412, guid: e72ec5b39ee98b742a7ead527b3f1415, type: 3}
+  - {fileID: 8413143246824418427, guid: 8c1a92b1bda172c41a5ccf67b885fd5d, type: 3}

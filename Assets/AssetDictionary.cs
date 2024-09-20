@@ -11,11 +11,14 @@ public class AssetDictionary : MonoBehaviour
     [SerializeField] private List<GameObject> decoValues;
     [SerializeField] private List<string> audioKeys;
     [SerializeField] private List<AudioClip> audioValues;
+    [SerializeField] private List<string> wepKeys;
+    [SerializeField] private List<GameObject> wepValues;
 
     private static Dictionary<string, Sprite> imageDictionary;
     private static List<GameObject> modelDictionary;
     private static Dictionary<string, GameObject> decoDictionary;
     private static Dictionary<string, AudioClip> audioDictionary;
+    private static Dictionary<string, GameObject> weaponDictionary;
 
     private void Start()
     {
@@ -35,6 +38,11 @@ public class AssetDictionary : MonoBehaviour
         {
             audioDictionary.Add(audioKeys[q], audioValues[q]);
         }
+        weaponDictionary = new Dictionary<string, GameObject>();
+        for (int q = 0; q < wepKeys.Count; q++)
+        {
+            weaponDictionary.Add(wepKeys[q], wepValues[q]);
+        }
     }
 
     public static Sprite getImage(string key)
@@ -52,5 +60,9 @@ public class AssetDictionary : MonoBehaviour
     public static AudioClip getAudio(string key)
     {
         return audioDictionary[key];
+    }
+    public static GameObject getWeapon(string key)
+    {
+        return weaponDictionary[key];
     }
 }

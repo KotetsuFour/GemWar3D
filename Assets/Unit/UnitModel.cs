@@ -31,7 +31,7 @@ public class UnitModel : MonoBehaviour
     {
         if (model != null)
         {
-            model.transform.position = transform.position;
+            model.transform.SetPositionAndRotation(transform.position, transform.rotation);
         }
 
         RaycastHit hit;
@@ -114,11 +114,39 @@ public class UnitModel : MonoBehaviour
     }
     public void playIdle()
     {
-        anim.Play("Idle");
+        if (unit.getEquippedWeapon() == null)
+        {
+            anim.Play("Idle");
+        }
+        else
+        {
+            string targetAnimation = Weapon.weaponTypeName(unit.getEquippedWeapon().weaponType) + " Idle";
+            anim.Play(targetAnimation);
+        }
     }
     public void playMove()
     {
         anim.Play("Running");
+    }
+    public void equip()
+    {
+        Transform hand = StaticData.findDeepChild(model.transform, "Hand");
+        for (int q = 0; q < hand.childCount; q++)
+        {
+            Destroy(hand.GetChild(q).gameObject);
+        }
+        hand.DetachChildren();
+
+        Weapon wep = unit.getEquippedWeapon();
+        if (wep != null)
+        {
+            GameObject wepModel = Instantiate(AssetDictionary.getWeapon(wep.itemName));
+            wepModel.transform.SetParent(hand);
+            wepModel.transform.localPosition = hand.localPosition;
+            Vector3 euler = hand.eulerAngles;
+            wepModel.transform.rotation = Quaternion.Euler(euler.x, euler.y, euler.z);
+        }
+        playIdle();
     }
 
     public void setPath(Vector3[] path)

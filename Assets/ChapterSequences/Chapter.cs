@@ -166,6 +166,7 @@ public class Chapter : MonoBehaviour
                     myUnit.setUnit(units[idx]);
                     map[x, y].setOccupant(myUnit);
                     myUnit.setStandingRotation(rotation);
+                    myUnit.equip();
                     idx++;
                 }
             }

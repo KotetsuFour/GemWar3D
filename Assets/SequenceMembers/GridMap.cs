@@ -611,13 +611,8 @@ public class GridMap : SequenceMember
     public void getMenuOptions()
     {
         Transform mi = StaticData.findDeepChild(transform, "MenuItems");
-        foreach (Button b in menuOptions)
-        {
-            Destroy(b);
-        }
-        mi.DetachChildren();
-        menuOptions = new List<Button>();
-        menuElements = new List<MenuChoice>();
+        clearMenu(mi);
+
         fillAttackableTiles();
         if (selectedUnit.isLeader && moveDest.getType() == Tile.SEIZE_POINT)
         {
@@ -694,14 +689,8 @@ public class GridMap : SequenceMember
         menuOptions.Add(wait);
         menuElements.Add(MenuChoice.WAIT);
 
-        for (int q = 0; q < menuOptions.Count; q++)
-        {
-            menuOptions[q].gameObject.SetActive(true);
-            menuOptions[q].GetComponent<MenuOption>().setIdx(q);
-        }
-
         menuIdx = 0;
-        updateMenu();
+        prepareMenu();
     }
 
     private void updateMenu()
@@ -714,11 +703,32 @@ public class GridMap : SequenceMember
         StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
             .color = Color.cyan;
     }
+    private void prepareMenu()
+    {
+        for (int q = 0; q < menuOptions.Count; q++)
+        {
+            Button opt = menuOptions[q];
+            opt.gameObject.SetActive(true);
+            menuOptions[q].GetComponent<MenuOption>().setIdx(q);
+        }
+        updateMenu();
+    }
+    private void clearMenu(Transform mi)
+    {
+        foreach (Button b in menuOptions)
+        {
+            Destroy(b);
+        }
+        mi.DetachChildren();
+        menuOptions = new List<Button>();
+        menuElements = new List<MenuChoice>();
+    }
     private void finalizeMove()
     {
         selectedTile.setOccupant(null);
         moveDest.setOccupant(selectedUnit.model);
         selectedUnit.isExhausted = true;
+        selectedUnit.model.setStandingRotation(selectedUnit.model.transform.rotation);
         //TODO change outline to grey
     }
     private void tryTakeLoot(Unit taker, Tile takeFrom)
@@ -776,14 +786,8 @@ public class GridMap : SequenceMember
         else if (choice == MenuChoice.WEAPON)
         {
             Transform mi = StaticData.findDeepChild(transform, "MenuItems");
+            clearMenu(mi);
 
-            foreach (Button t in menuOptions)
-            {
-                Destroy(t);
-            }
-            mi.DetachChildren();
-            menuOptions.Clear();
-            menuElements.Clear();
             if (selectedUnit.personalItem is Weapon)
             {
                 Button wep = Instantiate(menuOption, mi);
@@ -791,11 +795,6 @@ public class GridMap : SequenceMember
                     .text = "Equip " + selectedUnit.personalItem.itemName;
                 StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
                     .fontSize = 13;
-                if (selectedUnit.equipped == 0)
-                {
-                    StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
-                        .color = Color.cyan;
-                }
                 menuOptions.Add(wep);
                 menuElements.Add(MenuChoice.EQUIP_PERSONAL);
             }
@@ -809,11 +808,6 @@ public class GridMap : SequenceMember
                         .text = "Equip " + selectedUnit.heldWeapon.itemName;
                     StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
                         .fontSize = 13;
-                    if (selectedUnit.equipped == 1)
-                    {
-                        StaticData.findDeepChild(wep.transform, "Text").GetComponent<TextMeshProUGUI>()
-                            .color = Color.cyan;
-                    }
                     menuOptions.Add(wep);
                     menuElements.Add(MenuChoice.EQUIP_HELD);
                 }
@@ -844,27 +838,28 @@ public class GridMap : SequenceMember
             menuElements.Add(MenuChoice.EQUIP_NONE);
 
             menuIdx = 0;
-
-            StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
-                .color = Color.cyan;
+            prepareMenu();
 
             selectionMode = SelectionMode.SELECT_WEAPON;
         }
         else if (choice == MenuChoice.EQUIP_PERSONAL)
         {
             selectedUnit.equip(0);
+            selectedUnit.model.equip();
             unfillAttackableTiles();
             fillAttackableTiles();
         }
         else if (choice == MenuChoice.EQUIP_HELD)
         {
             selectedUnit.equip(1);
+            selectedUnit.model.equip();
             unfillAttackableTiles();
             fillAttackableTiles();
         }
         else if (choice == MenuChoice.EQUIP_NONE)
         {
             selectedUnit.equip(2);
+            selectedUnit.model.equip();
             unfillAttackableTiles();
             fillAttackableTiles();
         }
@@ -886,14 +881,8 @@ public class GridMap : SequenceMember
         else if (choice == MenuChoice.ITEM)
         {
             Transform mi = StaticData.findDeepChild(transform, "MenuItems");
+            clearMenu(mi);
 
-            foreach (Button t in menuOptions)
-            {
-                Destroy(t);
-            }
-            mi.DetachChildren();
-            menuOptions.Clear();
-            menuElements.Clear();
             if (selectedUnit.personalItem is UsableItem)
             {
                 Button pers = Instantiate(menuOption, mi);
@@ -948,8 +937,7 @@ public class GridMap : SequenceMember
             }
 
             menuIdx = 0;
-            StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text").GetComponent<TextMeshProUGUI>()
-                .color = Color.cyan;
+            prepareMenu();
 
             selectionMode = SelectionMode.ITEM_MENU;
 
@@ -1071,13 +1059,8 @@ public class GridMap : SequenceMember
         else if (choice == MenuChoice.GEM)
         {
             Transform mi = StaticData.findDeepChild(transform, "MenuItems");
-            foreach (Button t in menuOptions)
-            {
-                Destroy(t);
-            }
-            mi.DetachChildren();
-            menuOptions.Clear();
-            menuElements.Clear();
+            clearMenu(mi);
+
             for (int q = 0; q < moveDest.getGemstones().Count; q++)
             {
                 Gemstone gem = moveDest.getGemstones()[q];
@@ -1093,8 +1076,7 @@ public class GridMap : SequenceMember
                 menuElements.Add(MenuChoice.PICKED_GEM);
             }
             menuIdx = 0;
-            StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text")
-                .GetComponent<TextMeshProUGUI>().color = Color.cyan;
+            prepareMenu();
 
             selectionMode = SelectionMode.SELECT_GEM;
 

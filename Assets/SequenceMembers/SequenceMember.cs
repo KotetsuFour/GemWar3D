@@ -6,6 +6,7 @@ public abstract class SequenceMember : MonoBehaviour
 {
     [SerializeField] private AudioSource sound_effect;
     [SerializeField] private Camera cam;
+    [SerializeField] private OneTimeSound oneTimeSound;
 
     public abstract bool completed();
 

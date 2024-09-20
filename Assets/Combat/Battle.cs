@@ -57,41 +57,42 @@ public class Battle
 
 		//atkDef
 		ret[ATKDEF] = dfdWep != null && dfdWep.magic ? atkUnit.resistance + (atkWep is Armor && atkWep.magic ? ((Armor)atkWep).protection : 0)
-			: atkUnit.defense + (atkWep is Armor && !atkWep.magic ? ((Armor)atkWep).protection : 0);
+			: atkUnit.defense + (atkWep != null && atkWep is Armor && !atkWep.magic ? ((Armor)atkWep).protection : 0);
 
 		//atkHit
-		ret[ATKHIT] = atkUnit.getBaseAccuracy() + atkWep.hit - (dfdUnit.getBaseAvoidance() + dfdTile.getAvoidBonus());
+		ret[ATKHIT] = atkUnit.getBaseAccuracy() + (atkWep == null ? 0 : atkWep.hit) - (dfdUnit.getBaseAvoidance() + dfdTile.getAvoidBonus());
 
 		//atkCrit
-		ret[ATKCRIT] = atkUnit.getBaseCrit() + atkWep.crit - dfdUnit.luck;
+		ret[ATKCRIT] = atkUnit.getBaseCrit() + (atkWep == null ? 0 : atkWep.crit) - dfdUnit.luck;
 
 		//atkStandardAttackCount
-		int atkSpeed = atkUnit.speed - Mathf.Max(0, atkWep.weight - atkUnit.constitution);
-		int dfdSpeed = dfdUnit.speed - Mathf.Max(0, dfdWep.weight - dfdUnit.constitution);
-		ret[ATKCOUNT] = (atkSpeed - dfdSpeed >= DOUBLE_ATTACK_THRESHOLD ? 2 : 1) * (atkWep.brave ? 2 : 1);
+		int atkSpeed = atkUnit.speed - (atkWep == null ? 0 : Mathf.Max(0, atkWep.weight - atkUnit.constitution));
+		int dfdSpeed = dfdUnit.speed - (dfdWep == null ? 0 : Mathf.Max(0, dfdWep.weight - dfdUnit.constitution));
+		ret[ATKCOUNT] = (atkSpeed - dfdSpeed >= DOUBLE_ATTACK_THRESHOLD ? 2 : 1) * (atkWep != null && atkWep.brave ? 2 : 1);
 
 		//dfdHP
 		ret[DFDHP] = dfdUnit.currentHP;
 
-		if (dfdWep.minRange <= distance && dfdWep.maxRange >= distance)
+		//dfdDef
+		ret[DFDDEF] = atkWep != null && atkWep.magic ? dfdUnit.resistance + (dfdWep is Armor && dfdWep.magic ? ((Armor)dfdWep).protection : 0)
+			: dfdUnit.defense + (dfdWep != null && dfdWep is Armor && !dfdWep.magic ? ((Armor)dfdWep).protection : 0);
+
+		if ((dfdWep == null && distance == 1)
+			|| (dfdWep != null && dfdWep.minRange <= distance && dfdWep.maxRange >= distance))
         {
 			//dfdMt
 			ret[DFDMT] = dfdWep != null ? (dfdWep.magic ? dfdUnit.magic + (dfdWep.might * (dfdWep.isEffectiveAgainst(atkUnit) ? 3 : 1))
 				: dfdUnit.strength + (dfdWep.might * (dfdWep.isEffectiveAgainst(atkUnit) ? 3 : 1)))
 				: dfdUnit.strength;
 
-			//dfdDef
-			ret[DFDDEF] = atkWep != null && atkWep.magic ? dfdUnit.resistance + (dfdWep is Armor && dfdWep.magic ? ((Armor)dfdWep).protection : 0)
-				: dfdUnit.defense + (dfdWep is Armor && !dfdWep.magic ? ((Armor)dfdWep).protection : 0);
-
 			//dfdHit
-			ret[DFDHIT] = dfdUnit.getBaseAccuracy() + dfdWep.hit - (atkUnit.getBaseAvoidance() + atkTile.getAvoidBonus());
+			ret[DFDHIT] = dfdUnit.getBaseAccuracy() + (dfdWep == null ? 0 : dfdWep.hit) - (atkUnit.getBaseAvoidance() + atkTile.getAvoidBonus());
 
-			//atkCrit
-			ret[DFDCRIT] = dfdUnit.getBaseCrit() + dfdWep.crit - atkUnit.luck;
+			//dfdCrit
+			ret[DFDCRIT] = dfdUnit.getBaseCrit() + (dfdWep == null ? 0 : dfdWep.crit) - atkUnit.luck;
 
 			//dfdStandardAttackCount
-			ret[DFDCOUNT] = (dfdSpeed - atkSpeed >= DOUBLE_ATTACK_THRESHOLD ? 2 : 1) * (dfdWep.brave ? 2 : 1);
+			ret[DFDCOUNT] = (dfdSpeed - atkSpeed >= DOUBLE_ATTACK_THRESHOLD ? 2 : 1) * (dfdWep != null && dfdWep.brave ? 2 : 1);
 
 		}
 		else
