@@ -4,8 +4,16 @@ using UnityEngine;
 
 public class Battle
 {
+	public int[] forecast;
     private LinkedList<BattleEvent> attacks;
 	private AfterEffect finalState;
+
+	public UnitModel atk;
+	public UnitModel dfd;
+	public Weapon atkWep;
+	public Weapon dfdWep;
+	public Tile atkTile;
+	public Tile dfdTile;
 
 	public static int DOUBLE_ATTACK_THRESHOLD = 4;
 
@@ -107,7 +115,14 @@ public class Battle
         List<Unit> atkAllies, List<Unit> dfdAllies,
         Weapon atkWep, Weapon dfdWep, Tile atkTile, Tile dfdTile)
     {
-		int[] forecast = getForecast(atk, dfd, atkAllies, dfdAllies, atkWep, dfdWep, atkTile, dfdTile);
+		this.atk = atk;
+		this.dfd = dfd;
+		this.atkWep = atkWep;
+		this.dfdWep = dfdWep;
+		this.atkTile = atkTile;
+		this.dfdTile = dfdTile;
+
+		forecast = getForecast(atk, dfd, atkAllies, dfdAllies, atkWep, dfdWep, atkTile, dfdTile);
 
 		Unit atkUnit = atk.getUnit();
 		Unit dfdUnit = dfd.getUnit();
@@ -127,19 +142,19 @@ public class Battle
             {
 				ActivationStep act = new ActivationStep(attacks.Last.Value);
 				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, false);
+				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
             }
 			for (int q = 0; q < atkCount; q++)
             {
 				ActivationStep act = new ActivationStep(attacks.Last.Value);
 				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true);
+				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
 			}
 			for (int q = 0; q < dfdCount / 2; q++)
 			{
 				ActivationStep act = new ActivationStep(attacks.Last.Value);
 				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, false);
+				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
 			}
 		}
 		else
@@ -149,19 +164,19 @@ public class Battle
 			{
 				ActivationStep act = new ActivationStep(attacks.Last.Value);
 				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true);
+				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
 			}
 			for (int q = 0; q < dfdCount; q++)
 			{
 				ActivationStep act = new ActivationStep(attacks.Last.Value);
 				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, false);
+				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
 			}
 			for (int q = 0; q < atkCount / 2; q++)
 			{
 				ActivationStep act = new ActivationStep(attacks.Last.Value);
 				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true);
+				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
 			}
 		}
 
@@ -176,6 +191,10 @@ public class Battle
 				break;
             }
 			current = current.Next;
+        }
+		foreach (BattleEvent part in attacks)
+        {
+			Debug.Log($"ATK: {part.atkFinalHP}, DFD: {part.dfdFinalHP}");
         }
 	}
 
@@ -232,7 +251,7 @@ public class Battle
 					critChance += act.dfdResult[CombatSkill.EXTRACRIT];
 				}
 
-				damage = might - defense;
+				damage = Mathf.Max(0, might - defense);
 
 				if (trueHit() < hitChance)
                 {
@@ -269,7 +288,7 @@ public class Battle
 					critChance += act.dfdResult[CombatSkill.EXTRACRIT];
 				}
 
-				damage = might - defense;
+				damage = Mathf.Max(0, might - defense);
 
 				if (trueHit() < hitChance)
 				{
@@ -390,74 +409,87 @@ public class Battle
 			dfdFinalHP = dfdInitialHP;
         }
 
-		public void execute(LinkedList<BattleEvent> events, int[] forecast, Unit atk, Unit dfd, bool atkTurn)
+		public void execute(LinkedList<BattleEvent> events, int[] forecast, Unit atk, Unit dfd,
+			bool atkActs, bool dfdActs, bool atkTurn)
         {
-			if (FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkillBonus] is CombatSkill)
-			{
-				atkResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkillBonus])
-					.tryActivate(atk, dfd, atkTurn);
-				if (atkResult != null)
+			if (atkActs)
+            {
+				if (FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkillBonus] is CombatSkill)
 				{
-					atkSkill = atk.fusionSkillBonus;
+					atkResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkillBonus])
+						.tryActivate(atk, dfd, atkTurn);
+					if (atkResult != null)
+					{
+						atkSkill = atk.fusionSkillBonus;
+					}
 				}
-			}
-			if (atkResult == null && FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkill1] is CombatSkill)
-			{
-				atkResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkill1])
-					.tryActivate(atk, dfd, atkTurn);
-				if (atkResult != null)
+				if (atkResult == null && FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkill1] is CombatSkill)
 				{
-					atkSkill = atk.fusionSkill1;
+					atkResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkill1])
+						.tryActivate(atk, dfd, atkTurn);
+					if (atkResult != null)
+					{
+						atkSkill = atk.fusionSkill1;
+					}
 				}
-			}
-			if (atkResult == null && FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkill2] is CombatSkill)
-			{
-				atkResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkill2])
-					.tryActivate(atk, dfd, atkTurn);
-				if (atkResult != null)
+				if (atkResult == null && FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkill2] is CombatSkill)
 				{
-					atkSkill = atk.fusionSkill2;
-				}
-			}
-
-			if (FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkillBonus] is CombatSkill)
-			{
-				dfdResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkillBonus])
-					.tryActivate(dfd, atk, !atkTurn);
-				if (dfdResult != null)
-                {
-					dfdSkill = dfd.fusionSkillBonus;
-                }
-			}
-			if (dfdResult == null && FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkill1] is CombatSkill)
-			{
-				dfdResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkill1])
-					.tryActivate(dfd, atk, !atkTurn);
-				if (dfdResult != null)
-				{
-					dfdSkill = dfd.fusionSkill1;
-				}
-			}
-			if (dfdResult == null && FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkill2] is CombatSkill)
-			{
-				dfdResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkill2])
-					.tryActivate(dfd, atk, !atkTurn);
-				if (dfdResult != null)
-				{
-					dfdSkill = dfd.fusionSkill2;
+					atkResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkill2])
+						.tryActivate(atk, dfd, atkTurn);
+					if (atkResult != null)
+					{
+						atkSkill = atk.fusionSkill2;
+					}
 				}
 			}
 
+			if (dfdActs)
+            {
+				if (FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkillBonus] is CombatSkill)
+				{
+					dfdResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkillBonus])
+						.tryActivate(dfd, atk, !atkTurn);
+					if (dfdResult != null)
+					{
+						dfdSkill = dfd.fusionSkillBonus;
+					}
+				}
+				if (dfdResult == null && FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkill1] is CombatSkill)
+				{
+					dfdResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkill1])
+						.tryActivate(dfd, atk, !atkTurn);
+					if (dfdResult != null)
+					{
+						dfdSkill = dfd.fusionSkill1;
+					}
+				}
+				if (dfdResult == null && FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkill2] is CombatSkill)
+				{
+					dfdResult = ((CombatSkill)FusionSkillExecutioner.SKILL_LIST[(int)dfd.fusionSkill2])
+						.tryActivate(dfd, atk, !atkTurn);
+					if (dfdResult != null)
+					{
+						dfdSkill = dfd.fusionSkill2;
+					}
+				}
+			}
+
+			//Main attack
+			Attack attack = new Attack(this, forecast, atkTurn);
+			events.AddLast(attack);
+
+			AfterEffect afterEffect = new AfterEffect(attack);
+			events.AddLast(afterEffect);
+
+			//Extra attacks
 			int numExtraAttacks = atkTurn ? (atkResult != null ? atkResult[CombatSkill.EXTRACOUNT] : 0)
 				: (dfdResult != null ? dfdResult[CombatSkill.EXTRACOUNT] : 0);
 
-			for (int q = 0; q < numExtraAttacks + 1; q++)
+			for (int q = 0; q < numExtraAttacks; q++)
             {
-				Attack attack = new Attack(this, forecast, atkTurn);
-				events.AddLast(attack);
-
-				AfterEffect afterEffect = new AfterEffect(attack);
-				events.AddLast(afterEffect);
+				ActivationStep activation = new ActivationStep(events.Last.Value);
+				activation.execute(events, forecast, atk, dfd, !atkTurn, atkTurn,
+					atkTurn);
 			}
 		}
 	}

@@ -55,7 +55,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LANCE Throw
+  m_Name: Lance Throw
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -82,7 +82,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LANCE Attack
+  m_Name: Lance Attack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -109,7 +109,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CLUB Attack
+  m_Name: Club Attack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -136,7 +136,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SPECIAL Attack
+  m_Name: Special Attack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -456,7 +456,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FIST Attack
+  m_Name: Fist Attack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -483,7 +483,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SWORD Idle
+  m_Name: Sword Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -632,7 +632,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FIST Idle
+  m_Name: Fist Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -706,7 +706,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AXE Idle
+  m_Name: Axe Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -732,7 +732,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BOW Shot
+  m_Name: Bow Shot
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -759,7 +759,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SWORD Throw
+  m_Name: Sword Throw
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -812,7 +812,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ARMOR Idle
+  m_Name: Armor Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -890,7 +890,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BOW Idle
+  m_Name: Bow Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -997,7 +997,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WHIP Idle
+  m_Name: Whip Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -1287,7 +1287,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SPECIAL Idle
+  m_Name: Special Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -1339,7 +1339,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CLUB Idle
+  m_Name: Club Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -1435,7 +1435,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SWORD Attack
+  m_Name: Sword Attack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1462,7 +1462,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WHIP Attack
+  m_Name: Whip Attack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1489,7 +1489,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ARMOR Attack
+  m_Name: Armor Attack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1784,7 +1784,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AXE Attack
+  m_Name: Axe Attack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1811,7 +1811,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LANCE Idle
+  m_Name: Lance Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []

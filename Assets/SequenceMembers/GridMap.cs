@@ -9,7 +9,8 @@ public class GridMap : SequenceMember
     private int width;
     private int height;
 
-    public bool testingMode;
+    [SerializeField] private bool testingMode;
+    [SerializeField] private bool testFutureVision;
 
     public List<Unit> player;
     public List<Unit> enemy;
@@ -50,6 +51,9 @@ public class GridMap : SequenceMember
     [SerializeField] private float zoomSpeed;
 
     private SelectionMode selectionMode;
+
+    [SerializeField] private BattleAnimation battleAnimation;
+    private BattleAnimation instantiatedBattleAnimation;
 
     private Dictionary<Tile, object> traversableTiles;
     private Dictionary<Tile, object> attackableTiles;
@@ -120,6 +124,10 @@ public class GridMap : SequenceMember
         StaticData.findDeepChild(transform, hudName).gameObject.SetActive(enable);
     }
 
+    public GameObject getCursor()
+    {
+        return cursor;
+    }
     private void setCursor(int x, int y)
     {
         cursorX = Mathf.Clamp(x, 0, width - 1);
@@ -323,6 +331,7 @@ public class GridMap : SequenceMember
         else if (selectionMode == SelectionMode.FORECAST)
         {
             enableChild("Forecast", false);
+            enableChild("FutureVision", false);
 
             getAttackOptions();
         }
@@ -1537,85 +1546,129 @@ public class GridMap : SequenceMember
         int[] forecast = Battle.getForecast(selectedUnit.model, targetEnemy.model, player, enemy,
             selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(), moveDest, targetTile);
 
-        if (selectedUnit.fusionSkillBonus == Unit.FusionSkill.FUTURE_VISION
+        Transform forecastDisplay = null;
+
+        if (testFutureVision || selectedUnit.fusionSkillBonus == Unit.FusionSkill.FUTURE_VISION
             ||selectedUnit.fusionSkill1 == Unit.FusionSkill.FUTURE_VISION
             || selectedUnit.fusionSkill2 == Unit.FusionSkill.FUTURE_VISION)
         {
+            forecastDisplay = StaticData.findDeepChild(transform, "FutureVision");
+
             Battle result = new Battle(selectedUnit.model, targetEnemy.model, player, enemy,
                 selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(), moveDest, targetTile);
-            //TODO
+
+            StaticData.findDeepChild(forecastDisplay, "PlayerStartingHP").GetComponent<TextMeshProUGUI>()
+                .text = "" + forecast[Battle.ATKHP];
+            StaticData.findDeepChild(forecastDisplay, "PlayerEndingHP").GetComponent<TextMeshProUGUI>()
+                .text = "" + result.getATKFinalHP();
+
+            StaticData.findDeepChild(forecastDisplay, "EnemyStartingHP").GetComponent<TextMeshProUGUI>()
+                .text = "" + forecast[Battle.DFDHP];
+            StaticData.findDeepChild(forecastDisplay, "EnemyEndingHP").GetComponent<TextMeshProUGUI>()
+                .text = "" + result.getDFDFinalHP();
         }
         else
         {
-            enableChild("Forecast", true);
+            forecastDisplay = StaticData.findDeepChild(transform, "Forecast");
 
-            StaticData.findDeepChild(transform, "PlayerName").GetComponent<TextMeshProUGUI>()
-                .text = selectedUnit.unitName;
-            StaticData.findDeepChild(transform, "PlayerPortrait").GetComponent<Image>()
-                .sprite = AssetDictionary.getImage(selectedUnit.unitName);
-            StaticData.findDeepChild(transform, "PlayerHP").GetComponent<TextMeshProUGUI>()
-                .text = "" + forecast[0];
-            StaticData.findDeepChild(transform, "PlayerATK").GetComponent<TextMeshProUGUI>()
-                .text = $"{Mathf.Max(0, forecast[1] - forecast[8])}" + (forecast[5] != 1 ? $" x {forecast[5]}" : "");
-            StaticData.findDeepChild(transform, "PlayerHIT").GetComponent<TextMeshProUGUI>()
-                .text = $"{Mathf.Max(0, forecast[3])}";
-            StaticData.findDeepChild(transform, "PlayerCRIT").GetComponent<TextMeshProUGUI>()
-                .text = $"{Mathf.Max(0, forecast[4])}";
-            if (selectedUnit.getEquippedWeapon() == null)
-            {
-                StaticData.findDeepChild(transform, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
-                    .text = "-";
-                //TODO set image
-                StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
-                    .sprite = null;
-            }
-            else
-            {
-                StaticData.findDeepChild(transform, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
-                    .text = selectedUnit.getEquippedWeapon().itemName;
-                //TODO set image
-                StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
-                    .sprite = null;
-            }
+            StaticData.findDeepChild(forecastDisplay, "PlayerHP").GetComponent<TextMeshProUGUI>()
+                .text = "" + forecast[Battle.ATKHP];
+            StaticData.findDeepChild(forecastDisplay, "PlayerATK").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[Battle.ATKMT] - forecast[Battle.DFDDEF])}" + (forecast[Battle.ATKCOUNT] != 1 ? $" x {forecast[Battle.ATKCOUNT]}" : "");
+            StaticData.findDeepChild(forecastDisplay, "PlayerHIT").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[Battle.ATKHIT])}";
+            StaticData.findDeepChild(forecastDisplay, "PlayerCRIT").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[Battle.ATKCRIT])}";
 
 
-            StaticData.findDeepChild(transform, "EnemyName").GetComponent<TextMeshProUGUI>()
-                .text = targetEnemy.unitName;
-            StaticData.findDeepChild(transform, "EnemyPortrait").GetComponent<Image>()
-                .sprite = AssetDictionary.getImage(targetEnemy.unitName);
-            StaticData.findDeepChild(transform, "EnemyHP").GetComponent<TextMeshProUGUI>()
-                .text = "" + forecast[6];
-            StaticData.findDeepChild(transform, "EnemyATK").GetComponent<TextMeshProUGUI>()
-                .text = $"{Mathf.Max(0, forecast[7] - forecast[2])}" + (forecast[11] != 1 ? $" x {forecast[11]}" : "");
-            StaticData.findDeepChild(transform, "EnemyHIT").GetComponent<TextMeshProUGUI>()
-                .text = $"{Mathf.Max(0, forecast[9])}";
-            StaticData.findDeepChild(transform, "EnemyCRIT").GetComponent<TextMeshProUGUI>()
-                .text = $"{Mathf.Max(0, forecast[10])}";
-            if (targetEnemy.getEquippedWeapon() == null)
-            {
-                StaticData.findDeepChild(transform, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
-                    .text = "-";
-                //TODO set image
-                StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
-                    .sprite = null;
-            }
-            else
-            {
-                StaticData.findDeepChild(transform, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
-                    .text = targetEnemy.getEquippedWeapon().itemName;
-                //TODO set image
-                StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
-                    .sprite = null;
-            }
+            StaticData.findDeepChild(forecastDisplay, "EnemyHP").GetComponent<TextMeshProUGUI>()
+                .text = "" + forecast[Battle.DFDHP];
+            StaticData.findDeepChild(forecastDisplay, "EnemyATK").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[Battle.DFDMT] - forecast[Battle.ATKDEF])}" + (forecast[Battle.DFDCOUNT] != 1 ? $" x {forecast[Battle.DFDCOUNT]}" : "");
+            StaticData.findDeepChild(forecastDisplay, "EnemyHIT").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[Battle.DFDHIT])}";
+            StaticData.findDeepChild(forecastDisplay, "EnemyCRIT").GetComponent<TextMeshProUGUI>()
+                .text = $"{Mathf.Max(0, forecast[Battle.DFDCRIT])}";
+        }
+        forecastDisplay.gameObject.SetActive(true);
+
+        StaticData.findDeepChild(forecastDisplay, "PlayerName").GetComponent<TextMeshProUGUI>()
+            .text = selectedUnit.unitName;
+        StaticData.findDeepChild(forecastDisplay, "PlayerPortrait").GetComponent<Image>()
+            .sprite = AssetDictionary.getImage(selectedUnit.unitName);
+
+        StaticData.findDeepChild(forecastDisplay, "EnemyName").GetComponent<TextMeshProUGUI>()
+            .text = targetEnemy.unitName;
+        StaticData.findDeepChild(forecastDisplay, "EnemyPortrait").GetComponent<Image>()
+            .sprite = AssetDictionary.getImage(targetEnemy.unitName);
+
+        if (selectedUnit.getEquippedWeapon() == null)
+        {
+            StaticData.findDeepChild(forecastDisplay, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
+                .text = "-";
+            //TODO set image
+            StaticData.findDeepChild(forecastDisplay, "PlayerWeaponImage").GetComponent<Image>()
+                .sprite = null;
+        }
+        else
+        {
+            StaticData.findDeepChild(forecastDisplay, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
+                .text = selectedUnit.getEquippedWeapon().itemName;
+            //TODO set image
+            StaticData.findDeepChild(forecastDisplay, "PlayerWeaponImage").GetComponent<Image>()
+                .sprite = null;
+        }
+
+        if (targetEnemy.getEquippedWeapon() == null)
+        {
+            StaticData.findDeepChild(forecastDisplay, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
+                .text = "-";
+            //TODO set image
+            StaticData.findDeepChild(forecastDisplay, "EnemyWeaponImage").GetComponent<Image>()
+                .sprite = null;
+        }
+        else
+        {
+            StaticData.findDeepChild(forecastDisplay, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
+                .text = targetEnemy.getEquippedWeapon().itemName;
+            //TODO set image
+            StaticData.findDeepChild(forecastDisplay, "EnemyWeaponImage").GetComponent<Image>()
+                .sprite = null;
         }
 
         selectionMode = SelectionMode.FORECAST;
     }
     private void startBattle()
     {
-        //TODO
+        Battle battle = new Battle(selectedUnit.model, targetEnemy.model,
+            getTeam(selectedUnit), getTeam(targetEnemy),
+            selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(),
+            moveDest, targetTile);
+
+        instantiatedBattleAnimation = Instantiate(battleAnimation);
+        instantiatedBattleAnimation.constructor(battle, this);
 
         selectionMode = SelectionMode.BATTLE;
+    }
+    private List<Unit> getTeam(Unit u)
+    {
+        if (u.team == Unit.UnitTeam.PLAYER)
+        {
+            return player;
+        }
+        if (u.team == Unit.UnitTeam.ENEMY)
+        {
+            return enemy;
+        }
+        if (u.team == Unit.UnitTeam.ALLY)
+        {
+            return ally;
+        }
+        if (u.team == Unit.UnitTeam.OTHER)
+        {
+            return other;
+        }
+        return null;
     }
 
     private void performTalk()
