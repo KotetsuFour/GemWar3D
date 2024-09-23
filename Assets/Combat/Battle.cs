@@ -7,6 +7,7 @@ public class Battle
 	public int[] forecast;
     private LinkedList<BattleEvent> attacks;
 	private AfterEffect finalState;
+	private LinkedListNode<BattleEvent> currentEvent;
 
 	public UnitModel atk;
 	public UnitModel dfd;
@@ -14,6 +15,8 @@ public class Battle
 	public Weapon dfdWep;
 	public Tile atkTile;
 	public Tile dfdTile;
+
+	public int distance;
 
 	public static int DOUBLE_ATTACK_THRESHOLD = 4;
 
@@ -123,6 +126,7 @@ public class Battle
 		this.dfdTile = dfdTile;
 
 		forecast = getForecast(atk, dfd, atkAllies, dfdAllies, atkWep, dfdWep, atkTile, dfdTile);
+		int distance = Mathf.Abs(atkTile.x - dfdTile.x) + Mathf.Abs(atkTile.y - dfdTile.y);
 
 		Unit atkUnit = atk.getUnit();
 		Unit dfdUnit = dfd.getUnit();
@@ -207,16 +211,16 @@ public class Battle
 		return finalState.dfdFinalHP;
     }
 
-    private class BattleEvent
+    public class BattleEvent
     {
 		public int atkInitialHP;
 		public int dfdInitialHP;
 		public int atkFinalHP;
 		public int dfdFinalHP;
-
+		public bool isATKAttacking;
 	}
 
-    private class Attack : BattleEvent
+    public class Attack : BattleEvent
     {
 		public bool hit;
 		public bool crit;
@@ -227,6 +231,7 @@ public class Battle
 			dfdInitialHP = act.dfdFinalHP;
 			atkFinalHP = atkInitialHP;
 			dfdFinalHP = dfdInitialHP;
+			isATKAttacking = atkTurn;
 
 			if (atkTurn)
             {
@@ -305,7 +310,7 @@ public class Battle
 		}
     }
 
-    private class AfterEffect : BattleEvent
+    public class AfterEffect : BattleEvent
     {
 		private Attack prev;
 		public Unit.FusionSkill atkSkill;
@@ -317,6 +322,7 @@ public class Battle
 			dfdInitialHP = prev.dfdFinalHP;
 			atkFinalHP = atkInitialHP;
 			dfdFinalHP = dfdInitialHP;
+			isATKAttacking = prev.isATKAttacking;
         }
 
 		public void execute(Unit atk, Unit dfd, bool atkTurn)
@@ -394,7 +400,7 @@ public class Battle
 		}
 	}
 
-	private class ActivationStep : BattleEvent
+	public class ActivationStep : BattleEvent
     {
 		public Unit.FusionSkill atkSkill;
 		public Unit.FusionSkill dfdSkill;
@@ -412,6 +418,7 @@ public class Battle
 		public void execute(LinkedList<BattleEvent> events, int[] forecast, Unit atk, Unit dfd,
 			bool atkActs, bool dfdActs, bool atkTurn)
         {
+			isATKAttacking = atkTurn;
 			if (atkActs)
             {
 				if (FusionSkillExecutioner.SKILL_LIST[(int)atk.fusionSkillBonus] is CombatSkill)
@@ -480,6 +487,7 @@ public class Battle
 
 			AfterEffect afterEffect = new AfterEffect(attack);
 			events.AddLast(afterEffect);
+			afterEffect.execute(atk, dfd, atkTurn);
 
 			//Extra attacks
 			int numExtraAttacks = atkTurn ? (atkResult != null ? atkResult[CombatSkill.EXTRACOUNT] : 0)
@@ -488,12 +496,13 @@ public class Battle
 			for (int q = 0; q < numExtraAttacks; q++)
             {
 				ActivationStep activation = new ActivationStep(events.Last.Value);
+				events.AddLast(activation);
 				activation.execute(events, forecast, atk, dfd, !atkTurn, atkTurn,
 					atkTurn);
 			}
 		}
 	}
-	private class InitialStep : BattleEvent
+	public class InitialStep : BattleEvent
     {
 		public InitialStep(int[] forecast, Unit atk, Unit dfd)
 		{
@@ -503,6 +512,23 @@ public class Battle
 			dfdFinalHP = dfdInitialHP;
 		}
 	}
+
+	public BattleEvent getNextEvent()
+    {
+		if (currentEvent == null)
+        {
+			currentEvent = attacks.First;
+        }
+		else
+        {
+			currentEvent = currentEvent.Next;
+        }
+		return currentEvent.Value;
+    }
+	public bool onFinalState()
+    {
+		return currentEvent == null || currentEvent.Value == finalState;
+    }
 
 	private static void handleSupports(Unit atk, Unit dfd,
 	List<Unit> atkAllies, List<Unit> dfdAllies, int[] forecast)

@@ -128,6 +128,62 @@ public class UnitModel : MonoBehaviour
     {
         anim.Play("Running");
     }
+
+    //Returns the length of the animation
+    public float playAttack(int dist)
+    {
+        string attAnim = "Fist Attack";
+        if (unit.getEquippedWeapon() != null)
+        {
+            Weapon wep = unit.getEquippedWeapon();
+            if (moveAtDistance(dist) || wep is Whip || wep is Bow || wep is SpecialWeapon)
+            {
+                attAnim = Weapon.weaponTypeName(unit.getEquippedWeapon().weaponType) + " Attack";
+            }
+            else
+            {
+                attAnim = Weapon.weaponTypeName(unit.getEquippedWeapon().weaponType) + " Throw";
+            }
+        }
+        AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip.name == attAnim)
+            {
+                anim.Play(attAnim);
+                return clip.length;
+            }
+        }
+        return 0;
+    }
+    public float playDodge()
+    {
+        string dodge = "Dodge";
+        AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip.name == dodge)
+            {
+                anim.Play(dodge);
+                return clip.length;
+            }
+        }
+        return 0;
+    }
+    public float playGotHit()
+    {
+        string gothit = "Got Hit";
+        AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip.name == gothit)
+            {
+                anim.Play(gothit);
+                return clip.length;
+            }
+        }
+        return 0;
+    }
     public void equip()
     {
         Transform hand = StaticData.findDeepChild(model.transform, "Hand");
@@ -149,6 +205,25 @@ public class UnitModel : MonoBehaviour
         playIdle();
     }
 
+    public float getBattleMoveSpeed()
+    {
+        return battleMoveSpeed;
+    }
+    public bool moveAtDistance(int dist)
+    {
+        Weapon wep = getUnit().getEquippedWeapon();
+        if (wep == null)
+        {
+            return true;
+        }
+        if (wep is Whip
+            || wep is Bow
+            || wep is SpecialWeapon)
+        {
+            return false;
+        }
+        return dist <= 1;
+    }
     public void setPath(Vector3[] path)
     {
         this.path = path;

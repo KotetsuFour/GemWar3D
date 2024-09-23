@@ -1640,6 +1640,9 @@ public class GridMap : SequenceMember
     }
     private void startBattle()
     {
+        enableChild("Forecast", false);
+        enableChild("FutureVision", false);
+
         Battle battle = new Battle(selectedUnit.model, targetEnemy.model,
             getTeam(selectedUnit), getTeam(targetEnemy),
             selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(),
@@ -1649,6 +1652,13 @@ public class GridMap : SequenceMember
         instantiatedBattleAnimation.constructor(battle, this);
 
         selectionMode = SelectionMode.BATTLE;
+    }
+    public void endBattleAnimation()
+    {
+        //TODO fix
+        Destroy(instantiatedBattleAnimation.gameObject);
+
+        selectionMode = SelectionMode.ROAM;
     }
     private List<Unit> getTeam(Unit u)
     {

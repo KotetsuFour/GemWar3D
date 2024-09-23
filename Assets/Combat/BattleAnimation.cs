@@ -20,9 +20,19 @@ public class BattleAnimation : MonoBehaviour
 
     private bool isPlayerAttack;
 
+    private UnitModel currentActor;
+    private UnitModel target;
+    private Vector3 speed;
+
+    private Battle battle;
     private GridMap gridmap;
+
+    private Phase phase;
+    private Battle.BattleEvent currentEvent;
+    private float timer;
     public void constructor(Battle battle, GridMap gridmap)
     {
+        this.battle = battle;
         this.gridmap = gridmap;
         gridmap.gameObject.SetActive(false);
         foreach (Unit u in gridmap.player)
@@ -46,7 +56,7 @@ public class BattleAnimation : MonoBehaviour
         //Set Variables
         if (battle.dfd.getUnit().team == Unit.UnitTeam.ENEMY)
         {
-            isPlayerAttack = false;
+            isPlayerAttack = true;
 
             playerUnit = battle.atk;
             enemyUnit = battle.dfd;
@@ -57,7 +67,7 @@ public class BattleAnimation : MonoBehaviour
         }
         else
         {
-            isPlayerAttack = true;
+            isPlayerAttack = false;
 
             playerUnit = battle.dfd;
             enemyUnit = battle.atk;
@@ -136,6 +146,8 @@ public class BattleAnimation : MonoBehaviour
 
         playerUnit.transform.SetLocalPositionAndRotation(playerStart.position, playerStart.rotation);
         enemyUnit.transform.SetLocalPositionAndRotation(enemyStart.position, enemyStart.rotation);
+
+        getNextEvent();
     }
 
     private void backToGridMap()
@@ -168,16 +180,322 @@ public class BattleAnimation : MonoBehaviour
         }
         gridmap.getCursor().gameObject.SetActive(true);
 
+        gridmap.endBattleAnimation();
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.Log(phase);
+        if (timer > 0)
+        {
+            timer -= Time.deltaTime;
+        }
+        if (phase == Phase.BEGIN)
+        {
+            if (timer <= 0)
+            {
+                getNextEvent();
+            }
+        }
+        else if (phase == Phase.ACTIVATE_BATTLE_SKILL)
+        {
+            if (timer <= 0)
+            {
+                getNextEvent();
+            }
+        }
+        else if (phase == Phase.MOVE)
+        {
+            if (currentActor.moveAtDistance(battle.distance)
+                && (currentActor.transform.position - target.transform.position).magnitude > 1)
+            {
+                currentActor.transform.position += speed * Time.deltaTime;
+                currentActor.playMove();
+            }
+            else if (((Battle.Attack)currentEvent).crit)
+            {
+                timer = 1;
+                currentActor.playIdle();
+                //TODO play sound
+                phase = Phase.ACTIVATE_CRITICAL;
+            }
+            else
+            {
+                timer = currentActor.playAttack(battle.distance);
+                if (currentActor.moveAtDistance(battle.distance))
+                {
+                    //TODO play attack
+                    phase = Phase.ATTACKANIM;
+                }
+                else
+                {
+                    phase = Phase.RANGEANIM;
+                }
+            }
+        }
+        else if (phase == Phase.ACTIVATE_CRITICAL)
+        {
+            if (timer <= 0)
+            {
+                timer = currentActor.playAttack(battle.distance);
+                if (currentActor.moveAtDistance(battle.distance))
+                {
+                    //TODO play attack
+                    phase = Phase.ATTACKANIM;
+                }
+                else
+                {
+                    phase = Phase.RANGEANIM;
+                }
+            }
+        }
+        else if (phase == Phase.ATTACKANIM)
+        {
+            if (timer <= 0)
+            {
+                if (((Battle.Attack)currentEvent).hit)
+                {
+                    timer = target.playGotHit();
+                    updateHPs();
+                }
+                else
+                {
+                    timer = target.playDodge();
+                }
+            }
+            phase = Phase.HITANIM;
+        }
+        else if (phase == Phase.RANGEANIM)
+        {
+            if (timer <= 0)
+            {
+                //TODO eventually, we'll use projectiles
+                if (timer <= 0)
+                {
+                    if (((Battle.Attack)currentEvent).hit)
+                    {
+                        timer = target.playGotHit();
+                        updateHPs();
+                    }
+                    else
+                    {
+                        timer = target.playDodge();
+                    }
+                }
+                phase = Phase.HITANIM;
+            }
+        }
+        else if (phase == Phase.HITANIM)
+        {
+            if (timer <= 0)
+            {
+                getNextEvent();
+            }
+        }
+        else if (phase == Phase.ACTIVATE_AFTER_SKILL)
+        {
+            if (timer <= 0)
+            {
+                updateHPs();
+                phase = Phase.AFTERHP;
+            }
+        }
+        else if (phase == Phase.AFTERHP)
+        {
+            if (timer <= 0)
+            {
+                if (battle.onFinalState())
+                {
+                    timer = 2;
+                    if (currentEvent.atkFinalHP <= 0)
+                    {
+                        if (isPlayerAttack)
+                        {
+                            poof(playerUnit);
+                        }
+                        else
+                        {
+                            poof(enemyUnit);
+                        }
+
+                        phase = Phase.POOF;
+                    }
+                    else if (currentEvent.dfdFinalHP <= 0)
+                    {
+                        if (isPlayerAttack)
+                        {
+                            poof(enemyUnit);
+                        }
+                        else
+                        {
+                            poof(playerUnit);
+                        }
+
+                        phase = Phase.POOF;
+                    }
+                    else
+                    {
+                        phase = Phase.END;
+                    }
+                }
+                else
+                {
+                    getNextEvent();
+                }
+            }
+        }
+        else if (phase == Phase.POOF)
+        {
+            if (timer <= 0)
+            {
+                timer = 2;
+                phase = Phase.END;
+            }
+        }
+        else if (phase == Phase.END)
+        {
+            if (timer <= 0)
+            {
+                if (playerUnit != null && playerUnit.getUnit().team == Unit.UnitTeam.PLAYER)
+                {
+                    //TODO exp
+
+                    phase = Phase.EXP;
+                }
+            }
+        }
+        else if (phase == Phase.EXP)
+        {
+            //TODO
+            phase = Phase.LEVELUP;
+        }
+        else if (phase == Phase.LEVELUP)
+        {
+            //TODO
+            phase = Phase.LEVELSTATS;
+        }
+        else if (phase == Phase.LEVELSTATS)
+        {
+            if (timer <= 0)
+            {
+                backToGridMap();
+            }
+        }
+    }
+
+    private void getNextEvent()
+    {
+        currentEvent = battle.getNextEvent();
+
+        if (currentEvent is Battle.InitialStep)
+        {
+            timer = 2;
+            phase = Phase.BEGIN;
+        }
+        else if (currentEvent is Battle.ActivationStep)
+        {
+            Battle.ActivationStep act = (Battle.ActivationStep)currentEvent;
+            Unit.FusionSkill playerSkill = isPlayerAttack ? act.atkSkill : act.dfdSkill;
+            Unit.FusionSkill enemySkill = isPlayerAttack ? act.dfdSkill : act.atkSkill;
+            if (playerSkill != Unit.FusionSkill.LOCKED)
+            {
+                timer = 1;
+                FusionSkillExecutioner playerSkillExec = FusionSkillExecutioner.SKILL_LIST[(int)playerSkill];
+                StaticData.findDeepChild(transform, "PlayerSkill").gameObject.SetActive(true);
+                StaticData.findDeepChild(transform, "PlayerSkillName").GetComponent<TextMeshProUGUI>()
+                    .text = playerSkillExec.skillName;
+                StaticData.findDeepChild(transform, "PlayerSkillIcon").GetComponent<Image>()
+                    .sprite = null; //TODO set icon (AssetDictionary.getImage(playerSkillExec.skillName))
+                //TODO play sound (AssetDictionary.getAudio(playerSkillExec.skillName))
+            }
+            if (enemySkill != Unit.FusionSkill.LOCKED)
+            {
+                timer = 1;
+                FusionSkillExecutioner enemySkillExec = FusionSkillExecutioner.SKILL_LIST[(int)enemySkill];
+                StaticData.findDeepChild(transform, "EnemySkill").gameObject.SetActive(true);
+                StaticData.findDeepChild(transform, "EnemySkillName").GetComponent<TextMeshProUGUI>()
+                    .text = enemySkillExec.skillName;
+                StaticData.findDeepChild(transform, "EnemySkillIcon").GetComponent<Image>()
+                    .sprite = null; //TODO set icon (AssetDictionary.getImage(enemySkillExec.skillName))
+                //TODO play sound (AssetDictionary.getAudio(enemySkillExec.skillName))
+            }
+            phase = Phase.ACTIVATE_BATTLE_SKILL;
+        }
+        else if (currentEvent is Battle.Attack)
+        {
+            currentActor = ((isPlayerAttack && currentEvent.isATKAttacking) || !(isPlayerAttack || currentEvent.isATKAttacking))
+                ? playerUnit : enemyUnit;
+            target = currentActor == playerUnit ? enemyUnit : playerUnit;
+
+            speed = (target.transform.position - currentActor.transform.position).normalized
+                * currentActor.getBattleMoveSpeed();
+
+            phase = Phase.MOVE;
+        }
+        else if (currentEvent is Battle.AfterEffect)
+        {
+            Battle.AfterEffect act = (Battle.AfterEffect)currentEvent;
+
+            Unit.FusionSkill playerSkill = isPlayerAttack ? act.atkSkill : act.dfdSkill;
+            Unit.FusionSkill enemySkill = isPlayerAttack ? act.dfdSkill : act.atkSkill;
+            if (playerSkill != Unit.FusionSkill.LOCKED)
+            {
+                timer = 1;
+                FusionSkillExecutioner playerSkillExec = FusionSkillExecutioner.SKILL_LIST[(int)playerSkill];
+                StaticData.findDeepChild(transform, "PlayerSkill").gameObject.SetActive(true);
+                StaticData.findDeepChild(transform, "PlayerSkillName").GetComponent<TextMeshProUGUI>()
+                    .text = playerSkillExec.skillName;
+                StaticData.findDeepChild(transform, "PlayerSkillIcon").GetComponent<Image>()
+                    .sprite = null; //TODO set icon (AssetDictionary.getImage(playerSkillExec.skillName))
+                //TODO play sound (AssetDictionary.getAudio(playerSkillExec.skillName))
+            }
+            else
+            {
+                StaticData.findDeepChild(transform, "PlayerSkill").gameObject.SetActive(false);
+            }
+            if (enemySkill != Unit.FusionSkill.LOCKED)
+            {
+                timer = 1;
+                FusionSkillExecutioner enemySkillExec = FusionSkillExecutioner.SKILL_LIST[(int)enemySkill];
+                StaticData.findDeepChild(transform, "EnemySkill").gameObject.SetActive(true);
+                StaticData.findDeepChild(transform, "EnemySkillName").GetComponent<TextMeshProUGUI>()
+                    .text = enemySkillExec.skillName;
+                StaticData.findDeepChild(transform, "EnemySkillIcon").GetComponent<Image>()
+                    .sprite = null; //TODO set icon (AssetDictionary.getImage(enemySkillExec.skillName))
+                //TODO play sound (AssetDictionary.getAudio(enemySkillExec.skillName))
+            }
+            else
+            {
+                StaticData.findDeepChild(transform, "EnemySkill").gameObject.SetActive(false);
+            }
+
+            phase = Phase.ACTIVATE_AFTER_SKILL;
+        }
+    }
+
+    private void poof(UnitModel unit)
+    {
+        gridmap.player.Remove(unit.getUnit());
+        gridmap.enemy.Remove(unit.getUnit());
+        gridmap.ally.Remove(unit.getUnit());
+        gridmap.other.Remove(unit.getUnit());
+        //TODO place poof animation
+        Destroy(unit.gameObject);
+    }
+
+    private void updateHPs()
+    {
+        playerUnit.getUnit().currentHP = Mathf.Max(0, isPlayerAttack ? currentEvent.atkFinalHP : currentEvent.dfdFinalHP);
+        enemyUnit.getUnit().currentHP = Mathf.Max(0, isPlayerAttack ? currentEvent.dfdFinalHP : currentEvent.atkFinalHP);
+        StaticData.findDeepChild(transform, "PlayerHP").GetComponent<TextMeshProUGUI>()
+            .text = "" + playerUnit.getUnit().currentHP;
+        StaticData.findDeepChild(transform, "EnemyHP").GetComponent<TextMeshProUGUI>()
+            .text = "" + enemyUnit.getUnit().currentHP;
+    }
+
+    public enum Phase
+    {
+        BEGIN, ACTIVATE_BATTLE_SKILL, MOVE, ACTIVATE_CRITICAL, ATTACKANIM, RANGEANIM,
+        PROJECTILE, HITANIM, ACTIVATE_AFTER_SKILL, AFTERHP, POOF, END, EXP, LEVELUP, LEVELSTATS
     }
 }
