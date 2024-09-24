@@ -126,7 +126,7 @@ public class Battle
 		this.dfdTile = dfdTile;
 
 		forecast = getForecast(atk, dfd, atkAllies, dfdAllies, atkWep, dfdWep, atkTile, dfdTile);
-		int distance = Mathf.Abs(atkTile.x - dfdTile.x) + Mathf.Abs(atkTile.y - dfdTile.y);
+		distance = Mathf.Abs(atkTile.x - dfdTile.x) + Mathf.Abs(atkTile.y - dfdTile.y);
 
 		Unit atkUnit = atk.getUnit();
 		Unit dfdUnit = dfd.getUnit();
@@ -201,7 +201,14 @@ public class Battle
 			Debug.Log($"ATK: {part.atkFinalHP}, DFD: {part.dfdFinalHP}");
         }
 	}
-
+	public int getATKInitialHP()
+    {
+		return attacks.First.Value.atkInitialHP;
+    }
+	public int getDFDInitialHP()
+	{
+		return attacks.First.Value.dfdInitialHP;
+	}
 	public int getATKFinalHP()
     {
 		return finalState.atkFinalHP;
@@ -210,8 +217,30 @@ public class Battle
     {
 		return finalState.dfdFinalHP;
     }
+	public bool atkTookDamage()
+    {
+		foreach (BattleEvent be in attacks)
+        {
+			if (be.atkFinalHP < be.atkInitialHP)
+            {
+				return true;
+            }
+        }
+		return false;
+    }
+	public bool dfdTookDamage()
+	{
+		foreach (BattleEvent be in attacks)
+		{
+			if (be.dfdFinalHP < be.dfdInitialHP)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
-    public class BattleEvent
+	public class BattleEvent
     {
 		public int atkInitialHP;
 		public int dfdInitialHP;

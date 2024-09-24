@@ -70,5 +70,10 @@ public abstract class SequenceMember : MonoBehaviour
     {
         return cam;
     }
+    public void playOneTimeSound(AudioClip clip)
+    {
+        OneTimeSound once = Instantiate(oneTimeSound);
+        once.playSound(clip);
+    }
 
 }

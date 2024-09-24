@@ -2253,6 +2253,7 @@ MonoBehaviour:
   maxCamDistance: 0
   zoomSpeed: 0
   battleAnimation: {fileID: -6570087847307395200, guid: 642c2580f74a32c46aa90f45b39f855f, type: 3}
+  warpAnimation: {fileID: 2039320880806230488, guid: bdd8c1353e54e8e4dbbc86d300bae43f, type: 3}
 --- !u!1 &1697815353268774003
 GameObject:
   m_ObjectHideFlags: 0

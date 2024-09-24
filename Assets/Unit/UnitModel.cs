@@ -133,9 +133,9 @@ public class UnitModel : MonoBehaviour
     public float playAttack(int dist)
     {
         string attAnim = "Fist Attack";
-        if (unit.getEquippedWeapon() != null)
+        Weapon wep = unit.getEquippedWeapon();
+        if (wep != null)
         {
-            Weapon wep = unit.getEquippedWeapon();
             if (moveAtDistance(dist) || wep is Whip || wep is Bow || wep is SpecialWeapon)
             {
                 attAnim = Weapon.weaponTypeName(unit.getEquippedWeapon().weaponType) + " Attack";
@@ -145,44 +145,59 @@ public class UnitModel : MonoBehaviour
                 attAnim = Weapon.weaponTypeName(unit.getEquippedWeapon().weaponType) + " Throw";
             }
         }
+        /*
         AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
         foreach (AnimationClip clip in clips)
         {
             if (clip.name == attAnim)
             {
                 anim.Play(attAnim);
-                return clip.length;
+                return clip.length + 1;
             }
         }
+        anim.Play(attAnim);
         return 0;
+        */
+        anim.Play(attAnim);
+        return 2;
     }
     public float playDodge()
     {
         string dodge = "Dodge";
+        /*
         AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
         foreach (AnimationClip clip in clips)
         {
             if (clip.name == dodge)
             {
                 anim.Play(dodge);
-                return clip.length;
+                return clip.length + 1;
             }
         }
+        anim.Play(dodge);
         return 0;
+        */
+        anim.Play(dodge);
+        return 1;
     }
     public float playGotHit()
     {
         string gothit = "Got Hit";
+        /*
         AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
         foreach (AnimationClip clip in clips)
         {
             if (clip.name == gothit)
             {
                 anim.Play(gothit);
-                return clip.length;
+                return clip.length + 1;
             }
         }
+        anim.Play(gothit);
         return 0;
+        */
+        anim.Play(gothit);
+        return 1;
     }
     public void equip()
     {

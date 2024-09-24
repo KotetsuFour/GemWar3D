@@ -54,6 +54,7 @@ public class GridMap : SequenceMember
 
     [SerializeField] private BattleAnimation battleAnimation;
     private BattleAnimation instantiatedBattleAnimation;
+    [SerializeField] private ParticleAnimation warpAnimation;
 
     private Dictionary<Tile, object> traversableTiles;
     private Dictionary<Tile, object> attackableTiles;
@@ -85,9 +86,11 @@ public class GridMap : SequenceMember
 
     private Tile talkerTile;
 
+    private AudioSource music;
+
     public void constructor(Tile[,] map,
         Unit[] playerUnits, Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits,
-        Objective objective, string chapterName, string[] teamNames, int turnPar)
+        Objective objective, string chapterName, string[] teamNames, int turnPar, string mapMusic)
     {
         this.map = map;
         width = map.GetLength(0);
@@ -107,6 +110,10 @@ public class GridMap : SequenceMember
 
         interactableUnits = new List<Tile>();
         cursor = Instantiate(cursorPrefab);
+
+        music = getAudioSource(AssetDictionary.getAudio(mapMusic));
+        music.loop = true;
+        music.Play();
     }
     public void initializeCursorPosition()
     {
@@ -140,6 +147,8 @@ public class GridMap : SequenceMember
     }
     private void moveCursor(int xDirection, int yDirection)
     {
+        playOneTimeSound(AssetDictionary.getAudio("tile"));
+
         setCursor(cursorX + xDirection, cursorY + yDirection);
 
         setCameraPosition();
@@ -161,10 +170,14 @@ public class GridMap : SequenceMember
             {
                 if (hit.collider.GetComponent<UnitModel>() != null)
                 {
+                    playOneTimeSound(AssetDictionary.getAudio("select"));
+
                     initiateMove(hit.collider.GetComponent<UnitModel>().getTile());
                 }
                 else if (hit.collider.GetComponent<Tile>() != null)
                 {
+                    playOneTimeSound(AssetDictionary.getAudio("select"));
+
                     Tile currentTile = hit.collider.GetComponent<Tile>();
                     initiateMove(currentTile);
                 }
@@ -213,10 +226,14 @@ public class GridMap : SequenceMember
             Tile currentTile = map[cursorX, cursorY];
             if (currentTile.getOccupant() == null)
             {
+                playOneTimeSound(AssetDictionary.getAudio("select"));
+
                 //TODO options menu
             }
             else
             {
+                playOneTimeSound(AssetDictionary.getAudio("select"));
+
                 initiateMove(currentTile);
             }
         }
@@ -300,6 +317,7 @@ public class GridMap : SequenceMember
         }
 
     }
+
     public override void X()
     {
         if (selectionMode == SelectionMode.ROAM)
@@ -524,6 +542,7 @@ public class GridMap : SequenceMember
 
     private void cancelMove()
     {
+        playOneTimeSound(AssetDictionary.getAudio("back"));
         selectionMode = SelectionMode.ROAM;
         selectedTile = null;
         selectedUnit = null;
@@ -545,6 +564,7 @@ public class GridMap : SequenceMember
     }
     private void cancelTravel(bool mouse)
     {
+        playOneTimeSound(AssetDictionary.getAudio("back"));
         setCursor(selectedTile);
         if (!mouse)
         {
@@ -554,6 +574,8 @@ public class GridMap : SequenceMember
     }
     private void initiateTravel(Tile tile)
     {
+        playOneTimeSound(AssetDictionary.getAudio("select"));
+
         setCursor(tile);
 
         if (selectedUnit.team == Unit.UnitTeam.PLAYER && traversableTiles.ContainsKey(tile)
@@ -571,6 +593,7 @@ public class GridMap : SequenceMember
     }
     private void cancelMenu(bool mouse)
     {
+        playOneTimeSound(AssetDictionary.getAudio("back"));
         StaticData.findDeepChild(transform, "Menu").gameObject.SetActive(false);
         cancelTravel(mouse);
     }
@@ -583,6 +606,7 @@ public class GridMap : SequenceMember
     }
     private void cancelOtherUnitSelection()
     {
+        playOneTimeSound(AssetDictionary.getAudio("back"));
         unfillAttackableTiles();
         initiateMenu();
 
@@ -767,6 +791,8 @@ public class GridMap : SequenceMember
     {
         Debug.Log($"selected option {idx}, {menuElements[idx]}");
 
+        playOneTimeSound(AssetDictionary.getAudio("select"));
+
         MenuChoice choice = menuElements[idx];
 
         if (choice == MenuChoice.TALK)
@@ -879,9 +905,9 @@ public class GridMap : SequenceMember
             player.Remove(selectedUnit);
             StaticData.registerSupportUponEscape(selectedUnit, player, turn);
             selectedTile.setOccupant(null);
-            Destroy(selectedUnit.model);
-
-            //TODO play warp animation
+            Instantiate(warpAnimation, selectedUnit.model.transform.position, warpAnimation.transform.rotation);
+            playOneTimeSound(AssetDictionary.getAudio("warp"));
+            Destroy(selectedUnit.model.gameObject);
 
             enableChild("Menu", false);
 
@@ -1539,6 +1565,8 @@ public class GridMap : SequenceMember
 
     private void createForecast()
     {
+        playOneTimeSound(AssetDictionary.getAudio("select"));
+
         unfillAttackableTiles();
         targetTile = map[cursorX, cursorY];
         targetEnemy = targetTile.getOccupant().getUnit();
@@ -1648,6 +1676,8 @@ public class GridMap : SequenceMember
             selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(),
             moveDest, targetTile);
 
+        music.Pause();
+
         instantiatedBattleAnimation = Instantiate(battleAnimation);
         instantiatedBattleAnimation.constructor(battle, this);
 
@@ -1656,6 +1686,7 @@ public class GridMap : SequenceMember
     public void endBattleAnimation()
     {
         //TODO fix
+        music.UnPause();
         Destroy(instantiatedBattleAnimation.gameObject);
 
         selectionMode = SelectionMode.ROAM;

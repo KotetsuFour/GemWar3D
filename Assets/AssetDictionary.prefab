@@ -96,9 +96,45 @@ MonoBehaviour:
   audioKeys:
   - chapter_title_tone
   - chapter_title_jingle
+  - crit-activate
+  - crit-hit
+  - damage
+  - parry
+  - dodge
+  - battle-music
+  - boss-music
+  - map-music-1
+  - map-music-2
+  - map-music-3
+  - tile
+  - select
+  - back
+  - game-start
+  - poof
+  - exp
+  - warp
+  - level
   audioValues:
   - {fileID: 8300000, guid: 87f4d4c1f429e1e42b1237cb43a4fc0d, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
+  - {fileID: 8300000, guid: 10e33c19caab98b419cb66264df760fb, type: 3}
+  - {fileID: 8300000, guid: 9cb1e5a076a55384582c06ed19a2db40, type: 3}
+  - {fileID: 8300000, guid: a752e97b80fe8d943a8abdd8f147959b, type: 3}
+  - {fileID: 8300000, guid: 6cc76747eaba9eb4f9aa1008cc4a4ff4, type: 3}
+  - {fileID: 8300000, guid: 88fe3f78272f2064abbebf1fddebfd6a, type: 3}
+  - {fileID: 8300000, guid: 82e5853cad5ea244192ff4e8a63e55d3, type: 3}
+  - {fileID: 8300000, guid: b0dff7f32d9b06d41aabee75bcd56afe, type: 3}
+  - {fileID: 8300000, guid: abd786f91f1395f48951dd2fdfa48ce0, type: 3}
+  - {fileID: 8300000, guid: fd188f9cae04ead4599161cb7ee8c05b, type: 3}
+  - {fileID: 8300000, guid: 065fb552ae8fdd9409f4a898f2aa6d2e, type: 3}
+  - {fileID: 8300000, guid: 6d91ea8eea6457943ae9209ad32355a5, type: 3}
+  - {fileID: 8300000, guid: b8d20dd732cc71b42bb3e8903ed2b105, type: 3}
+  - {fileID: 8300000, guid: 37e053595542fa245900ed8e5c8553c4, type: 3}
+  - {fileID: 8300000, guid: 4c03ddc508a01bd47a5f713d839d80cb, type: 3}
+  - {fileID: 8300000, guid: 7da254ec5b0cd8b46a84f90adee26b1d, type: 3}
+  - {fileID: 8300000, guid: a687239aa55aba3458243434c7092eab, type: 3}
+  - {fileID: 8300000, guid: 4f075dd1588edf24d87471f8ef11e860, type: 3}
+  - {fileID: 8300000, guid: 8cae1602d9f0cd944aa747b39513fb27, type: 3}
   wepKeys:
   - Rose Quartz Shield
   - Pearl Spear

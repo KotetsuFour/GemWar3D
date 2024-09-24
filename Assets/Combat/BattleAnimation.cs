@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class BattleAnimation : MonoBehaviour
 {
+    [SerializeField] private ParticleAnimation poofEffect;
+
     private UnitModel playerUnit;
     private UnitModel enemyUnit;
     private Weapon playerWep;
@@ -30,6 +32,10 @@ public class BattleAnimation : MonoBehaviour
     private Phase phase;
     private Battle.BattleEvent currentEvent;
     private float timer;
+
+    private bool[] levelup;
+
+    private AudioSource music;
     public void constructor(Battle battle, GridMap gridmap)
     {
         this.battle = battle;
@@ -83,6 +89,8 @@ public class BattleAnimation : MonoBehaviour
 
         playerUnit.gameObject.SetActive(true);
         enemyUnit.gameObject.SetActive(true);
+        playerUnit.playIdle();
+        enemyUnit.playIdle();
 
         int[] forecast = battle.forecast;
 
@@ -121,20 +129,44 @@ public class BattleAnimation : MonoBehaviour
             .text = "" + playerUnit.getUnit().currentHP;
         StaticData.findDeepChild(transform, "PlayerName").GetComponent<TextMeshProUGUI>()
             .text = playerUnit.getUnit().unitName;
-        StaticData.findDeepChild(transform, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
-            .text = playerWep.itemName;
-        //TODO setimage
-        StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
-            .sprite = null;
+        if (playerWep != null)
+        {
+            StaticData.findDeepChild(transform, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
+                .text = playerWep.itemName;
+            //TODO setimage
+            StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
+                .sprite = null;
+        }
+        else
+        {
+            StaticData.findDeepChild(transform, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
+                .text = "-";
+            StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
+                .sprite = null;
+            StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
+                .color = Color.black;
+        }
         StaticData.findDeepChild(transform, "EnemyHP").GetComponent<TextMeshProUGUI>()
             .text = "" + enemyUnit.getUnit().currentHP;
         StaticData.findDeepChild(transform, "EnemyName").GetComponent<TextMeshProUGUI>()
             .text = enemyUnit.getUnit().unitName;
-        StaticData.findDeepChild(transform, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
-            .text =enemyWep.itemName;
-        //TODO set image
-        StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
-            .sprite = null;
+        if (enemyWep != null)
+        {
+            StaticData.findDeepChild(transform, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
+                .text = enemyWep.itemName;
+            //TODO set image
+            StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
+                .sprite = null;
+        }
+        else
+        {
+            StaticData.findDeepChild(transform, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
+                .text = "-";
+            StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
+                .sprite = null;
+            StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
+                .color = Color.black;
+        }
 
         StaticData.findDeepChild(transform, "PlayerPlatform").GetComponent<MeshRenderer>()
             .material = playerTile.GetComponent<MeshRenderer>().material;
@@ -146,6 +178,9 @@ public class BattleAnimation : MonoBehaviour
 
         playerUnit.transform.SetLocalPositionAndRotation(playerStart.position, playerStart.rotation);
         enemyUnit.transform.SetLocalPositionAndRotation(enemyStart.position, enemyStart.rotation);
+
+        music = gridmap.getAudioSource(AssetDictionary.getAudio("battle-music"));
+        music.Play();
 
         getNextEvent();
     }
@@ -165,27 +200,32 @@ public class BattleAnimation : MonoBehaviour
         foreach (Unit u in gridmap.player)
         {
             u.model.gameObject.SetActive(true);
+            u.model.playIdle();
         }
         foreach (Unit u in gridmap.enemy)
         {
             u.model.gameObject.SetActive(true);
+            u.model.playIdle();
         }
         foreach (Unit u in gridmap.ally)
         {
             u.model.gameObject.SetActive(true);
+            u.model.playIdle();
         }
         foreach (Unit u in gridmap.other)
         {
             u.model.gameObject.SetActive(true);
+            u.model.playIdle();
         }
         gridmap.getCursor().gameObject.SetActive(true);
+
+        Destroy(music.gameObject);
 
         gridmap.endBattleAnimation();
     }
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(phase);
         if (timer > 0)
         {
             timer -= Time.deltaTime;
@@ -209,6 +249,7 @@ public class BattleAnimation : MonoBehaviour
             if (currentActor.moveAtDistance(battle.distance)
                 && (currentActor.transform.position - target.transform.position).magnitude > 1)
             {
+                setCamera(currentActor);
                 currentActor.transform.position += speed * Time.deltaTime;
                 currentActor.playMove();
             }
@@ -216,7 +257,7 @@ public class BattleAnimation : MonoBehaviour
             {
                 timer = 1;
                 currentActor.playIdle();
-                //TODO play sound
+                gridmap.playOneTimeSound(AssetDictionary.getAudio("crit-activate"));
                 phase = Phase.ACTIVATE_CRITICAL;
             }
             else
@@ -224,7 +265,6 @@ public class BattleAnimation : MonoBehaviour
                 timer = currentActor.playAttack(battle.distance);
                 if (currentActor.moveAtDistance(battle.distance))
                 {
-                    //TODO play attack
                     phase = Phase.ATTACKANIM;
                 }
                 else
@@ -235,12 +275,12 @@ public class BattleAnimation : MonoBehaviour
         }
         else if (phase == Phase.ACTIVATE_CRITICAL)
         {
+            setCamera(currentActor);
             if (timer <= 0)
             {
                 timer = currentActor.playAttack(battle.distance);
                 if (currentActor.moveAtDistance(battle.distance))
                 {
-                    //TODO play attack
                     phase = Phase.ATTACKANIM;
                 }
                 else
@@ -251,36 +291,64 @@ public class BattleAnimation : MonoBehaviour
         }
         else if (phase == Phase.ATTACKANIM)
         {
+            setCamera(currentActor);
             if (timer <= 0)
             {
                 if (((Battle.Attack)currentEvent).hit)
                 {
                     timer = target.playGotHit();
                     updateHPs();
-                }
-                else
-                {
-                    timer = target.playDodge();
-                }
-            }
-            phase = Phase.HITANIM;
-        }
-        else if (phase == Phase.RANGEANIM)
-        {
-            if (timer <= 0)
-            {
-                //TODO eventually, we'll use projectiles
-                if (timer <= 0)
-                {
-                    if (((Battle.Attack)currentEvent).hit)
+
+                    if (((Battle.Attack)currentEvent).damage <= 0)
                     {
-                        timer = target.playGotHit();
-                        updateHPs();
+                        gridmap.playOneTimeSound(AssetDictionary.getAudio("parry"));
+                    }
+                    else if (((Battle.Attack)currentEvent).crit)
+                    {
+                        gridmap.playOneTimeSound(AssetDictionary.getAudio("crit-hit"));
                     }
                     else
                     {
-                        timer = target.playDodge();
+                        gridmap.playOneTimeSound(AssetDictionary.getAudio("damage"));
                     }
+                }
+                else
+                {
+                    gridmap.playOneTimeSound(AssetDictionary.getAudio("dodge"));
+                    timer = target.playDodge();
+                }
+                phase = Phase.HITANIM;
+            }
+        }
+        else if (phase == Phase.RANGEANIM)
+        {
+            setCamera(currentActor);
+            //TODO eventually, we'll use projectiles
+            if (timer <= 0)
+            {
+                if (((Battle.Attack)currentEvent).hit)
+                {
+                    setCamera(target);
+                    timer = target.playGotHit();
+                    updateHPs();
+
+                    if (((Battle.Attack)currentEvent).damage <= 0)
+                    {
+                        gridmap.playOneTimeSound(AssetDictionary.getAudio("parry"));
+                    }
+                    else if (((Battle.Attack)currentEvent).crit)
+                    {
+                        gridmap.playOneTimeSound(AssetDictionary.getAudio("crit-hit"));
+                    }
+                    else
+                    {
+                        gridmap.playOneTimeSound(AssetDictionary.getAudio("damage"));
+                    }
+                }
+                else
+                {
+                    gridmap.playOneTimeSound(AssetDictionary.getAudio("dodge"));
+                    timer = target.playDodge();
                 }
                 phase = Phase.HITANIM;
             }
@@ -309,6 +377,7 @@ public class BattleAnimation : MonoBehaviour
                     timer = 2;
                     if (currentEvent.atkFinalHP <= 0)
                     {
+                        setCamera(target);
                         if (isPlayerAttack)
                         {
                             poof(playerUnit);
@@ -322,6 +391,7 @@ public class BattleAnimation : MonoBehaviour
                     }
                     else if (currentEvent.dfdFinalHP <= 0)
                     {
+                        setCamera(target);
                         if (isPlayerAttack)
                         {
                             poof(enemyUnit);
@@ -358,16 +428,38 @@ public class BattleAnimation : MonoBehaviour
             {
                 if (playerUnit != null && playerUnit.getUnit().team == Unit.UnitTeam.PLAYER)
                 {
-                    //TODO exp
-
+                    setEXPDisplay(false);
+                    timer = 1;
                     phase = Phase.EXP;
                 }
             }
         }
         else if (phase == Phase.EXP)
         {
-            //TODO
-            phase = Phase.LEVELUP;
+            setCamera(playerUnit);
+            if (timer <= 0)
+            {
+                timer = 1;
+                levelup = playerUnit.getUnit().addExperience(calculateEXP());
+                setEXPDisplay(levelup != null);
+                gridmap.playOneTimeSound(AssetDictionary.getAudio("exp"));
+                phase = Phase.EXPCHANGE;
+            }
+        }
+        else if (phase == Phase.EXPCHANGE)
+        {
+            if (timer <= 0)
+            {
+                if (levelup == null)
+                {
+                    backToGridMap();
+                }
+                else
+                {
+                    //TODO
+                    phase = Phase.LEVELUP;
+                }
+            }
         }
         else if (phase == Phase.LEVELUP)
         {
@@ -479,8 +571,57 @@ public class BattleAnimation : MonoBehaviour
         gridmap.enemy.Remove(unit.getUnit());
         gridmap.ally.Remove(unit.getUnit());
         gridmap.other.Remove(unit.getUnit());
-        //TODO place poof animation
+        gridmap.playOneTimeSound(AssetDictionary.getAudio("poof"));
+        Instantiate(poofEffect, unit.transform.position, Quaternion.identity);
         Destroy(unit.gameObject);
+    }
+
+    private void setEXPDisplay(bool leveledUp)
+    {
+        StaticData.findDeepChild(transform, "EXPMeter").gameObject.SetActive(true);
+        if (leveledUp)
+        {
+            StaticData.findDeepChild(transform, "LevelBack").GetComponent<Image>()
+                .color = Color.green;
+            StaticData.findDeepChild(transform, "Level").GetComponent<TextMeshProUGUI>()
+                .color = Color.black;
+        }
+        StaticData.findDeepChild(transform, "Level").GetComponent<TextMeshProUGUI>()
+            .text = "" + playerUnit.getUnit().level;
+        StaticData.findDeepChild(transform, "EXPBack").GetComponent<Image>()
+            .color = new Color(0, playerUnit.getUnit().experience / 100f, 0);
+        StaticData.findDeepChild(transform, "EXP").GetComponent<TextMeshProUGUI>()
+            .text = "" + playerUnit.getUnit().experience;
+    }
+
+    private int calculateEXP()
+    {
+        if (enemyUnit == null)
+        {
+            return 30;
+        }
+        if (isPlayerAttack)
+        {
+            if (battle.dfdTookDamage())
+            {
+                return 10;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+        else
+        {
+            if (battle.atkTookDamage())
+            {
+                return 10;
+            }
+            else
+            {
+                return 1;
+            }
+        }
     }
 
     private void updateHPs()
@@ -493,9 +634,30 @@ public class BattleAnimation : MonoBehaviour
             .text = "" + enemyUnit.getUnit().currentHP;
     }
 
+    private void setCamera(UnitModel camTarget)
+    {
+        Transform cam = StaticData.findDeepChild(transform, "Camera");
+
+        if (camTarget == playerUnit)
+        {
+            cam.position = new Vector3(camTarget.transform.position.x - 1.3f,
+                camTarget.transform.position.y + 1.5f,
+                camTarget.transform.position.z + 1.5f);
+        }
+        else
+        {
+            cam.position = new Vector3(camTarget.transform.position.x + 1.3f,
+                camTarget.transform.position.y + 1.5f,
+                camTarget.transform.position.z + 1.5f);
+        }
+
+        Vector3 lookAt = new Vector3(camTarget.transform.position.x, camTarget.transform.position.y + 1, camTarget.transform.position.z);
+        cam.rotation = Quaternion.LookRotation(lookAt - cam.position);
+    }
+
     public enum Phase
     {
         BEGIN, ACTIVATE_BATTLE_SKILL, MOVE, ACTIVATE_CRITICAL, ATTACKANIM, RANGEANIM,
-        PROJECTILE, HITANIM, ACTIVATE_AFTER_SKILL, AFTERHP, POOF, END, EXP, LEVELUP, LEVELSTATS
+        PROJECTILE, HITANIM, ACTIVATE_AFTER_SKILL, AFTERHP, POOF, END, EXP, EXPCHANGE, LEVELUP, LEVELSTATS
     }
 }
