@@ -48,8 +48,16 @@ public class Cutscene : SequenceMember
             string[] speakerAndText = dialogue[idx].Split(' ');
             StaticData.findDeepChild(transform, "SpeakerName").GetComponent<TextMeshProUGUI>()
                 .text = speakerAndText[0].Replace('_', ' ');
-            StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().sprite
-                = AssetDictionary.getImage(speakerAndText[1]);
+            if (speakerAndText[1] == "null")
+            {
+                StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().sprite
+                    = null;
+            }
+            else
+            {
+                StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().sprite
+                    = AssetDictionary.getImage(speakerAndText[1].Replace('_', ' '));
+            }
             StaticData.findDeepChild(transform, "Dialogue").GetComponent<TextMeshProUGUI>().text
                 = dialogue[idx].Substring(speakerAndText[0].Length + speakerAndText[1].Length + 2);
         }

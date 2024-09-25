@@ -2233,6 +2233,7 @@ MonoBehaviour:
   oneTimeSound: {fileID: 2747771020700787980, guid: a97a041e56fec9f499abbe14cf729545, type: 3}
   testingMode: 0
   testFutureVision: 0
+  copyrightMode: 0
   seized: 0
   turn: 0
   cursorPrefab: {fileID: 5567251825533974625, guid: 275db0d07084d074c873fde4addb5d97, type: 3}
@@ -2253,6 +2254,7 @@ MonoBehaviour:
   maxCamDistance: 0
   zoomSpeed: 0
   battleAnimation: {fileID: -6570087847307395200, guid: 642c2580f74a32c46aa90f45b39f855f, type: 3}
+  mapEvent: {fileID: 1350778673254934627, guid: f5f55f0583ef11a419c8cda8a3c1c11d, type: 3}
   warpAnimation: {fileID: 2039320880806230488, guid: bdd8c1353e54e8e4dbbc86d300bae43f, type: 3}
 --- !u!1 &1697815353268774003
 GameObject:

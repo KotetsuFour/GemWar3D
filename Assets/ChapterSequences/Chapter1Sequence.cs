@@ -190,23 +190,75 @@ public class Chapter1Sequence : Chapter
     }
     public string[] biggsRecruitment()
     {
+        string biggs = "Biggs Biggs ";
+        string rose = "Rose_Quartz Rose_Quartz ";
         return new string[]
         {
-
+            "$removeConvo",
+//            "$sound recruit-music playMusic",
+            biggs + "Hey you!",
+            rose + "Hm?",
+            biggs + "I heard your speech. Are you really going to stop the colony?",
+            biggs + "All for the earthling organics?",
+            rose + "I'll do what I have to. I can't let them die.",
+            biggs + "You must have a lot of conviction.I want to join you!",
+            rose + "Really?",
+            biggs + "Yeah! I'm only building the colony because I was ordered to.",
+            biggs + "But you actually believe in what you're doing. It's inspiring!",
+            biggs + "So from now on, you have my whip!",
+            rose + "Oh, and if you wouldn't mind, talk to my pal Ocean too. I'm sure she'll join you.",
+            "$sound recruit play",
+            "$join",
+            "_ null Biggs joined your party!"
         };
     }
     public string[] oceanRecruitment()
     {
+        string ocean = "Ocean Ocean ";
         return new string[]
         {
-
+            "$removeConvo",
+//            "$sound recruit-music playMusic",
+            ocean + "What's that? You want me to join you?",
+            ocean + "To turn my back on everything we've built here and betray the Diamonds?",
+            ocean + "All for the sake of one planet ? You're insane.",
+            ocean + "I kinda admire that.",
+            ocean + "Alright, I'll join you! Let's do this!",
+            "$sound recruit play",
+            "$join",
+            "_ null Ocean joined your party!"
         };
     }
     public string[] bismuthTalk()
     {
+        string bismuth = "Bismuth Bismuth ";
+        string rose = "Rose_Quartz Rose_Quartz ";
         return new string[]
         {
-
+            "$removeConvo",
+//            "$sound  convo-music playMusic",
+            bismuth + "Ah! I'm just a builder! Don't hurt me!",
+            rose + "I won't hurt you!",
+            bismuth + "Oh, thanks.",
+            bismuth + "Uh... I hope you don't mind, but I'm supposed to finish building this part of the arena.",
+            rose + "Is that what you want to do? Build ?",
+            bismuth + "...Huh ?",
+            rose + "I mean if you had a choice, what would you want to do?",
+            bismuth + "I...Well... there is this one thing that-- But I can't.",
+            bismuth + "Look, I can't talk to you. You're gonna get me in a lot of trouble.",
+            rose + "Sometimes, trouble is the only way to freedom.Think about it.",
+            bismuth + "Wait! You're at a disadvantage with just that shield.",
+            bismuth + "Here.You and your Pearl take these.",
+            "$sound itemget play",
+            "$give Rose_Quartz",
+            "_ null Rose got an Iron Sword",
+            "$sound itemget play",
+            "$give Pearl",
+            "_ null Pearl got an Iron Sword",
+            rose + "Thank you! These will be really helpful.",
+            rose + "You'd better get out of here. I hope we'll see each other again.",
+            "$leave",
+            bismuth + "Heh, yeah, maybe we will."
         };
     }
     public string[] ending()

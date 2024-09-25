@@ -647,6 +647,10 @@ PrefabInstance:
       propertyPath: testingMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6763109430847855345, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
+      propertyPath: copyrightMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6800707616749649309, guid: dec81351e2c5abd4f845510b824c8913, type: 3}
       propertyPath: m_Name
       value: EnemyATK

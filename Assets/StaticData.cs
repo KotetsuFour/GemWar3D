@@ -18,8 +18,6 @@ public static class StaticData
 
     public static int scene = 1;
 
-    public static Unit unitToInstantiate;
-
     public static List<int>[] convoyIds = new List<int>[10];
     public static List<int>[] convoyDurabilities = new List<int>[10];
 
@@ -27,6 +25,8 @@ public static class StaticData
 
     public static int chapterPrep;
     public static int[] positions;
+
+    public static bool copyrightMusic;
 
     public static Unit findUnit(string name)
     {

@@ -114,6 +114,10 @@ MonoBehaviour:
   - exp
   - warp
   - level
+  - map-music-1-c
+  - battle-music-c
+  - itemget
+  - recruit
   audioValues:
   - {fileID: 8300000, guid: 87f4d4c1f429e1e42b1237cb43a4fc0d, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
@@ -135,6 +139,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a687239aa55aba3458243434c7092eab, type: 3}
   - {fileID: 8300000, guid: 4f075dd1588edf24d87471f8ef11e860, type: 3}
   - {fileID: 8300000, guid: 8cae1602d9f0cd944aa747b39513fb27, type: 3}
+  - {fileID: 8300000, guid: 3ab02bb2777e6a746a59533ebe48d1fb, type: 3}
+  - {fileID: 8300000, guid: 87b0fd941ac98c7489d6f9e5937861c8, type: 3}
+  - {fileID: 8300000, guid: 2ca14f9fb5645a84fa390eda02277e38, type: 3}
+  - {fileID: 8300000, guid: 0a1a5f5017e4df642b794b9fc992c1d7, type: 3}
   wepKeys:
   - Rose Quartz Shield
   - Pearl Spear

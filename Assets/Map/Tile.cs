@@ -211,6 +211,25 @@ public class Tile : MonoBehaviour
     {
         return gemstones;
     }
+    public void updateGemstones()
+    {
+        if (gemstones.Count > 0)
+        {
+            Unit u = gemstones[0].unit;
+            StaticData.findDeepChild(transform, "Gemstone").gameObject.SetActive(true);
+            int paletteIdx = Mathf.Min(1, u.palette.Count - 1);
+            if (paletteIdx > 0)
+            {
+                Color gemColor = u.palette[paletteIdx];
+                StaticData.findDeepChild(transform, "Gemstone").GetComponent<MeshRenderer>()
+                    .material.color = gemColor;
+            }
+        }
+        else
+        {
+            StaticData.findDeepChild(transform, "Gemstone").gameObject.SetActive(false);
+        }
+    }
     public bool hasLoot()
     {
         return ironLoot > 0 || steelLoot > 0 || silverLoot > 0 || itemLoot != null;

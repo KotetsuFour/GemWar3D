@@ -11,6 +11,7 @@ public class GridMap : SequenceMember
 
     [SerializeField] private bool testingMode;
     [SerializeField] private bool testFutureVision;
+    [SerializeField] private bool copyrightMode;
 
     public List<Unit> player;
     public List<Unit> enemy;
@@ -54,6 +55,8 @@ public class GridMap : SequenceMember
 
     [SerializeField] private BattleAnimation battleAnimation;
     private BattleAnimation instantiatedBattleAnimation;
+    [SerializeField] private MapEventExecutor mapEvent;
+    private MapEventExecutor instantiatedMapEvent;
     [SerializeField] private ParticleAnimation warpAnimation;
 
     private Dictionary<Tile, object> traversableTiles;
@@ -92,6 +95,8 @@ public class GridMap : SequenceMember
         Unit[] playerUnits, Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits,
         Objective objective, string chapterName, string[] teamNames, int turnPar, string mapMusic)
     {
+        StaticData.copyrightMusic = copyrightMode;
+
         this.map = map;
         width = map.GetLength(0);
         height = map.GetLength(1);
@@ -111,7 +116,14 @@ public class GridMap : SequenceMember
         interactableUnits = new List<Tile>();
         cursor = Instantiate(cursorPrefab);
 
-        music = getAudioSource(AssetDictionary.getAudio(mapMusic));
+        if (StaticData.copyrightMusic)
+        {
+            music = getAudioSource(AssetDictionary.getAudio(mapMusic + "-c"));
+        }
+        else
+        {
+            music = getAudioSource(AssetDictionary.getAudio(mapMusic));
+        }
         music.loop = true;
         music.Play();
     }
@@ -270,17 +282,7 @@ public class GridMap : SequenceMember
         }
         else if (selectionMode == SelectionMode.IN_CONVO)
         {
-            /*
-            if (!nextSaying())
-            {
-                deconstructConversation();
-                if (talkerTile.getOccupant() != null)
-                {
-                    talkerTile.getOccupant().talkConvo = null;
-                }
-                selectionMode = SelectionMode.ROAM;
-            }
-            */
+            instantiatedMapEvent.Z();
         }
         else if (selectionMode == SelectionMode.SELECT_TRADER)
         {
@@ -521,7 +523,14 @@ public class GridMap : SequenceMember
 
     public override void ENTER()
     {
-        //TODO maybe something?
+        if (selectionMode == SelectionMode.BATTLE)
+        {
+            //TODO skip battle
+        }
+        if (selectionMode == SelectionMode.IN_CONVO)
+        {
+            instantiatedMapEvent.ENTER();
+        }
     }
     public override void ESCAPE()
     {
@@ -769,7 +778,7 @@ public class GridMap : SequenceMember
         if (moveDest.hasLoot() && Random.Range(0, 100) < selectedUnit.luck) //OR selectedUnit is a thief
         {
             string note = takeFrom.takeLoot(taker);
-            makeNotification(note, null);
+            makeNotification(note, null/*TODO add sound effect*/);
             timer = 2;
 
             selectionMode = SelectionMode.NOTIFICATION;
@@ -784,7 +793,7 @@ public class GridMap : SequenceMember
         //TODO
         if (soundEffect != null)
         {
-            //TODO
+            playOneTimeSound(soundEffect);
         }
     }
     public void selectMenuOption(int idx)
@@ -1670,12 +1679,16 @@ public class GridMap : SequenceMember
     {
         enableChild("Forecast", false);
         enableChild("FutureVision", false);
+        Vector3 selectedUnitPos = new Vector3(selectedUnit.model.transform.position.x, 0, selectedUnit.model.transform.position.z);
+        Vector3 targetEnemyPos = new Vector3(targetEnemy.model.transform.position.x, 0, targetEnemy.model.transform.position.z);
+        selectedUnit.model.transform.rotation = Quaternion.LookRotation(targetEnemyPos - selectedUnitPos);
+        targetEnemy.model.transform.rotation = Quaternion.LookRotation(selectedUnitPos - targetEnemyPos);
 
         Battle battle = new Battle(selectedUnit.model, targetEnemy.model,
             getTeam(selectedUnit), getTeam(targetEnemy),
             selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(),
             moveDest, targetTile);
-
+        Battle.RNGSTORE = new List<int>();
         music.Pause();
 
         instantiatedBattleAnimation = Instantiate(battleAnimation);
@@ -1714,9 +1727,24 @@ public class GridMap : SequenceMember
 
     private void performTalk()
     {
-        //TODO
+        Vector3 selectedUnitPos = new Vector3(selectedUnit.model.transform.position.x, 0, selectedUnit.model.transform.position.z);
+        Vector3 interactUnitPos = new Vector3(talkerTile.getOccupant().transform.position.x, 0, talkerTile.getOccupant().transform.position.z);
+        selectedUnit.model.transform.rotation = Quaternion.LookRotation(interactUnitPos - selectedUnitPos);
+        talkerTile.getOccupant().transform.rotation = Quaternion.LookRotation(selectedUnitPos - interactUnitPos);
+
+        instantiatedMapEvent = Instantiate(mapEvent);
+        instantiatedMapEvent.constructor(talkerTile.getOccupant().getUnit().talkConvo, talkerTile.getOccupant().getUnit(),
+            selectedUnit, this);
+        music.Pause();
 
         selectionMode = SelectionMode.IN_CONVO;
+    }
+    public void endMapEvent()
+    {
+        music.UnPause();
+        Destroy(instantiatedMapEvent.gameObject);
+        setCameraPosition();
+        selectionMode = SelectionMode.ROAM;
     }
 
     // Start is called before the first frame update

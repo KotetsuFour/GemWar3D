@@ -75,5 +75,9 @@ public abstract class SequenceMember : MonoBehaviour
         OneTimeSound once = Instantiate(oneTimeSound);
         once.playSound(clip);
     }
+    public void playOneTimeSound(string soundName)
+    {
+        playOneTimeSound(AssetDictionary.getAudio(soundName));
+    }
 
 }

@@ -33,6 +33,9 @@ public class Battle
 	public static int DFDCRIT = 10;
 	public static int DFDCOUNT = 11;
 
+	public static List<int> RNGSTORE;
+	private static int currentRandom0To99;
+
 	/**
 	 * [0] = atkHP
 	 * [1] = atkMt
@@ -127,6 +130,7 @@ public class Battle
 
 		forecast = getForecast(atk, dfd, atkAllies, dfdAllies, atkWep, dfdWep, atkTile, dfdTile);
 		distance = Mathf.Abs(atkTile.x - dfdTile.x) + Mathf.Abs(atkTile.y - dfdTile.y);
+		currentRandom0To99 = 0;
 
 		Unit atkUnit = atk.getUnit();
 		Unit dfdUnit = dfd.getUnit();
@@ -135,7 +139,7 @@ public class Battle
 		int dfdCount = forecast[DFDCOUNT];
 
 		attacks = new LinkedList<BattleEvent>();
-		attacks.AddFirst(new InitialStep(forecast, atkUnit, dfdUnit));
+		attacks.AddFirst(new InitialStep(forecast, atkWep, dfdWep));
 
 		if (forecast[DFDCOUNT] > 0
 			&& FusionSkillExecutioner.activateVantage(dfdUnit)
@@ -144,21 +148,30 @@ public class Battle
 			int initial = Mathf.Max(1, dfdCount / 2);
 			for (int q = 0; q < initial; q++)
             {
-				ActivationStep act = new ActivationStep(attacks.Last.Value);
-				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
-            }
+				if (attacks.Last.Value.dfdFinalWepDurability > 0)
+                {
+					ActivationStep act = new ActivationStep(attacks.Last.Value);
+					attacks.AddLast(act);
+					act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
+				}
+			}
 			for (int q = 0; q < atkCount; q++)
             {
-				ActivationStep act = new ActivationStep(attacks.Last.Value);
-				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+				if (attacks.Last.Value.atkFinalWepDurability > 0)
+				{
+					ActivationStep act = new ActivationStep(attacks.Last.Value);
+					attacks.AddLast(act);
+					act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+				}
 			}
 			for (int q = 0; q < dfdCount / 2; q++)
 			{
-				ActivationStep act = new ActivationStep(attacks.Last.Value);
-				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
+				if (attacks.Last.Value.dfdFinalWepDurability > 0)
+				{
+					ActivationStep act = new ActivationStep(attacks.Last.Value);
+					attacks.AddLast(act);
+					act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
+				}
 			}
 		}
 		else
@@ -166,21 +179,30 @@ public class Battle
 			int initial = Mathf.Max(1, atkCount / 2);
 			for (int q = 0; q < initial; q++)
 			{
-				ActivationStep act = new ActivationStep(attacks.Last.Value);
-				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+				if (attacks.Last.Value.atkFinalWepDurability > 0)
+				{
+					ActivationStep act = new ActivationStep(attacks.Last.Value);
+					attacks.AddLast(act);
+					act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+				}
 			}
 			for (int q = 0; q < dfdCount; q++)
 			{
-				ActivationStep act = new ActivationStep(attacks.Last.Value);
-				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
+				if (attacks.Last.Value.dfdFinalWepDurability > 0)
+				{
+					ActivationStep act = new ActivationStep(attacks.Last.Value);
+					attacks.AddLast(act);
+					act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
+				}
 			}
 			for (int q = 0; q < atkCount / 2; q++)
 			{
-				ActivationStep act = new ActivationStep(attacks.Last.Value);
-				attacks.AddLast(act);
-				act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+				if (attacks.Last.Value.atkFinalWepDurability > 0)
+				{
+					ActivationStep act = new ActivationStep(attacks.Last.Value);
+					attacks.AddLast(act);
+					act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+				}
 			}
 		}
 
@@ -239,13 +261,22 @@ public class Battle
 		}
 		return false;
 	}
-
+	public int atkFinalWepDurability()
+    {
+		return finalState.atkFinalWepDurability;
+    }
+	public int dfdFinalWepDurability()
+	{
+		return finalState.dfdFinalWepDurability;
+	}
 	public class BattleEvent
     {
 		public int atkInitialHP;
 		public int dfdInitialHP;
 		public int atkFinalHP;
 		public int dfdFinalHP;
+		public int atkFinalWepDurability;
+		public int dfdFinalWepDurability;
 		public bool isATKAttacking;
 	}
 
@@ -260,6 +291,8 @@ public class Battle
 			dfdInitialHP = act.dfdFinalHP;
 			atkFinalHP = atkInitialHP;
 			dfdFinalHP = dfdInitialHP;
+			atkFinalWepDurability = act.atkFinalWepDurability;
+			dfdFinalWepDurability = act.dfdFinalWepDurability;
 			isATKAttacking = atkTurn;
 
 			if (atkTurn)
@@ -290,13 +323,14 @@ public class Battle
 				if (trueHit() < hitChance)
                 {
 					hit = true;
-					if (Random.Range(0, 100) < critChance)
+					if (randomNumber0To99() < critChance)
                     {
 						crit = true;
 						damage *= 3;
                     }
 
 					dfdFinalHP -= damage;
+					dfdFinalWepDurability--;
                 }
 			}
 			else
@@ -327,13 +361,14 @@ public class Battle
 				if (trueHit() < hitChance)
 				{
 					hit = true;
-					if (Random.Range(0, 100) < critChance)
+					if (randomNumber0To99() < critChance)
 					{
 						crit = true;
 						damage *= 3;
 					}
 
 					atkFinalHP -= damage;
+					atkFinalWepDurability--;
 				}
 			}
 		}
@@ -351,6 +386,8 @@ public class Battle
 			dfdInitialHP = prev.dfdFinalHP;
 			atkFinalHP = atkInitialHP;
 			dfdFinalHP = dfdInitialHP;
+			atkFinalWepDurability = prev.atkFinalWepDurability;
+			dfdFinalWepDurability = prev.dfdFinalWepDurability;
 			isATKAttacking = prev.isATKAttacking;
         }
 
@@ -442,7 +479,9 @@ public class Battle
 			dfdInitialHP = prev.dfdFinalHP;
 			atkFinalHP = atkInitialHP;
 			dfdFinalHP = dfdInitialHP;
-        }
+			atkFinalWepDurability = prev.atkFinalWepDurability;
+			dfdFinalWepDurability = prev.dfdFinalWepDurability;
+		}
 
 		public void execute(LinkedList<BattleEvent> events, int[] forecast, Unit atk, Unit dfd,
 			bool atkActs, bool dfdActs, bool atkTurn)
@@ -533,12 +572,14 @@ public class Battle
 	}
 	public class InitialStep : BattleEvent
     {
-		public InitialStep(int[] forecast, Unit atk, Unit dfd)
+		public InitialStep(int[] forecast, Weapon atkWep, Weapon dfdWep)
 		{
 			atkInitialHP = forecast[ATKHP];
 			dfdInitialHP = forecast[DFDHP];
 			atkFinalHP = atkInitialHP;
 			dfdFinalHP = dfdInitialHP;
+			atkFinalWepDurability = atkWep == null || atkWep.uses == -1 ? int.MaxValue : atkWep.usesLeft;
+			dfdFinalWepDurability = dfdWep == null || dfdWep.uses == -1 ? int.MaxValue : dfdWep.usesLeft;
 		}
 	}
 
@@ -775,9 +816,22 @@ public class Battle
 		}
 	}
 
+	private static int randomNumber0To99()
+    {
+		if (RNGSTORE == null)
+        {
+			RNGSTORE = new List<int>();
+        }
+		while (RNGSTORE.Count < currentRandom0To99 + 1)
+        {
+			RNGSTORE.Add(Random.Range(0, 100));
+        }
+		int ret = RNGSTORE[currentRandom0To99];
+		currentRandom0To99++;
+		return ret;
+    }
 	private static int trueHit()
 	{
-		return (Random.Range(0, 100) + Random.Range(0, 100)) / 2;
+		return (randomNumber0To99() + randomNumber0To99()) / 2;
 	}
-
 }

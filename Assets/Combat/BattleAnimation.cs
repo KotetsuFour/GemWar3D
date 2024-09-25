@@ -14,7 +14,8 @@ public class BattleAnimation : MonoBehaviour
     private Weapon enemyWep;
     private Tile playerTile;
     private Tile enemyTile;
-    
+    private int enemyEXPYield;
+
     private Vector3 playerReturnPos;
     private Vector3 enemyReturnPos;
     private Quaternion playerReturnRot;
@@ -86,6 +87,7 @@ public class BattleAnimation : MonoBehaviour
         enemyReturnPos = enemyUnit.transform.position;
         playerReturnRot = playerUnit.transform.rotation;
         enemyReturnRot = enemyUnit.transform.rotation;
+        enemyEXPYield = enemyUnit.getUnit().rawEXPReward();
 
         playerUnit.gameObject.SetActive(true);
         enemyUnit.gameObject.SetActive(true);
@@ -179,7 +181,14 @@ public class BattleAnimation : MonoBehaviour
         playerUnit.transform.SetLocalPositionAndRotation(playerStart.position, playerStart.rotation);
         enemyUnit.transform.SetLocalPositionAndRotation(enemyStart.position, enemyStart.rotation);
 
-        music = gridmap.getAudioSource(AssetDictionary.getAudio("battle-music"));
+        if (StaticData.copyrightMusic)
+        {
+            music = gridmap.getAudioSource(AssetDictionary.getAudio("battle-music-c"));
+        }
+        else
+        {
+            music = gridmap.getAudioSource(AssetDictionary.getAudio("battle-music"));
+        }
         music.Play();
 
         getNextEvent();
@@ -426,11 +435,23 @@ public class BattleAnimation : MonoBehaviour
         {
             if (timer <= 0)
             {
+                if (playerWep != null)
+                {
+                    playerWep.usesLeft = isPlayerAttack ? battle.atkFinalWepDurability() : battle.dfdFinalWepDurability();
+                }
+                if (enemyWep != null)
+                {
+                    enemyWep.usesLeft = !isPlayerAttack ? battle.atkFinalWepDurability() : battle.dfdFinalWepDurability();
+                }
                 if (playerUnit != null && playerUnit.getUnit().team == Unit.UnitTeam.PLAYER)
                 {
                     setEXPDisplay(false);
                     timer = 1;
                     phase = Phase.EXP;
+                }
+                else
+                {
+                    backToGridMap();
                 }
             }
         }
@@ -452,7 +473,18 @@ public class BattleAnimation : MonoBehaviour
             {
                 if (levelup == null)
                 {
-                    backToGridMap();
+                    if (playerWep != null && playerWep.uses > 0 && playerWep.usesLeft <= 0)
+                    {
+                        playerUnit.getUnit().breakEquippedWeapon();
+                        playerUnit.equip();
+                        //TODO set weapon break display
+                        timer = 3;
+                        phase = Phase.BROKENWEP;
+                    }
+                    else
+                    {
+                        backToGridMap();
+                    }
                 }
                 else
                 {
@@ -467,6 +499,24 @@ public class BattleAnimation : MonoBehaviour
             phase = Phase.LEVELSTATS;
         }
         else if (phase == Phase.LEVELSTATS)
+        {
+            if (timer <= 0)
+            {
+                if (playerWep != null && playerWep.uses > 0 && playerWep.usesLeft <= 0)
+                {
+                    playerUnit.getUnit().breakEquippedWeapon();
+                    playerUnit.equip();
+                    //TODO set weapon break display
+                    timer = 3;
+                    phase = Phase.BROKENWEP;
+                }
+                else
+                {
+                    backToGridMap();
+                }
+            }
+        }
+        else if (phase == Phase.BROKENWEP)
         {
             if (timer <= 0)
             {
@@ -573,6 +623,16 @@ public class BattleAnimation : MonoBehaviour
         gridmap.other.Remove(unit.getUnit());
         gridmap.playOneTimeSound(AssetDictionary.getAudio("poof"));
         Instantiate(poofEffect, unit.transform.position, Quaternion.identity);
+        if (!unit.getUnit().isEssential
+            && (unit.getUnit().team == Unit.UnitTeam.PLAYER || unit.getUnit().team == Unit.UnitTeam.ENEMY))
+        {
+            unit.getTile().getGemstones().Add(new Gemstone(unit.getUnit()));
+            if (unit.getUnit().heldItem is Gemstone)
+            {
+                unit.getTile().getGemstones().Add((Gemstone)unit.getUnit().heldItem);
+            }
+        }
+        unit.getTile().updateGemstones();
         Destroy(unit.gameObject);
     }
 
@@ -598,7 +658,7 @@ public class BattleAnimation : MonoBehaviour
     {
         if (enemyUnit == null)
         {
-            return 30;
+            return enemyEXPYield;
         }
         if (isPlayerAttack)
         {
@@ -658,6 +718,7 @@ public class BattleAnimation : MonoBehaviour
     public enum Phase
     {
         BEGIN, ACTIVATE_BATTLE_SKILL, MOVE, ACTIVATE_CRITICAL, ATTACKANIM, RANGEANIM,
-        PROJECTILE, HITANIM, ACTIVATE_AFTER_SKILL, AFTERHP, POOF, END, EXP, EXPCHANGE, LEVELUP, LEVELSTATS
+        PROJECTILE, HITANIM, ACTIVATE_AFTER_SKILL, AFTERHP, POOF, END, EXP, EXPCHANGE,
+        LEVELUP, LEVELSTATS, BROKENWEP
     }
 }
