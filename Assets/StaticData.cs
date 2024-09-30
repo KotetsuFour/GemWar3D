@@ -184,36 +184,26 @@ public static class StaticData
 
     public static Unit[] findLivingSupportPartners(Unit seeker)
     {
-        int id1 = seeker.supportId1;
-        int id2 = seeker.supportId2;
-        Unit partner1 = null;
-        Unit partner2 = null;
-
-        for (int q = 0; q < members.Count; q++)
+        int[] supportIdx = { seeker.supportId1, seeker.supportId2 };
+        Unit[] ret = new Unit[supportIdx.Length];
+        for (int q = 0; q < supportIdx.Length; q++)
         {
-            Unit check = members[q];
-            if (!check.isAlive())
+            if (supportIdx[q] == -1)
             {
                 continue;
             }
-            if (check.supportId1 == id1 || check.supportId2 == id1)
+            for (int w = 0; w < members.Count; w++)
             {
-                partner1 = check;
-                if (partner2 != null)
+                int[] compare = { members[w].supportId1, members[w].supportId2 };
+                if (members[w] != seeker && compare[q] == supportIdx[q])
                 {
-                    break;
-                }
-            }
-            if (check.supportId1 == id2 || check.supportId2 == id2)
-            {
-                partner2 = check;
-                if (partner1 != null)
-                {
+                    ret[q] = members[w];
                     break;
                 }
             }
         }
-        return new Unit[] { partner1, partner2 };
+
+        return ret;
     }
     public static Transform findDeepChild(Transform parent, string childName)
     {

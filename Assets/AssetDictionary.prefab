@@ -62,6 +62,25 @@ MonoBehaviour:
   - Topaz
   - Noble
   - Elite
+  - ANIMA
+  - DARK
+  - EARTH
+  - FIRE
+  - HEAVEN
+  - ICE
+  - LIGHT
+  - LIGHTNING
+  - WATER
+  - WIND
+  - Armor
+  - Axe
+  - Bow
+  - Club
+  - Fist
+  - Lance
+  - Special
+  - Sword
+  - Whip
   imageValues:
   - {fileID: 21300000, guid: 5d21a8ff6d9c67d4da065d3015918b21, type: 3}
   - {fileID: 21300000, guid: 2bf5e4a84745aa94ab2d85f712347b41, type: 3}
@@ -80,6 +99,25 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3e829ca05f4df434695da370a077aac2, type: 3}
   - {fileID: 21300000, guid: 7fba06c6a17c63748a376c363ae37a09, type: 3}
   - {fileID: 21300000, guid: fb1a7d95f0bc8a6448e72ad75a29f45b, type: 3}
+  - {fileID: 21300000, guid: 8e6ebfd1dbb4e7749ba78303ffeeba02, type: 3}
+  - {fileID: 21300000, guid: 8d4cc71629dd0744282e3b2da17664e3, type: 3}
+  - {fileID: 21300000, guid: 5622f637dfa2d6044b1ac4e1d56a144e, type: 3}
+  - {fileID: 21300000, guid: 7f4daedd23cdda4499e37bc7fd621c8c, type: 3}
+  - {fileID: 21300000, guid: ad07b7b09af963a449e87919375d34ae, type: 3}
+  - {fileID: 21300000, guid: 8c0cd28f3a3e24347bf30f156907db67, type: 3}
+  - {fileID: 21300000, guid: d621dc0052444a54e9e61bc16eca7d38, type: 3}
+  - {fileID: 21300000, guid: 7d81698ff62a6d341a191ec0949fbd6b, type: 3}
+  - {fileID: 21300000, guid: 08e6631b55839e746a6db5dff1025d1a, type: 3}
+  - {fileID: 21300000, guid: 9d9223e3dd045d941b6dec477ce9a5c7, type: 3}
+  - {fileID: 21300000, guid: 9a0fe34313d1b1e43a15f9ea121abcc8, type: 3}
+  - {fileID: 21300000, guid: 5039b085cf2853648a94f23db775f0b5, type: 3}
+  - {fileID: 21300000, guid: 26137222aefdb8648ac98a047faac180, type: 3}
+  - {fileID: 21300000, guid: 0dadcd372e86fbf49bb89c5f6137a3c6, type: 3}
+  - {fileID: 21300000, guid: 012dd35b5a9b4414380aed9e72e29385, type: 3}
+  - {fileID: 21300000, guid: 3dbd6da128d323f41b4b669a8b8f3114, type: 3}
+  - {fileID: 21300000, guid: a852c09bf97613a4090008639278bb6d, type: 3}
+  - {fileID: 21300000, guid: 95fdb65d04829a64a8510820280f1e48, type: 3}
+  - {fileID: 21300000, guid: 610564cf02df823408b427adae3b06fd, type: 3}
   modelValues:
   - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
   - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}

@@ -305,8 +305,8 @@ public class Tile : MonoBehaviour
     }
     private void setUtilityPositions(float stageHeight)
     {
-        getStage().Translate(0, stageHeight - getStage().position.y, 0);
-        getHighlight().Translate(0, getStage().position.y + 0.05f - getHighlight().position.y, 0);
+        getStage().position = new Vector3(getStage().position.x, stageHeight, getStage().position.z);
+        getHighlight().position = getStage().position + new Vector3(0, 0.05f, 0);
         cursorPosition = getHighlight().position + new Vector3(0, 0.01f, 0);
     }
     public void highlightMove()

@@ -135,9 +135,8 @@ public class BattleAnimation : MonoBehaviour
         {
             StaticData.findDeepChild(transform, "PlayerWeapon").GetComponent<TextMeshProUGUI>()
                 .text = playerWep.itemName;
-            //TODO setimage
             StaticData.findDeepChild(transform, "PlayerWeaponImage").GetComponent<Image>()
-                .sprite = null;
+                .sprite = AssetDictionary.getImage(Weapon.weaponTypeName(playerWep.weaponType));
         }
         else
         {
@@ -156,9 +155,8 @@ public class BattleAnimation : MonoBehaviour
         {
             StaticData.findDeepChild(transform, "EnemyWeapon").GetComponent<TextMeshProUGUI>()
                 .text = enemyWep.itemName;
-            //TODO set image
             StaticData.findDeepChild(transform, "EnemyWeaponImage").GetComponent<Image>()
-                .sprite = null;
+                .sprite = AssetDictionary.getImage(Weapon.weaponTypeName(enemyWep.weaponType));
         }
         else
         {

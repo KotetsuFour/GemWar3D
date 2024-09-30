@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5036156133220041093}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: WarpPad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 1240436002351948789}
   - component: {fileID: 3101735925399215302}
   - component: {fileID: 5853453434636946266}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Crystals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 218394411829826016}
   - component: {fileID: 4387244626707552013}
   - component: {fileID: 8159011430404926844}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
