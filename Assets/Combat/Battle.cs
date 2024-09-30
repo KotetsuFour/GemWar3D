@@ -218,10 +218,12 @@ public class Battle
             }
 			current = current.Next;
         }
+		/*
 		foreach (BattleEvent part in attacks)
         {
 			Debug.Log($"ATK: {part.atkFinalHP}, DFD: {part.dfdFinalHP}");
         }
+		*/
 	}
 	public int getATKInitialHP()
     {

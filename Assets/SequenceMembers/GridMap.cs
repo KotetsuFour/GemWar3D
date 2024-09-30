@@ -18,6 +18,7 @@ public class GridMap : SequenceMember
     public List<Unit> ally;
     public List<Unit> other;
     private string[] teamNames;
+    private int teamPhase;
 
     private Objective objective;
     public bool seized;
@@ -70,31 +71,18 @@ public class GridMap : SequenceMember
     private Unit targetEnemy;
     private Unit statsUnit;
 
-//    private List<AttackComponent> attackParts;
-    private int attackMode; //0 = attack, 1 = return
-    private int attackPartIdx;
-    private bool keepBattling;
-
-    private int enemyIdx;
-    private Unit currentEnemy;
-    private object[] enemyAction;
-    private Tile enemyStartTile;
-    private Tile enemyDestTile;
-    private float moveTime;
-
-    private int allyIdx;
-    private Unit currentAlly;
-    private object[] allyAction;
-    private Tile allyStartTile;
-    private Tile allyDestTile;
+    private int npcIdx;
+    private object[] npcAction;
 
     private Tile talkerTile;
 
     private AudioSource music;
+    private string[] teamMusic;
 
     public void constructor(Tile[,] map,
         Unit[] playerUnits, Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits,
-        Objective objective, string chapterName, string[] teamNames, int turnPar, string mapMusic)
+        Objective objective, string chapterName, string[] teamNames, int turnPar,
+        string[] teamMusic)
     {
         StaticData.copyrightMusic = copyrightMode;
 
@@ -120,16 +108,10 @@ public class GridMap : SequenceMember
         interactableUnits = new List<Tile>();
         cursor = Instantiate(cursorPrefab);
 
-        if (StaticData.copyrightMusic)
-        {
-            music = getAudioSource(AssetDictionary.getAudio(mapMusic + "-c"));
-        }
-        else
-        {
-            music = getAudioSource(AssetDictionary.getAudio(mapMusic));
-        }
-        music.loop = true;
-        music.Play();
+        this.teamMusic = teamMusic;
+
+        teamPhase = -1;
+        nextTeamPhase();
     }
     public void initializeCursorPosition()
     {
@@ -1292,7 +1274,8 @@ public class GridMap : SequenceMember
         }
         else if (choice == MenuChoice.END)
         {
-            //TODO enemy phase
+            enableChild("Menu", false);
+            nextTeamPhase();
         }
 
     }
@@ -1997,7 +1980,22 @@ public class GridMap : SequenceMember
         instantiatedBattleAnimation = Instantiate(battleAnimation);
         instantiatedBattleAnimation.constructor(battle, this);
 
-        selectionMode = SelectionMode.BATTLE;
+        if (selectedUnit.team == Unit.UnitTeam.PLAYER)
+        {
+            selectionMode = SelectionMode.BATTLE;
+        }
+        else if (selectedUnit.team == Unit.UnitTeam.ENEMY)
+        {
+            selectionMode = SelectionMode.ENEMYPHASE_ATTACK;
+        }
+        else if (selectedUnit.team == Unit.UnitTeam.ALLY)
+        {
+            selectionMode = SelectionMode.ALLYPHASE_ATTACK;
+        }
+        else if (selectedUnit.team == Unit.UnitTeam.OTHER)
+        {
+            selectionMode = SelectionMode.OTHERPHASE_ATTACK;
+        }
     }
     public void endBattleAnimation()
     {
@@ -2005,7 +2003,25 @@ public class GridMap : SequenceMember
         Destroy(instantiatedBattleAnimation.gameObject);
         enableChild("HUD", true);
 
-        selectionMode = SelectionMode.ROAM;
+        if (selectionMode == SelectionMode.BATTLE)
+        {
+            selectionMode = SelectionMode.ROAM;
+        }
+        else if (selectionMode == SelectionMode.ENEMYPHASE_ATTACK)
+        {
+            npcIdx++;
+            selectionMode = SelectionMode.ENEMYPHASE_SELECT_UNIT;
+        }
+        else if (selectionMode == SelectionMode.ALLYPHASE_ATTACK)
+        {
+            npcIdx++;
+            selectionMode = SelectionMode.ALLYPHASE_SELECT_UNIT;
+        }
+        else if (selectionMode == SelectionMode.OTHERPHASE_ATTACK)
+        {
+            npcIdx++;
+            selectionMode = SelectionMode.OTHERPHASE_SELECT_UNIT;
+        }
     }
     private List<Unit> getTeam(Unit u)
     {
@@ -2051,6 +2067,305 @@ public class GridMap : SequenceMember
         selectionMode = SelectionMode.ROAM;
     }
 
+    private void nextTeamPhase()
+    {
+        if (music != null)
+        {
+            Destroy(music.gameObject);
+        }
+        List<Unit>[] teams = { player, enemy, ally, other };
+        do
+        {
+            teamPhase = (teamPhase + 1) % teams.Length;
+        } while (teams[teamPhase].Count == 0);
+        npcIdx = 0;
+
+        //TODO show phase notification
+        timer = 2;
+
+        selectionMode = SelectionMode.PHASE;
+    }
+
+    //Returns all target tiles (destinations for ATTACK, attackables for GUARD, enemy tiles for PURSUE, houses for BURN)
+    public List<Tile> testAISuccess(Unit.AIType ai)
+    {
+        List<Tile> ret = new List<Tile>();
+        Tile startTile = selectedTile;
+        if (ai == Unit.AIType.ATTACK)
+        {
+            Dictionary<Tile, object> traversable = getTraversableTiles(selectedUnit, startTile.x, startTile.y);
+            Dictionary<Tile, object>.KeyCollection dests = traversable.Keys;
+            foreach (Tile dest in dests)
+            {
+                if (dest.isVacant() || dest.getOccupant().getUnit() == selectedUnit)
+                {
+                    Dictionary<Tile, object> att = getAttackableBattlegroundTilesFromDestination(selectedUnit, dest);
+                    List<Tile> realAtt = getAttackableTilesWithEnemies(att, selectedUnit);
+                    if (realAtt.Count != 0)
+                    {
+                        ret.Add(dest);
+                    }
+                }
+            }
+        }
+        else if (ai == Unit.AIType.BURN)
+        {
+            //TODO if there is a path to a house, add that house's tile
+        }
+        else if (ai == Unit.AIType.GUARD)
+        {
+            Dictionary<Tile, object> attackable = getAttackableBattlegroundTilesFromDestination(selectedUnit, startTile);
+            List<Tile> enemyTiles = getAttackableTilesWithEnemies(attackable, selectedUnit);
+            foreach (Tile t in enemyTiles)
+            {
+                ret.Add(t);
+            }
+        }
+        else if (ai == Unit.AIType.PURSUE)
+        {
+            //TODO if there is a path to an enemy, add that enemy's tile
+        }
+
+        return ret;
+    }
+
+    /**
+     * Fills report with
+     * [0] = AI type
+     * [1] = start tile
+     * [2] = dest tile
+     * [3] = target tile
+     */
+    private void actOnUnitAI(Unit.AIType ai,
+            List<Tile> target, object[] report, List<Unit> uAllies)
+    {
+        report[0] = ai;
+        Tile startTile = selectedTile;
+
+        if (ai == Unit.AIType.ATTACK)
+        {
+            //TODO
+            int heur = int.MinValue;
+            Tile bestDest = null;
+            Tile best = null;
+            for (int q = 0; q < target.Count; q++)
+            {
+                Tile dest = target[q];
+                Dictionary<Tile, object> att = getAttackableBattlegroundTilesFromDestination(selectedUnit, dest);
+                List<Tile> enemTiles = getAttackableTilesWithEnemies(att, selectedUnit);
+                for (int r = 0; r < enemTiles.Count; r++)
+                {
+                    Tile dfdTile = enemTiles[r];
+                    int specialHeur = int.MinValue;
+                    int heldHeur = int.MinValue;
+                    Unit enem = dfdTile.getOccupant().getUnit();
+                    int dist = Mathf.Abs(dfdTile.x - dest.x) + Mathf.Abs(dfdTile.y - dest.y);
+                    if (selectedUnit.personalItem is Weapon)
+                    {
+                        Weapon w = (Weapon)selectedUnit.personalItem;
+                        if (w.minRange <= dist && w.maxRange >= dist)
+                        {
+                            specialHeur = 0;
+                            List<Unit> enemAllies = player.Contains(enem) ? player : ally.Contains(enem) ? ally
+                                : enemy.Contains(enem) ? enemy : other.Contains(enem) ? other : null;
+                            int[] forecast = Battle.getForecast(selectedUnit.model, enem.model, uAllies,
+                                enemAllies, w, enem.getEquippedWeapon(), dest, dfdTile);
+                            if ((forecast[Battle.ATKMT] - forecast[Battle.DFDDEF]) * forecast[Battle.ATKCOUNT] >= forecast[Battle.DFDHP])
+                            {
+                                specialHeur += 50;
+                            }
+                            else
+                            {
+                                int bonus = Mathf.RoundToInt((forecast[Battle.ATKMT] - forecast[Battle.DFDDEF]) * forecast[Battle.ATKHIT] / 100.0f);
+                                specialHeur += Mathf.Min(40, bonus);
+                            }
+                            specialHeur += Mathf.Max(0, 20 - forecast[Battle.DFDHP]);
+                            if (forecast[Battle.DFDCOUNT] == 0)
+                            {
+                                specialHeur += 10;
+                            }
+                            else
+                            {
+                                int penalty = Mathf.RoundToInt((forecast[Battle.DFDMT] - forecast[Battle.ATKDEF]) * forecast[Battle.DFDHIT] / 100.0f);
+                                specialHeur -= Mathf.Min(40, penalty);
+                            }
+                            specialHeur -= Mathf.Max(0, 20 - (forecast[Battle.ATKHP] - (forecast[Battle.DFDMT] - forecast[Battle.ATKDEF])));
+                        }
+                    }
+                    if (selectedUnit.heldWeapon != null)
+                    {
+                        Weapon w = selectedUnit.heldWeapon;
+                        if (w.maxRange >= dist && dist <= w.minRange)
+                        {
+                            heldHeur = 0;
+                            List<Unit> enemAllies = player.Contains(enem) ? player : ally.Contains(enem) ? ally
+                                : enemy.Contains(enem) ? enemy : other.Contains(enem) ? other : null;
+                            int[] forecast = Battle.getForecast(selectedUnit.model, enem.model, uAllies, enemAllies,
+                                w, enem.getEquippedWeapon(), dest, dfdTile);
+                            if (forecast[1] * forecast[5] >= forecast[6])
+                            {
+                                heldHeur += 50;
+                            }
+                            else
+                            {
+                                int bonus = Mathf.RoundToInt((float)(forecast[1] * forecast[2] / 100.0));
+                                heldHeur += Mathf.Min(40, bonus);
+                            }
+                            heldHeur += Mathf.Max(0, 20 - forecast[6]);
+                            if (forecast[10] == 0)
+                            {
+                                heldHeur += 10;
+                            }
+                            else
+                            {
+                                int penalty = Mathf.RoundToInt((float)(forecast[7] * forecast[8] / 100.0));
+                                heldHeur -= Mathf.Min(40, penalty);
+                            }
+                            heldHeur -= Mathf.Max(0, 20 - (forecast[0] - forecast[7]));
+                        }
+                    }
+                    if (specialHeur > heur)
+                    {
+                        heur = specialHeur;
+                        best = dfdTile;
+                        selectedUnit.equipSpecial();
+                        selectedUnit.model.equip();
+                        bestDest = dest;
+                    }
+                    if (heldHeur > heur)
+                    {
+                        heur = heldHeur;
+                        best = dfdTile;
+                        selectedUnit.equipHeld();
+                        selectedUnit.model.equip();
+                        bestDest = dest;
+                    }
+                }
+            }
+
+            report[1] = startTile;
+            report[2] = bestDest;
+            report[3] = best;
+            if (bestDest == null)
+            {
+                Debug.Log($"ATTACK's bestDest for {selectedUnit.unitName} ({npcIdx}) is null.");
+            }
+        }
+        else if (ai == Unit.AIType.BURN)
+        {
+            //TODO move closer to the house or burn it if possible
+        }
+        else if (ai == Unit.AIType.GUARD)
+        {
+            int heur = int.MinValue;
+            int best = 0;
+            for (int q = 0; q < target.Count; q++)
+            {
+                Unit enem = target[q].getOccupant().getUnit();
+                Weapon specialWep = null;
+                Weapon heldWep = null;
+                int specialHeur = 0;
+                int heldHeur = 0;
+                if (selectedUnit.personalItem is Weapon)
+                {
+                    specialWep = (Weapon)selectedUnit.personalItem;
+                }
+                if (selectedUnit.heldWeapon != null)
+                {
+                    heldWep = (Weapon)selectedUnit.heldWeapon;
+                }
+                List<Unit> enemAllies = player.Contains(enem) ? player : ally.Contains(enem) ? ally
+                    : enemy.Contains(enem) ? enemy : other.Contains(enem) ? other : null;
+                int[] w1Forecast = Battle.getForecast(selectedUnit.model, enem.model, uAllies, enemAllies,
+                    specialWep, enem.getEquippedWeapon(), startTile, target[q]);
+                int[] w2Forecast = Battle.getForecast(selectedUnit.model, enem.model, uAllies, enemAllies,
+                    heldWep, enem.getEquippedWeapon(), startTile, target[q]);
+                if ((w1Forecast[Battle.ATKMT] - w1Forecast[Battle.DFDDEF]) * w1Forecast[Battle.ATKCOUNT] >= w1Forecast[Battle.DFDHP])
+                {
+                    specialHeur += 50;
+                }
+                else
+                {
+                    int bonus = Mathf.RoundToInt((w1Forecast[Battle.ATKMT] - w1Forecast[Battle.DFDDEF]) * w1Forecast[Battle.ATKHIT] / 100.0f);
+                    specialHeur += Mathf.Min(40, bonus);
+                }
+                if ((w2Forecast[Battle.ATKMT] - w2Forecast[Battle.DFDDEF]) * w2Forecast[Battle.ATKCOUNT] >= w2Forecast[Battle.DFDHP])
+                {
+                    heldHeur += 50;
+                }
+                else
+                {
+                    int bonus = Mathf.RoundToInt((w2Forecast[Battle.ATKMT] - w2Forecast[Battle.ATKDEF]) * w2Forecast[Battle.ATKHIT] / 100.0f);
+                    heldHeur += Mathf.Min(40, bonus);
+                }
+                specialHeur += Mathf.Max(0, 20 - w1Forecast[Battle.DFDHP]);
+                heldHeur += Mathf.Max(0, 20 - w2Forecast[Battle.DFDHP]);
+                if (w1Forecast[10] == 0)
+                {
+                    specialHeur += 10;
+                }
+                else
+                {
+                    int penalty = Mathf.RoundToInt((w1Forecast[Battle.DFDMT] - w1Forecast[Battle.ATKDEF]) * w1Forecast[Battle.ATKHIT] / 100.0f);
+                    specialHeur -= Mathf.Min(40, penalty);
+                }
+                if (w2Forecast[Battle.DFDCOUNT] == 0)
+                {
+                    heldHeur += 10;
+                }
+                else
+                {
+                    int penalty = (int)Mathf.RoundToInt((w2Forecast[Battle.DFDMT] - w2Forecast[Battle.ATKDEF]) * w2Forecast[Battle.ATKHIT] / 100.0f);
+                    heldHeur -= Mathf.Min(40, penalty);
+                }
+                specialHeur -= Mathf.Max(0, 20 - (w1Forecast[Battle.ATKHP] - (w1Forecast[Battle.DFDMT] - w1Forecast[Battle.ATKDEF])));
+                heldHeur -= Mathf.Max(0, 20 - (w2Forecast[Battle.ATKHP] - (w2Forecast[Battle.DFDMT] - w2Forecast[Battle.ATKDEF])));
+
+                if (specialHeur > heur)
+                {
+                    heur = specialHeur;
+                    best = q;
+                    if (specialWep != null)
+                    {
+                        selectedUnit.equipSpecial();
+                        selectedUnit.model.equip();
+                    }
+                    else
+                    {
+                        selectedUnit.equipNone();
+                        selectedUnit.model.equip();
+                    }
+                }
+                if (heldHeur > heur)
+                {
+                    heur = heldHeur;
+                    best = q;
+                    if (heldWep != null)
+                    {
+                        selectedUnit.equipHeld();
+                    }
+                    else
+                    {
+                        selectedUnit.equipNone();
+                    }
+                }
+            }
+            Tile enemyTile = target[best];
+            report[1] = startTile;
+            report[2] = startTile;
+            report[3] = enemyTile;
+            if (startTile == null)
+            {
+                Debug.Log($"startTile for {selectedUnit.unitName} ({npcIdx}) is null");
+            }
+
+        }
+        else if (ai == Unit.AIType.PURSUE)
+        {
+            //TODO move closer to the enemy or attack if possible
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -2060,9 +2375,122 @@ public class GridMap : SequenceMember
     // Update is called once per frame
     void Update()
     {
+        if (timer > 0)
+        {
+            timer -= Time.deltaTime;
+        }
         if (selectionMode == SelectionMode.TRAVEL && selectedUnit.model.reachedDestination())
         {
             initiateMenu();
+        }
+        else if (selectionMode == SelectionMode.ENEMYPHASE_COMBAT_PAUSE || selectionMode == SelectionMode.ALLYPHASE_COMBAT_PAUSE
+            || selectionMode == SelectionMode.OTHERPHASE_COMBAT_PAUSE)
+        {
+            if (timer <= 0)
+            {
+                targetTile = (Tile)npcAction[3];
+                targetEnemy = targetTile.getOccupant().getUnit();
+                startBattle();
+            }
+        }
+        else if (selectionMode == SelectionMode.ENEMYPHASE_MOVE && selectedUnit.model.reachedDestination())
+        {
+            finalizeMove();
+            setCursor(moveDest);
+            setCameraPosition();
+            if ((Unit.AIType)npcAction[0] == Unit.AIType.GUARD || (Unit.AIType)npcAction[0] == Unit.AIType.ATTACK
+                || ((Unit.AIType)npcAction[0] == Unit.AIType.PURSUE && (Tile)npcAction[3] != null))
+            {
+                timer = 1;
+
+                selectionMode = SelectionMode.ENEMYPHASE_COMBAT_PAUSE;
+            }
+            else if ((Unit.AIType)npcAction[0] == Unit.AIType.BURN)
+            {
+                //TODO
+            }
+            else
+            {
+                npcIdx++;
+
+                selectionMode = SelectionMode.ENEMYPHASE_SELECT_UNIT;
+            }
+        }
+        else if (selectionMode == SelectionMode.ALLYPHASE_MOVE && selectedUnit.model.reachedDestination())
+        {
+            finalizeMove();
+            setCursor(moveDest);
+            setCameraPosition();
+            //TODO
+        }
+        else if (selectionMode == SelectionMode.OTHERPHASE_MOVE && selectedUnit.model.reachedDestination())
+        {
+            finalizeMove();
+            setCursor(moveDest);
+            setCameraPosition();
+            //TODO
+        }
+        else if (selectionMode == SelectionMode.PHASE)
+        {
+            if (timer <= 0)
+            {
+                //TODO remove phase notification
+                SelectionMode[] selection = { SelectionMode.ROAM, SelectionMode.ENEMYPHASE_SELECT_UNIT,
+                    SelectionMode.ALLYPHASE_SELECT_UNIT, SelectionMode.OTHERPHASE_SELECT_UNIT };
+                selectionMode = selection[teamPhase];
+                if (teamPhase == 0)
+                {
+                    setCursor(player[0].model.getTile());
+                    setCameraPosition();
+                }
+
+                string mapMusic = teamMusic[teamPhase % teamMusic.Length];
+                if (StaticData.copyrightMusic)
+                {
+                    music = getAudioSource(AssetDictionary.getAudio(mapMusic + "-c"));
+                }
+                else
+                {
+                    music = getAudioSource(AssetDictionary.getAudio(mapMusic));
+                }
+                music.loop = true;
+                music.Play();
+
+            }
+        }
+        else if (selectionMode == SelectionMode.ENEMYPHASE_SELECT_UNIT)
+        {
+            if (npcIdx >= enemy.Count)
+            {
+                nextTeamPhase();
+                return;
+            }
+            selectedUnit = enemy[npcIdx];
+            selectedTile = selectedUnit.model.getTile();
+            setCameraPosition();
+            npcAction = new object[4];
+            List<Tile> targets = testAISuccess(selectedUnit.ai1);
+            if (targets.Count > 0)
+            {
+                actOnUnitAI(selectedUnit.ai1, targets, npcAction, enemy);
+            }
+            else
+            {
+                targets = testAISuccess(selectedUnit.ai2);
+                if (targets.Count > 0)
+                {
+                    actOnUnitAI(selectedUnit.ai2, targets, npcAction, enemy);
+                }
+                else
+                {
+                    npcIdx++;
+                    return;
+                }
+            }
+            moveDest = (Tile)npcAction[2];
+            selectedUnit.model.setPath(getPath());
+
+            selectionMode = SelectionMode.ENEMYPHASE_MOVE;
         }
     }
 
@@ -2073,7 +2501,8 @@ public class GridMap : SequenceMember
         SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, NOTIFICATION, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER, USE_ITEM,
         ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
         ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
-        STANDBY, GAMEOVER, ESCAPE_MENU
+        OTHERPHASE_SELECT_UNIT, OTHERPHASE_MOVE, OTHERPHASE_ATTACK, OTHERPHASE_BURN, OTHERPHASE_COMBAT_PAUSE,
+        STANDBY, GAMEOVER, ESCAPE_MENU, PHASE
     }
 
     public enum MenuChoice

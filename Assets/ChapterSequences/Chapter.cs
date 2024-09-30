@@ -80,7 +80,6 @@ public class Chapter : MonoBehaviour
         {
             for (int x = 0; x < tileMap[y].Length; x++)
             {
-                Debug.Log($"Tile {x},{y}");
                 Tile toPut = Instantiate(tile, new Vector3(x, 0, y), Quaternion.identity);
                 if (lootMap[y][x] == 'e')
                 {
