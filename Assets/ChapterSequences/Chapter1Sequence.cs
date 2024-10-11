@@ -25,6 +25,30 @@ public class Chapter1Sequence : Chapter
 
     private List<Unit> playerList;
 
+    [SerializeField] private Color roseQuartzHair;
+    [SerializeField] private Color roseQuartzSkin;
+    [SerializeField] private Color roseQuartzEyes;
+
+    [SerializeField] private Color pearlHair;
+    [SerializeField] private Color pearlSkin;
+    [SerializeField] private Color pearlEyes;
+
+    [SerializeField] private Color bismuthHair;
+    [SerializeField] private Color bismuthSkin;
+    [SerializeField] private Color bismuthEyes;
+
+    [SerializeField] private Color biggsHair;
+    [SerializeField] private Color biggsSkin;
+    [SerializeField] private Color biggsEyes;
+
+    [SerializeField] private Color oceanHair;
+    [SerializeField] private Color oceanSkin;
+    [SerializeField] private Color oceanEyes;
+
+    [SerializeField] private Color quartzHair;
+    [SerializeField] private Color quartzSkin;
+    [SerializeField] private Color quartzEyes;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -125,7 +149,6 @@ public class Chapter1Sequence : Chapter
             sequenceNum++;
             if (sequenceNum == 1)
             {
-/*
                 seqMem.gameObject.SetActive(false);
                 firstScene.gameObject.SetActive(true);
                 firstScene.constructor(opening());
@@ -141,7 +164,6 @@ public class Chapter1Sequence : Chapter
             }
             else if (sequenceNum == 3)
             {
-*/
                 seqMem.gameObject.SetActive(false);
                 seqMem = makeChapter();
             }
@@ -176,16 +198,52 @@ public class Chapter1Sequence : Chapter
 
     public string[] opening()
     {
+        string noOne = "_ null ";
         return new string[]
         {
-
+            "$solidColor 0 0 0",
+            noOne + "For hundreds of millions of years, the Great Diamond Authority spread their perfection throughout the cosmos.",
+            noOne + "They bent planets to their will and expanded their empire, creating life from nothing.",
+            noOne + "White, Yellow, and Blue Diamond all possessed many worlds.",
+            noOne + "But the littlest Diamond, Pink Diamond, had only the Earth.",
+            noOne + "Pink Diamond fell in love with the life that existed on the planet",
+            noOne + "And she realized that she could not go through with creating her colony.",
+            noOne + "But the other Diamonds wouldn't listen.",
+            noOne + "They told her she was being ridiculous.",
+            noOne + "So Pink Diamond donned her false persona of Rose Quartz.",
+            noOne + "Together with her Pearl, she rebelled against the Diamonds as someone they couldn't ignore.",
+            noOne + "She spoke out at the Prime Kindergarten and made her case known",
+            noOne + "And now, at the Sky Arena, Rose Quartz aims to recruit allies to her cause."
         };
     }
     public string[] intro()
     {
+        string rose = "Rose_Quartz Rose_Quartz ";
+        string pearl = "Pearl Pearl ";
+        string quartz = "Quartz Quartz ";
         return new string[]
         {
-
+            "$solidColor 0 0 0",
+            rose + "Here we are. The Sky Arena",
+            rose + "If the Quartzes at the Prime Kindergarten wouldn't join us, maybe some here will.",
+            pearl + "I hope so, my Quartz. Soldiers are very important for fighting a war.",
+            rose + "Pearl, you don't have to call me \"my Quartz\". Just call me Rose.",
+            pearl + "Understood, my Rose.",
+            rose + "*sigh* I saw that coming.",
+            rose + "Just remember the plan.Let me give my speech, and if things go south...",
+            pearl + "Yes, then I get to use my new spear that you graciously gave me at the Shell!",
+            rose + "*chuckle* You mean the spear you begged me to give you.",
+            rose + "Alright, it's time. Wish me luck!",
+            pearl + "Good luck, my Rose!",
+            rose + "Gems of Earth! Listen to me!",
+            rose + "Look around at what you are building. Is this really what you want?",
+            rose + "I have made an amazing discovery. This planet is the home of a diverse ecosystem of organic life!",
+            rose + "I've seen them for myself! The lives they live and the things they do are extraordinary!",
+            rose + "But our invasion is destroying their home.If we continue, nothing will be left.",
+            rose + "Will you destroy this life, or will you join it?",
+            quartz + "That's her! It's the Rose Quartz who attacked the kindergarten!",
+            quartz + "Get her!",
+            rose + "Well, here we go again.",
         };
     }
     public string[] biggsRecruitment()
@@ -263,9 +321,33 @@ public class Chapter1Sequence : Chapter
     }
     public string[] ending()
     {
+        string rose = "Rose_Quartz Rose_Quartz ";
+        string pearl = "Pearl Pearl ";
+        string bismuth = "Bismuth Bismuth ";
         return new string[]
         {
-
+            "$solidColor 0 0 0",
+            rose + "It's a good thing we got away.",
+            rose + "And it looks like we even inspired some Gems to join us!",
+            pearl + "Wait. I heard something... I think we have company...",
+            rose + "Be careful.",
+            bismuth + "Hey, hey, wait! I come in peace!",
+            rose + "You're the Bismuth from the arena.",
+            bismuth + "Yeah. I figured out what I want to do.I don't want to build arenas and spires.",
+            bismuth + "I want to make weapons!",
+            rose + "Weapons?",
+            bismuth + "Is that too--",
+            rose + "No, that's wonderful! In fact, it's just what we need!",
+            bismuth + "Well then I guess I'm joining you! The Diamonds don't have use for a Bismuth who makes weapons.",
+            rose + "No, the Diamonds wouldn't understand.",
+            rose + "But we're glad to have you here in the... um...",
+            pearl + "The Crystal Gems!",
+            bismuth + "The \"Crystal Gems\" ?",
+            rose + "The \"Crystal Gems\" ?",
+            pearl + "We're a group of Gems that have \"dissolved\" off of Homeworld's structure.",
+            pearl + "Then we deposited onto each other to form an organized lattice.",
+            pearl + "Like a crystal.",
+            rose + "I love it! Bismuth, welcome to the Crystal Gems!"
         };
     }
 
@@ -277,7 +359,12 @@ public class Chapter1Sequence : Chapter
             29, 9, 0, 3, 2, 0, 11, 0, 15, 6,
             60, 50, 5, 40, 30, 25, 30, 5,
                 Item.bismuth_hammer.clone(), Weapon.WeaponType.ARMOR, 0, Unit.UnitTeam.ENEMY, -1, -1,
-                Unit.Affinity.ANIMA, new float[] { /*TODO*/ });
+                Unit.Affinity.ANIMA,
+                new float[] {
+                    bismuthHair.r, bismuthHair.g, bismuthHair.b,
+                    bismuthSkin.r, bismuthSkin.g, bismuthSkin.b,
+                    bismuthEyes.r, bismuthEyes.g, bismuthEyes.b,
+                });
         bismuth.isEssential = true;
 
         return bismuth;
@@ -294,7 +381,13 @@ public class Chapter1Sequence : Chapter
                 26, 6, 5, 7, 7, 6, 6, 5, 8, 6,
                 65, 45, 10, 45, 35, 40, 25, 10,
                 Item.rose_shield.clone(), Weapon.WeaponType.SWORD, 0, Unit.UnitTeam.PLAYER, 0, 1,
-                Unit.Affinity.EARTH, new float[] { });
+                Unit.Affinity.EARTH,
+                new float[] {
+                    roseQuartzHair.r, roseQuartzHair.g, roseQuartzHair.b,
+                    roseQuartzSkin.r, roseQuartzSkin.g, roseQuartzSkin.b,
+                    roseQuartzEyes.r, roseQuartzEyes.g, roseQuartzEyes.b,
+
+                });
         rose_quartz.isEssential = true;
         rose_quartz.isLeader = true;
 
@@ -311,7 +404,12 @@ public class Chapter1Sequence : Chapter
                 22, 4, 1, 10, 9, 6, 5, 1, 6, 6,
                 60, 30, 10, 55, 60, 35, 25, 10,
                 Item.pearl_spear.clone(), Weapon.WeaponType.SWORD, 0, Unit.UnitTeam.PLAYER, 0, 2,
-                Unit.Affinity.WATER, new float[] { });
+                Unit.Affinity.WATER,
+                new float[] {
+                    pearlHair.r, pearlHair.g, pearlHair.b,
+                    pearlSkin.r, pearlSkin.g, pearlSkin.b,
+                    pearlEyes.r, pearlEyes.g, pearlEyes.b,
+                });
         pearl.isEssential = true;
 
         return pearl;
@@ -326,7 +424,12 @@ public class Chapter1Sequence : Chapter
                 28, 7, 0, 7, 7, 2, 5, 0, 12, 6,
                 80, 40, 5, 20, 30, 30, 30, 5,
                 Item.biggs_whip.clone(), Weapon.WeaponType.CLUB, 20, Unit.UnitTeam.ENEMY, 9, -1,
-                Unit.Affinity.FIRE, new float[] { });
+                Unit.Affinity.FIRE,
+                new float[] {
+                    biggsHair.r, biggsHair.g, biggsHair.b,
+                    biggsSkin.r, biggsSkin.g, biggsSkin.b,
+                    biggsEyes.r, biggsEyes.g, biggsEyes.b,
+                });
         biggs.setTalkConvo(biggsRecruitment(), true, null);
         biggs.ai1 = Unit.AIType.ATTACK; biggs.ai2 = Unit.AIType.GUARD;
 
@@ -342,7 +445,12 @@ public class Chapter1Sequence : Chapter
                 27, 6, 0, 7, 9, 3, 4, 0, 11, 6,
                 85, 30, 5, 25, 35, 55, 25, 5,
                 Item.ocean_club.clone(), Weapon.WeaponType.WHIP, 20, Unit.UnitTeam.ENEMY, 9, -1,
-                Unit.Affinity.WATER, new float[] { });
+                Unit.Affinity.WATER,
+                new float[] {
+                    oceanHair.r, oceanHair.g, oceanHair.b,
+                    oceanSkin.r, oceanSkin.g, oceanSkin.b,
+                    oceanEyes.r, oceanEyes.g, oceanEyes.b,
+                });
         ocean.setTalkConvo(oceanRecruitment(), false, null);
         ocean.ai1 = Unit.AIType.ATTACK; ocean.ai2 = Unit.AIType.GUARD;
 
@@ -359,7 +467,12 @@ public class Chapter1Sequence : Chapter
                 29, 9, 0, 3, 2, 0, 11, 0, 15, 6,
                 60, 50, 5, 40, 30, 25, 30, 5,
                 Item.bismuth_hammer.clone(), Weapon.WeaponType.ARMOR, 0, Unit.UnitTeam.ENEMY, -1, -1,
-                Unit.Affinity.ANIMA, new float[] { });
+                Unit.Affinity.ANIMA,
+                new float[] {
+                    bismuthHair.r, bismuthHair.g, bismuthHair.b,
+                    bismuthSkin.r, bismuthSkin.g, bismuthSkin.b,
+                    bismuthEyes.r, bismuthEyes.g, bismuthEyes.b,
+                });
         bismuth.isEssential = true;
         bismuth.setTalkConvo(bismuthTalk(), true, Item.iron_sword);
         bismuth.ai1 = Unit.AIType.IDLE; bismuth.ai2 = Unit.AIType.IDLE;
@@ -375,7 +488,12 @@ public class Chapter1Sequence : Chapter
                 24, 6, 0, 3, 6, 2, 4, 0, 9, 6,
                 80, 40, 5, 20, 30, 30, 30, 5,
                 Item.quartz_axe, Weapon.WeaponType.FIST, 20, Unit.UnitTeam.ENEMY, -1, -1,
-                Unit.Affinity.FIRE, new float[] { });
+                Unit.Affinity.FIRE,
+                new float[] {
+                    quartzHair.r, quartzHair.g, quartzHair.b,
+                    quartzSkin.r, quartzSkin.g, quartzSkin.b,
+                    quartzEyes.r, quartzEyes.g, quartzEyes.b,
+                });
         quartz.ai1 = Unit.AIType.ATTACK; quartz.ai2 = Unit.AIType.GUARD;
 
         return quartz;

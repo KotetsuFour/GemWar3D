@@ -14,7 +14,7 @@ public class MapEventExecutor : MonoBehaviour
     private int idx;
     private float timer;
     private Stack<string> ifStack;
-    private bool skip;
+    private bool skipping;
 
     private AudioSource music;
 
@@ -88,9 +88,9 @@ public class MapEventExecutor : MonoBehaviour
     {
         nextAction();
     }
-    public void ENTER()
+    public void skip()
     {
-        skip = true;
+        skipping = true;
         for (int q = idx; q < script.Length; q++)
         {
             if (script[q][0] == '$' || script[q][0] == '@')
@@ -161,12 +161,12 @@ public class MapEventExecutor : MonoBehaviour
         if (ifStack.Count == 0 || ifStack.Peek() == "dontElse" || ifStack.Peek() == "doingElse")
         {
             Debug.Log("allowed action " + comm);
-            if (comm == "pause" && !skip)
+            if (comm == "pause" && !skipping)
             {
                 float time = float.Parse(parts[1]);
                 timer = time;
             }
-            else if (comm == "sound" && !skip)
+            else if (comm == "sound" && !skipping)
             {
                 string soundName = parts[1];
                 if (parts[2] == "stopMusic")
@@ -237,7 +237,7 @@ public class MapEventExecutor : MonoBehaviour
             {
                 StaticData.findDeepChild(gridmap.transform, "DialogueBox").gameObject.SetActive(false);
             }
-            else if (comm == "removeConvo" && !skip)
+            else if (comm == "removeConvo" && !skipping)
             {
                 speaker.talkConvo = null;
             }
@@ -298,8 +298,8 @@ public class MapEventExecutor : MonoBehaviour
                 gridmap.other.Remove(speaker);
                 gridmap.player.Add(speaker);
                 //            speaker.setTalkIcon(null);
-                //            talkerTile.getOccupant().outline.color = Color.blue;
                 speaker.team = Unit.UnitTeam.PLAYER;
+                speaker.model.setCircleColor();
                 StaticData.members.Add(speaker);
             }
 

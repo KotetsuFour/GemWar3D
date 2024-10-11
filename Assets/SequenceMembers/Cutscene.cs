@@ -27,6 +27,7 @@ public class Cutscene : SequenceMember
     public void constructor(string[] dialogue)
     {
         this.dialogue = dialogue;
+        ifStack = new Stack<string>();
         nextSaying();
     }
 
@@ -50,16 +51,21 @@ public class Cutscene : SequenceMember
                 .text = speakerAndText[0].Replace('_', ' ');
             if (speakerAndText[1] == "null")
             {
+                StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().color
+                    = new Color(0, 0, 0, 0);
                 StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().sprite
                     = null;
             }
             else
             {
+                StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().color
+                    = Color.white;
                 StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().sprite
                     = AssetDictionary.getImage(speakerAndText[1].Replace('_', ' '));
             }
             StaticData.findDeepChild(transform, "Dialogue").GetComponent<TextMeshProUGUI>().text
                 = dialogue[idx].Substring(speakerAndText[0].Length + speakerAndText[1].Length + 2);
+            idx++;
         }
         return true;
     }
@@ -250,8 +256,16 @@ public class Cutscene : SequenceMember
             {
                 string imageName = parts[1];
                 Sprite image = AssetDictionary.getImage(imageName);
-                Image display = StaticData.findDeepChild(transform, "ImageDisplay").GetComponent<Image>();
+                Image display = StaticData.findDeepChild(transform, "DisplayImage").GetComponent<Image>();
                 display.sprite = image;
+                display.gameObject.SetActive(true);
+            }
+            else if (comm == "solidColor")
+            {
+                Color solid = new Color(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3]));
+                Image display = StaticData.findDeepChild(transform, "DisplayImage").GetComponent<Image>();
+                display.sprite = null;
+                display.color = solid;
                 display.gameObject.SetActive(true);
             }
             else if (comm == "removeImage")

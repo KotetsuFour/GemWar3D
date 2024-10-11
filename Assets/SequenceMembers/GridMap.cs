@@ -49,8 +49,8 @@ public class GridMap : SequenceMember
     public int cursorX;
     public int cursorY;
 
-    [SerializeField] private float cameraDistance, minCamDistance, maxCamDistance;
-    [SerializeField] private float zoomSpeed;
+    [SerializeField] private float cameraDistance;
+    private int camOrientation;
 
     private SelectionMode selectionMode;
 
@@ -99,6 +99,7 @@ public class GridMap : SequenceMember
         this.chapterName = chapterName;
         this.teamNames = teamNames;
         this.turnPar = turnPar;
+        turn = 1;
 
         StaticData.findDeepChild(transform, "HUDObjective").GetComponent<TextMeshProUGUI>()
             .text = objective.getName();
@@ -144,6 +145,34 @@ public class GridMap : SequenceMember
             .text = tile.getName();
         StaticData.findDeepChild(transform, "TileAVO").GetComponent<TextMeshProUGUI>()
             .text = "" + tile.getAvoidBonus();
+        if (tile.getOccupant() == null)
+        {
+            enableChild("UnitHere", false);
+        }
+        else
+        {
+            Unit unitHere = tile.getOccupant().getUnit();
+            enableChild("UnitHere", true);
+            StaticData.findDeepChild(transform, "UnitHerePortrait").GetComponent<Image>()
+                .sprite = AssetDictionary.getImage(unitHere.unitName);
+            StaticData.findDeepChild(transform, "UnitHereName").GetComponent<TextMeshProUGUI>()
+                .text = unitHere.unitName;
+            StaticData.findDeepChild(transform, "UnitHereHP").GetComponent<TextMeshProUGUI>()
+                .text = $"{unitHere.currentHP}/{unitHere.maxHP}";
+            if (unitHere.getEquippedWeapon() == null)
+            {
+                enableChild("UnitHereWeaponImage", false);
+            }
+            else
+            {
+                Weapon wep = unitHere.getEquippedWeapon();
+                enableChild("UnitHereWeaponImage", true);
+                StaticData.findDeepChild(transform, "UnitHereWeaponImage").GetComponent<Image>()
+                    .sprite = AssetDictionary.getImage(Weapon.weaponTypeName(wep.weaponType));
+                StaticData.findDeepChild(transform, "UnitHereWeaponName").GetComponent<TextMeshProUGUI>()
+                    .text = wep.itemName;
+            }
+        }
     }
     private void setCursor(Tile tile)
     {
@@ -159,11 +188,22 @@ public class GridMap : SequenceMember
     }
     private void setCameraPosition()
     {
-        Vector3 pos = cursor.transform.position;
-        pos += new Vector3(0, 1, -1);
-        Vector3 newPos = cursor.transform.position - ((cursor.transform.position - pos).normalized * cameraDistance);
-        getCamera().transform.position = newPos;
-        getCamera().transform.rotation = Quaternion.LookRotation(cursor.transform.position - getCamera().transform.position);
+        if (camOrientation == 0)
+        {
+            Vector3 pos = cursor.transform.position;
+            pos += new Vector3(0, 1, -1);
+            Vector3 newPos = cursor.transform.position - ((cursor.transform.position - pos).normalized * cameraDistance);
+            getCamera().transform.position = newPos;
+            getCamera().transform.rotation = Quaternion.LookRotation(cursor.transform.position - getCamera().transform.position);
+        }
+        else if (camOrientation == 1)
+        {
+            Vector3 pos = cursor.transform.position;
+            pos += new Vector3(0, 1.5f, 0);
+            Vector3 newPos = cursor.transform.position - ((cursor.transform.position - pos).normalized * cameraDistance);
+            getCamera().transform.position = newPos;
+            getCamera().transform.rotation = Quaternion.LookRotation(cursor.transform.position - getCamera().transform.position);
+        }
     }
     public override void LEFT_MOUSE()
     {
@@ -253,6 +293,10 @@ public class GridMap : SequenceMember
             enableChild("HUD", false);
             finalizeMove();
             startBattle();
+        }
+        else if (selectionMode == SelectionMode.BATTLE)
+        {
+            instantiatedBattleAnimation.levelUpOK();
         }
         else if (selectionMode == SelectionMode.SELECT_TALKER)
         {
@@ -370,13 +414,9 @@ public class GridMap : SequenceMember
         }
         else if (selectionMode == SelectionMode.STATUS)
         {
-            /*
-            statusPage.SetActive(false);
-            Camera camCam = cam.GetComponent<Camera>();
-            camCam.orthographicSize = cameraOrthographicSize;
-            setCameraPosition(cursorX, cursorY);
-            instantiatedMapHUD.SetActive(true);
-            */
+            enableChild("Status", false);
+            enableChild("Menu", false);
+            enableChild("HUD", true);
             selectionMode = SelectionMode.ROAM;
         }
         else if (selectionMode == SelectionMode.ESCAPE_MENU)
@@ -590,11 +630,11 @@ public class GridMap : SequenceMember
     {
         if (selectionMode == SelectionMode.BATTLE)
         {
-            //TODO skip battle
+            instantiatedBattleAnimation.skip();
         }
-        if (selectionMode == SelectionMode.IN_CONVO)
+        else if (selectionMode == SelectionMode.IN_CONVO)
         {
-            instantiatedMapEvent.ENTER();
+            instantiatedMapEvent.skip();
         }
     }
     public override void ESCAPE()
@@ -880,7 +920,7 @@ public class GridMap : SequenceMember
         moveDest.setOccupant(selectedUnit.model);
         selectedUnit.isExhausted = true;
         selectedUnit.model.setStandingRotation(selectedUnit.model.transform.rotation);
-        //TODO change outline to grey
+        selectedUnit.model.setCircleColorExhaust();
     }
     private void tryTakeLoot(Unit taker, Tile takeFrom)
     {
@@ -894,6 +934,7 @@ public class GridMap : SequenceMember
         }
         else
         {
+            enableChild("HUD", true);
             selectionMode = SelectionMode.ROAM;
         }
     }
@@ -1263,7 +1304,62 @@ public class GridMap : SequenceMember
         }
         else if (choice == MenuChoice.STATUS)
         {
-            //TODO show status page
+            enableChild("HUD", false);
+            enableChild("Status", true);
+            StaticData.findDeepChild(transform, "ChapterName").GetComponent<TextMeshProUGUI>()
+                .text = chapterName;
+            if (player.Count > 0)
+            {
+                StaticData.findDeepChild(transform, "PlayerCount").GetComponent<TextMeshProUGUI>()
+                    .text = teamNames[0] + ": " + player.Count;
+            }
+            else
+            {
+                enableChild("PlayerCountBack", false);
+            }
+            if (enemy.Count > 0)
+            {
+                StaticData.findDeepChild(transform, "EnemyCount").GetComponent<TextMeshProUGUI>()
+                    .text = teamNames[1] + ": " + enemy.Count;
+            }
+            else
+            {
+                enableChild("EnemyCountBack", false);
+            }
+            if (ally.Count > 0)
+            {
+                StaticData.findDeepChild(transform, "AllyCount").GetComponent<TextMeshProUGUI>()
+                    .text = teamNames[2] + ": " + ally.Count;
+            }
+            else
+            {
+                enableChild("AllyCountBack", false);
+            }
+            if (other.Count > 0)
+            {
+                StaticData.findDeepChild(transform, "OtherCount").GetComponent<TextMeshProUGUI>()
+                    .text = teamNames[3] + ": " + other.Count;
+            }
+            else
+            {
+                enableChild("OtherCountBack", false);
+            }
+
+            StaticData.findDeepChild(transform, "StatusObjective").GetComponent<TextMeshProUGUI>()
+                .text = "Objective: " + objective.getName();
+            StaticData.findDeepChild(transform, "StatusFailure").GetComponent<TextMeshProUGUI>()
+                .text = "Defeat: " + objective.getFailure();
+            StaticData.findDeepChild(transform, "Turn").GetComponent<TextMeshProUGUI>()
+                .text = "TURN " + turn;
+            StaticData.findDeepChild(transform, "Par").GetComponent<TextMeshProUGUI>()
+                .text = "Par: " + turnPar;
+            StaticData.findDeepChild(transform, "Iron").GetComponent<TextMeshProUGUI>()
+                .text = "Iron: " + StaticData.iron;
+            StaticData.findDeepChild(transform, "Steel").GetComponent<TextMeshProUGUI>()
+                .text = "Steel: " + StaticData.steel;
+            StaticData.findDeepChild(transform, "Silver").GetComponent<TextMeshProUGUI>()
+                .text = "Silver: " + StaticData.silver;
+
 
             selectionMode = SelectionMode.STATUS;
         }
@@ -1977,6 +2073,9 @@ public class GridMap : SequenceMember
         Battle.RNGSTORE = new List<int>();
         music.Pause();
 
+        StaticData.findDeepChild(selectedUnit.model.transform, "TeamCircle").gameObject.SetActive(false);
+        StaticData.findDeepChild(targetEnemy.model.transform, "TeamCircle").gameObject.SetActive(false);
+
         instantiatedBattleAnimation = Instantiate(battleAnimation);
         instantiatedBattleAnimation.constructor(battle, this);
 
@@ -2002,6 +2101,15 @@ public class GridMap : SequenceMember
         music.UnPause();
         Destroy(instantiatedBattleAnimation.gameObject);
         enableChild("HUD", true);
+
+        if (selectedUnit.model != null)
+        {
+            StaticData.findDeepChild(selectedUnit.model.transform, "TeamCircle").gameObject.SetActive(true);
+        }
+        if (targetEnemy.model != null)
+        {
+            StaticData.findDeepChild(targetEnemy.model.transform, "TeamCircle").gameObject.SetActive(true);
+        }
 
         if (selectionMode == SelectionMode.BATTLE)
         {
@@ -2074,13 +2182,28 @@ public class GridMap : SequenceMember
             Destroy(music.gameObject);
         }
         List<Unit>[] teams = { player, enemy, ally, other };
+        foreach (Unit u in teams[Mathf.Max(0, teamPhase)])
+        {
+            u.isExhausted = false;
+            if (u.model != null)
+            {
+                u.model.setCircleColor();
+            }
+        }
         do
         {
             teamPhase = (teamPhase + 1) % teams.Length;
         } while (teams[teamPhase].Count == 0);
         npcIdx = 0;
 
-        //TODO show phase notification
+        if (teams[teamPhase] == player)
+        {
+            turn++;
+        }
+
+        enableChild("PhaseBack", true);
+        StaticData.findDeepChild(transform, "Phase").GetComponent<TextMeshProUGUI>()
+            .text = teamNames[teamPhase] + " Turn";
         timer = 2;
 
         selectionMode = SelectionMode.PHASE;
@@ -2195,33 +2318,33 @@ public class GridMap : SequenceMember
                     if (selectedUnit.heldWeapon != null)
                     {
                         Weapon w = selectedUnit.heldWeapon;
-                        if (w.maxRange >= dist && dist <= w.minRange)
+                        if (w.minRange <= dist && dist <= w.maxRange)
                         {
                             heldHeur = 0;
                             List<Unit> enemAllies = player.Contains(enem) ? player : ally.Contains(enem) ? ally
                                 : enemy.Contains(enem) ? enemy : other.Contains(enem) ? other : null;
                             int[] forecast = Battle.getForecast(selectedUnit.model, enem.model, uAllies, enemAllies,
                                 w, enem.getEquippedWeapon(), dest, dfdTile);
-                            if (forecast[1] * forecast[5] >= forecast[6])
+                            if ((forecast[Battle.ATKMT] - forecast[Battle.DFDDEF]) * forecast[Battle.DFDCOUNT] >= forecast[Battle.DFDHP])
                             {
                                 heldHeur += 50;
                             }
                             else
                             {
-                                int bonus = Mathf.RoundToInt((float)(forecast[1] * forecast[2] / 100.0));
+                                int bonus = Mathf.RoundToInt((float)((forecast[Battle.ATKMT] - forecast[Battle.DFDDEF]) * forecast[Battle.ATKHIT] / 100.0));
                                 heldHeur += Mathf.Min(40, bonus);
                             }
-                            heldHeur += Mathf.Max(0, 20 - forecast[6]);
+                            heldHeur += Mathf.Max(0, 20 - forecast[Battle.DFDHP]);
                             if (forecast[10] == 0)
                             {
                                 heldHeur += 10;
                             }
                             else
                             {
-                                int penalty = Mathf.RoundToInt((float)(forecast[7] * forecast[8] / 100.0));
+                                int penalty = Mathf.RoundToInt((forecast[Battle.DFDMT] - forecast[Battle.ATKDEF]) * forecast[Battle.DFDHIT] / 100.0f);
                                 heldHeur -= Mathf.Min(40, penalty);
                             }
-                            heldHeur -= Mathf.Max(0, 20 - (forecast[0] - forecast[7]));
+                            heldHeur -= Mathf.Max(0, 20 - (forecast[Battle.ATKHP] - (forecast[Battle.DFDMT] - forecast[Battle.ATKDEF])));
                         }
                     }
                     if (specialHeur > heur)
@@ -2246,10 +2369,6 @@ public class GridMap : SequenceMember
             report[1] = startTile;
             report[2] = bestDest;
             report[3] = best;
-            if (bestDest == null)
-            {
-                Debug.Log($"ATTACK's bestDest for {selectedUnit.unitName} ({npcIdx}) is null.");
-            }
         }
         else if (ai == Unit.AIType.BURN)
         {
@@ -2354,22 +2473,11 @@ public class GridMap : SequenceMember
             report[1] = startTile;
             report[2] = startTile;
             report[3] = enemyTile;
-            if (startTile == null)
-            {
-                Debug.Log($"startTile for {selectedUnit.unitName} ({npcIdx}) is null");
-            }
-
         }
         else if (ai == Unit.AIType.PURSUE)
         {
             //TODO move closer to the enemy or attack if possible
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
     }
 
     // Update is called once per frame
@@ -2379,6 +2487,68 @@ public class GridMap : SequenceMember
         {
             timer -= Time.deltaTime;
         }
+        if (Input.GetKeyDown(KeyCode.P) && selectionMode == SelectionMode.ROAM)
+        {
+            camOrientation = 1 - camOrientation;
+            setCameraPosition();
+        }
+
+        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.ENEMYPHASE_SELECT_UNIT)
+        {
+            if (!objectiveComplete && objective.checkFailed(this))
+            {
+                selectionMode = SelectionMode.GAMEOVER;
+                enableChild("HUD", false);
+                //TODO game over screen
+                enableChild("GameOver", true);
+                specialMenuIdx = 0;
+                Destroy(music.gameObject);
+
+                Debug.Log("CHAPTER FAILED");
+                return;
+            }
+            else if (!objectiveComplete && objective.checkComplete(this))
+            {
+                selectionMode = SelectionMode.STANDBY;
+                if (turn < turnPar)
+                {
+                    StaticData.bonusEXP += (turnPar - turn) * 50;
+                }
+                timer = 3;
+                enableChild("Victory", false);
+                enableChild("HUD", false);
+
+                foreach (Unit u in player)
+                {
+                    Destroy(u.model.gameObject);
+                }
+                foreach (Unit u in enemy)
+                {
+                    Destroy(u.model.gameObject);
+                }
+                foreach (Unit u in ally)
+                {
+                    Destroy(u.model.gameObject);
+                }
+                foreach (Unit u in other)
+                {
+                    Destroy(u.model.gameObject);
+                }
+                Destroy(music.gameObject);
+
+                Debug.Log("CHAPTER COMPLETE");
+                return;
+            }
+        }
+
+        if (selectionMode == SelectionMode.STANDBY)
+        {
+            if (timer <= 0)
+            {
+                objectiveComplete = true;
+            }
+        }
+
         if (selectionMode == SelectionMode.TRAVEL && selectedUnit.model.reachedDestination())
         {
             initiateMenu();
@@ -2434,7 +2604,7 @@ public class GridMap : SequenceMember
         {
             if (timer <= 0)
             {
-                //TODO remove phase notification
+                enableChild("PhaseBack", false);
                 SelectionMode[] selection = { SelectionMode.ROAM, SelectionMode.ENEMYPHASE_SELECT_UNIT,
                     SelectionMode.ALLYPHASE_SELECT_UNIT, SelectionMode.OTHERPHASE_SELECT_UNIT };
                 selectionMode = selection[teamPhase];

@@ -78,6 +78,32 @@ public class UnitModel : MonoBehaviour
         unit.model = this;
         anim = model.GetComponent<Animator>();
         setPalette(unit.palette);
+        setCircleColor();
+    }
+    public void setCircleColor()
+    {
+        Material circleMaterial = StaticData.findDeepChild(transform, "TeamCircle").GetComponent<MeshRenderer>().material;
+        if (unit.team == Unit.UnitTeam.PLAYER)
+        {
+            circleMaterial.color = Color.blue;
+        }
+        else if (unit.team == Unit.UnitTeam.ENEMY)
+        {
+            circleMaterial.color = Color.red;
+        }
+        else if (unit.team == Unit.UnitTeam.ALLY)
+        {
+            circleMaterial.color = Color.green;
+        }
+        else if (unit.team == Unit.UnitTeam.OTHER)
+        {
+            circleMaterial.color = Color.yellow;
+        }
+    }
+    public void setCircleColorExhaust()
+    {
+        Material circleMaterial = StaticData.findDeepChild(transform, "TeamCircle").GetComponent<MeshRenderer>().material;
+        circleMaterial.color = Color.grey;
     }
     private void setPalette(List<Color> palette)
     {
@@ -85,7 +111,7 @@ public class UnitModel : MonoBehaviour
             .GetComponent<SkinnedMeshRenderer>().materials;
         for (int q = 0; q < palette.Count; q++)
         {
-            Material mat = StaticData.getMaterialByName(materials, "Palette" + (q % materials.Length));
+            Material mat = StaticData.getMaterialByName(materials, "Palette" + ((q % materials.Length) + 1));
             mat.color = palette[q];
         }
     }

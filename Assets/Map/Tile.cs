@@ -306,6 +306,7 @@ public class Tile : MonoBehaviour
     private void setUtilityPositions(float stageHeight)
     {
         getStage().position = new Vector3(getStage().position.x, stageHeight, getStage().position.z);
+        StaticData.findDeepChild(transform, "Gemstone").transform.position = getStage().position;
         getHighlight().position = getStage().position + new Vector3(0, 0.05f, 0);
         cursorPosition = getHighlight().position + new Vector3(0, 0.01f, 0);
     }
