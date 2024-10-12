@@ -74,7 +74,9 @@ public class Battle
 			: atkUnit.defense + (atkWep != null && atkWep is Armor && !atkWep.magic ? ((Armor)atkWep).protection : 0);
 
 		//atkHit
-		ret[ATKHIT] = atkUnit.getBaseAccuracy() + (atkWep == null ? 0 : atkWep.hit) - (dfdUnit.getBaseAvoidance() + dfdTile.getAvoidBonus());
+		ret[ATKHIT] = atkUnit.getBaseAccuracy() + (atkWep == null ? 0 : atkWep.hit)
+			+ (atkWep != null && dfdWep != null && atkWep.isAdvantageousAgainst(dfdWep) ? 10 : 0)
+			- ((atkWep != null && dfdWep != null && dfdWep.isAdvantageousAgainst(atkWep) ? 10 : 0) + dfdUnit.getBaseAvoidance() + dfdTile.getAvoidBonus());
 
 		//atkCrit
 		ret[ATKCRIT] = atkUnit.getBaseCrit() + (atkWep == null ? 0 : atkWep.crit) - dfdUnit.luck;
@@ -100,7 +102,9 @@ public class Battle
 				: dfdUnit.strength;
 
 			//dfdHit
-			ret[DFDHIT] = dfdUnit.getBaseAccuracy() + (dfdWep == null ? 0 : dfdWep.hit) - (atkUnit.getBaseAvoidance() + atkTile.getAvoidBonus());
+			ret[DFDHIT] = dfdUnit.getBaseAccuracy() + (dfdWep == null ? 0 : dfdWep.hit)
+			+ (atkWep != null && dfdWep != null && dfdWep.isAdvantageousAgainst(atkWep) ? 10 : 0)
+			- ((atkWep != null && dfdWep != null && atkWep.isAdvantageousAgainst(dfdWep) ? 10 : 0) + atkUnit.getBaseAvoidance() + atkTile.getAvoidBonus());
 
 			//dfdCrit
 			ret[DFDCRIT] = dfdUnit.getBaseCrit() + (dfdWep == null ? 0 : dfdWep.crit) - atkUnit.luck;

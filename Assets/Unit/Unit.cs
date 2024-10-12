@@ -64,11 +64,11 @@ public class Unit
 
 	public string talkIconName;
 
-	public static float spriteDimension = (float)1.4;
-
 	public bool deployed;
 
 	public UnitModel model;
+
+	public static int MAX_PALETTE_COLORS = 7;
 
 	public void constructor(string unitName, UnitClass unitClass, string description, int maxHP, int strength, int magic,
 		int skill, int speed, int luck, int defense, int resistance, int constitution, int movement,
@@ -108,7 +108,7 @@ public class Unit
 		level = 1;
 
 		palette = new List<Color>();
-		for (int q = 0; q < colors.Length; q += 3)
+		for (int q = 0; q < Mathf.Min(colors.Length, MAX_PALETTE_COLORS * 3); q += 3)
         {
 			palette.Add(new Color(colors[q], colors[q + 1], colors[q + 2]));
         }

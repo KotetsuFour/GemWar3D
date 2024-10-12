@@ -278,21 +278,45 @@ MonoBehaviour:
   roseQuartzHair: {r: 1, g: 0.3075471, b: 0.8534926, a: 1}
   roseQuartzSkin: {r: 1, g: 0.6698113, b: 0.88124883, a: 1}
   roseQuartzEyes: {r: 0, g: 0, b: 0, a: 1}
+  roseQuartzPalette4: {r: 1, g: 1, b: 1, a: 1}
+  roseQuartzPalette5: {r: 1, g: 0.8962264, b: 0.98251414, a: 1}
+  roseQuartzPalette6: {r: 1, g: 0.6773585, b: 0.9899516, a: 1}
+  roseQuartzPalette7: {r: 1, g: 0.57169807, b: 0.95859617, a: 1}
   pearlHair: {r: 1, g: 0.8738564, b: 0, a: 1}
   pearlSkin: {r: 1, g: 1, b: 1, a: 1}
   pearlEyes: {r: 0, g: 0.9307804, b: 1, a: 1}
+  pearlPalette4: {r: 1, g: 0.8886792, b: 0.98371184, a: 1}
+  pearlPalette5: {r: 0.3150943, g: 0.7814578, b: 1, a: 1}
+  pearlPalette6: {r: 1, g: 0, b: 0.93376255, a: 1}
+  pearlPalette7: {r: 0.53396225, g: 1, b: 0.9667295, a: 1}
   bismuthHair: {r: 0.051466703, g: 1, b: 0, a: 1}
   bismuthSkin: {r: 0.32156864, g: 0.6313726, b: 0.8784314, a: 1}
   bismuthEyes: {r: 0, g: 0, b: 0, a: 1}
-  biggsHair: {r: 1, g: 0.99614143, b: 0, a: 1}
+  bismuthPalette4: {r: 0, g: 0, b: 0, a: 1}
+  bismuthPalette5: {r: 1, g: 0, b: 0.87482166, a: 1}
+  bismuthPalette6: {r: 0.7207546, g: 0, b: 0, a: 1}
+  bismuthPalette7: {r: 0.2981131, g: 0, b: 0, a: 1}
+  biggsHair: {r: 1, g: 0.99900115, b: 0.745283, a: 1}
   biggsSkin: {r: 1, g: 0.5588603, b: 0, a: 1}
   biggsEyes: {r: 0, g: 0, b: 0, a: 1}
-  oceanHair: {r: 0.60188675, g: 1, b: 0.8402987, a: 1}
-  oceanSkin: {r: 0, g: 1, b: 0.62485075, a: 1}
+  biggsPalette4: {r: 0.24528301, g: 0.1067993, b: 0, a: 1}
+  biggsPalette5: {r: 0.5924529, g: 0.1338138, b: 0, a: 1}
+  biggsPalette6: {r: 0.2679245, g: 0.08638037, b: 0, a: 1}
+  biggsPalette7: {r: 0, g: 0, b: 0, a: 1}
+  oceanHair: {r: 1, g: 1, b: 1, a: 1}
+  oceanSkin: {r: 0, g: 0.7297159, b: 0.7584905, a: 1}
   oceanEyes: {r: 0, g: 0, b: 0, a: 1}
-  quartzHair: {r: 1, g: 0.5113207, b: 0.900559, a: 1}
-  quartzSkin: {r: 0.6872245, g: 0, b: 0.87169814, a: 1}
+  oceanPalette4: {r: 0, g: 0, b: 0, a: 1}
+  oceanPalette5: {r: 0, g: 0.20597275, b: 0.2679245, a: 1}
+  oceanPalette6: {r: 0, g: 0.40650624, b: 0.5999999, a: 1}
+  oceanPalette7: {r: 0, g: 0.23773581, b: 0.007069889, a: 1}
+  quartzHair: {r: 1, g: 0.9641509, b: 0.9928302, a: 1}
+  quartzSkin: {r: 0.885356, g: 0.4584905, b: 1, a: 1}
   quartzEyes: {r: 0, g: 0, b: 0, a: 1}
+  quartzPalette4: {r: 0, g: 0, b: 0, a: 1}
+  quartzPalette5: {r: 0.9217932, g: 0.65471697, b: 1, a: 1}
+  quartzPalette6: {r: 0.49580932, g: 0, b: 0.6679245, a: 1}
+  quartzPalette7: {r: 0.10674875, g: 0, b: 0.16981131, a: 1}
 --- !u!4 &846600427
 Transform:
   m_ObjectHideFlags: 0
@@ -456,6 +480,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: IntroCutscene
       objectReference: {fileID: 0}
+    - target: {fileID: 1071379513932426285, guid: f0eb5ce4842522a4bb29d76d176a9172, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5484643571104439685, guid: f0eb5ce4842522a4bb29d76d176a9172, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -524,6 +552,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FinalCutscene
       objectReference: {fileID: 0}
+    - target: {fileID: 1071379513932426285, guid: f0eb5ce4842522a4bb29d76d176a9172, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5484643571104439685, guid: f0eb5ce4842522a4bb29d76d176a9172, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -591,6 +623,10 @@ PrefabInstance:
     - target: {fileID: 1071379513932426285, guid: f0eb5ce4842522a4bb29d76d176a9172, type: 3}
       propertyPath: m_Name
       value: FirstCutscene
+      objectReference: {fileID: 0}
+    - target: {fileID: 1071379513932426285, guid: f0eb5ce4842522a4bb29d76d176a9172, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5484643571104439685, guid: f0eb5ce4842522a4bb29d76d176a9172, type: 3}
       propertyPath: m_LocalPosition.x

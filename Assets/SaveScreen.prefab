@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1894561121341211172}
   - component: {fileID: 8141865968692489084}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -686,7 +686,7 @@ GameObject:
   - component: {fileID: 6512143712714038627}
   - component: {fileID: 7947091941884239256}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -820,7 +820,7 @@ GameObject:
   - component: {fileID: 8616823473727947371}
   - component: {fileID: 2417847301587844658}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1256,6 +1256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound_effect: {fileID: 4180955342499958800, guid: ac026c1596c529549b9e78b970de22b5, type: 3}
   cam: {fileID: 3140094123562921236}
+  oneTimeSound: {fileID: 0}
   saveButtons:
   - {fileID: 2613561669092579949}
   - {fileID: 4690541528435002153}
@@ -1273,7 +1274,7 @@ GameObject:
   - component: {fileID: 7121812460635309223}
   - component: {fileID: 161689722105609275}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

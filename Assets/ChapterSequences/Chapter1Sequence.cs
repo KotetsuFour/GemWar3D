@@ -28,32 +28,58 @@ public class Chapter1Sequence : Chapter
     [SerializeField] private Color roseQuartzHair;
     [SerializeField] private Color roseQuartzSkin;
     [SerializeField] private Color roseQuartzEyes;
+    [SerializeField] private Color roseQuartzPalette4;
+    [SerializeField] private Color roseQuartzPalette5;
+    [SerializeField] private Color roseQuartzPalette6;
+    [SerializeField] private Color roseQuartzPalette7;
 
     [SerializeField] private Color pearlHair;
     [SerializeField] private Color pearlSkin;
     [SerializeField] private Color pearlEyes;
+    [SerializeField] private Color pearlPalette4;
+    [SerializeField] private Color pearlPalette5;
+    [SerializeField] private Color pearlPalette6;
+    [SerializeField] private Color pearlPalette7;
 
     [SerializeField] private Color bismuthHair;
     [SerializeField] private Color bismuthSkin;
     [SerializeField] private Color bismuthEyes;
+    [SerializeField] private Color bismuthPalette4;
+    [SerializeField] private Color bismuthPalette5;
+    [SerializeField] private Color bismuthPalette6;
+    [SerializeField] private Color bismuthPalette7;
 
     [SerializeField] private Color biggsHair;
     [SerializeField] private Color biggsSkin;
     [SerializeField] private Color biggsEyes;
+    [SerializeField] private Color biggsPalette4;
+    [SerializeField] private Color biggsPalette5;
+    [SerializeField] private Color biggsPalette6;
+    [SerializeField] private Color biggsPalette7;
 
     [SerializeField] private Color oceanHair;
     [SerializeField] private Color oceanSkin;
     [SerializeField] private Color oceanEyes;
+    [SerializeField] private Color oceanPalette4;
+    [SerializeField] private Color oceanPalette5;
+    [SerializeField] private Color oceanPalette6;
+    [SerializeField] private Color oceanPalette7;
 
     [SerializeField] private Color quartzHair;
     [SerializeField] private Color quartzSkin;
     [SerializeField] private Color quartzEyes;
+    [SerializeField] private Color quartzPalette4;
+    [SerializeField] private Color quartzPalette5;
+    [SerializeField] private Color quartzPalette6;
+    [SerializeField] private Color quartzPalette7;
+
+    public static string CHAPTER_TITLE = "Chapter 1 - The Crystal Gems";
 
     // Start is called before the first frame update
     void Start()
     {
         ChapterTitle title = Instantiate(chapterTitle);
-        title.constructor("Chapter 1 - Rebellion");
+        title.constructor(CHAPTER_TITLE);
         seqMem = title;
 
         materialDictionary = new Dictionary<char, Material>();
@@ -202,6 +228,8 @@ public class Chapter1Sequence : Chapter
         return new string[]
         {
             "$solidColor 0 0 0",
+            "$sound storytelling-music start",
+            "$sound storytelling-music loop",
             noOne + "For hundreds of millions of years, the Great Diamond Authority spread their perfection throughout the cosmos.",
             noOne + "They bent planets to their will and expanded their empire, creating life from nothing.",
             noOne + "White, Yellow, and Blue Diamond all possessed many worlds.",
@@ -224,6 +252,10 @@ public class Chapter1Sequence : Chapter
         return new string[]
         {
             "$solidColor 0 0 0",
+            "$sound before-chapter-music1 start",
+            "$sound before-chapter-music1 loop",
+            "$left Rose_Quartz",
+            "$right Pearl",
             rose + "Here we are. The Sky Arena",
             rose + "If the Quartzes at the Prime Kindergarten wouldn't join us, maybe some here will.",
             pearl + "I hope so, my Quartz. Soldiers are very important for fighting a war.",
@@ -231,16 +263,24 @@ public class Chapter1Sequence : Chapter
             pearl + "Understood, my Rose.",
             rose + "*sigh* I saw that coming.",
             rose + "Just remember the plan.Let me give my speech, and if things go south...",
-            pearl + "Yes, then I get to use my new spear that you graciously gave me at the Shell!",
+            pearl + "Yes, then I get to use my new spear that you graciously gave me at the Reef!",
             rose + "*chuckle* You mean the spear you begged me to give you.",
             rose + "Alright, it's time. Wish me luck!",
             pearl + "Good luck, my Rose!",
+            "$sound before-chapter-music1 stop",
+            "$sound rally-music start",
+            "$sound rally-music loop",
+            "$right null",
             rose + "Gems of Earth! Listen to me!",
             rose + "Look around at what you are building. Is this really what you want?",
             rose + "I have made an amazing discovery. This planet is the home of a diverse ecosystem of organic life!",
             rose + "I've seen them for myself! The lives they live and the things they do are extraordinary!",
             rose + "But our invasion is destroying their home.If we continue, nothing will be left.",
             rose + "Will you destroy this life, or will you join it?",
+            "$sound rally-music stop",
+            "$sound trouble-music start",
+            "$sound trouble-music loop",
+            "$right Quartz",
             quartz + "That's her! It's the Rose Quartz who attacked the kindergarten!",
             quartz + "Get her!",
             rose + "Well, here we go again.",
@@ -253,7 +293,9 @@ public class Chapter1Sequence : Chapter
         return new string[]
         {
             "$removeConvo",
-//            "$sound recruit-music playMusic",
+            "$sound recruit-music playMusic",
+            "$left Rose_Quartz",
+            "$right Biggs",
             biggs + "Hey you!",
             rose + "Hm?",
             biggs + "I heard your speech. Are you really going to stop the colony?",
@@ -276,7 +318,8 @@ public class Chapter1Sequence : Chapter
         return new string[]
         {
             "$removeConvo",
-//            "$sound recruit-music playMusic",
+            "$sound recruit-music playMusic",
+            "$right Ocean",
             ocean + "What's that? You want me to join you?",
             ocean + "To turn my back on everything we've built here and betray the Diamonds?",
             ocean + "All for the sake of one planet ? You're insane.",
@@ -294,7 +337,9 @@ public class Chapter1Sequence : Chapter
         return new string[]
         {
             "$removeConvo",
-//            "$sound  convo-music playMusic",
+            "$sound convo-music playMusic",
+            "$left Rose_Quartz",
+            "$right Bismuth",
             bismuth + "Ah! I'm just a builder! Don't hurt me!",
             rose + "I won't hurt you!",
             bismuth + "Oh, thanks.",
@@ -327,10 +372,15 @@ public class Chapter1Sequence : Chapter
         return new string[]
         {
             "$solidColor 0 0 0",
+            "$sound peaceful-music start",
+            "$sound peaceful-music loop",
+            "$left Rose_Quartz",
+            "$right Pearl",
             rose + "It's a good thing we got away.",
             rose + "And it looks like we even inspired some Gems to join us!",
             pearl + "Wait. I heard something... I think we have company...",
             rose + "Be careful.",
+            "$right Bismuth",
             bismuth + "Hey, hey, wait! I come in peace!",
             rose + "You're the Bismuth from the arena.",
             bismuth + "Yeah. I figured out what I want to do.I don't want to build arenas and spires.",
@@ -341,13 +391,18 @@ public class Chapter1Sequence : Chapter
             bismuth + "Well then I guess I'm joining you! The Diamonds don't have use for a Bismuth who makes weapons.",
             rose + "No, the Diamonds wouldn't understand.",
             rose + "But we're glad to have you here in the... um...",
+            "$left Pearl",
             pearl + "The Crystal Gems!",
             bismuth + "The \"Crystal Gems\" ?",
+            "$right Rose_Quartz",
             rose + "The \"Crystal Gems\" ?",
             pearl + "We're a group of Gems that have \"dissolved\" off of Homeworld's structure.",
             pearl + "Then we deposited onto each other to form an organized lattice.",
             pearl + "Like a crystal.",
-            rose + "I love it! Bismuth, welcome to the Crystal Gems!"
+            rose + "I love it!",
+            "$left Rose_Quartz",
+            "$right Bismuth",
+            rose + "Bismuth, welcome to the Crystal Gems!"
         };
     }
 
@@ -364,6 +419,10 @@ public class Chapter1Sequence : Chapter
                     bismuthHair.r, bismuthHair.g, bismuthHair.b,
                     bismuthSkin.r, bismuthSkin.g, bismuthSkin.b,
                     bismuthEyes.r, bismuthEyes.g, bismuthEyes.b,
+                    bismuthPalette4.r, bismuthPalette4.g, bismuthPalette4.b,
+                    bismuthPalette5.r, bismuthPalette5.g, bismuthPalette5.b,
+                    bismuthPalette6.r, bismuthPalette6.g, bismuthPalette6.b,
+                    bismuthPalette7.r, bismuthPalette7.g, bismuthPalette7.b,
                 });
         bismuth.isEssential = true;
 
@@ -386,6 +445,10 @@ public class Chapter1Sequence : Chapter
                     roseQuartzHair.r, roseQuartzHair.g, roseQuartzHair.b,
                     roseQuartzSkin.r, roseQuartzSkin.g, roseQuartzSkin.b,
                     roseQuartzEyes.r, roseQuartzEyes.g, roseQuartzEyes.b,
+                    roseQuartzPalette4.r, roseQuartzPalette4.g, roseQuartzPalette4.b,
+                    roseQuartzPalette5.r, roseQuartzPalette5.g, roseQuartzPalette5.b,
+                    roseQuartzPalette6.r, roseQuartzPalette6.g, roseQuartzPalette6.b,
+                    roseQuartzPalette7.r, roseQuartzPalette7.g, roseQuartzPalette7.b,
 
                 });
         rose_quartz.isEssential = true;
@@ -409,6 +472,10 @@ public class Chapter1Sequence : Chapter
                     pearlHair.r, pearlHair.g, pearlHair.b,
                     pearlSkin.r, pearlSkin.g, pearlSkin.b,
                     pearlEyes.r, pearlEyes.g, pearlEyes.b,
+                    pearlPalette4.r, pearlPalette4.g, pearlPalette4.b,
+                    pearlPalette5.r, pearlPalette5.g, pearlPalette5.b,
+                    pearlPalette6.r, pearlPalette6.g, pearlPalette6.b,
+                    pearlPalette7.r, pearlPalette7.g, pearlPalette7.b,
                 });
         pearl.isEssential = true;
 
@@ -429,6 +496,10 @@ public class Chapter1Sequence : Chapter
                     biggsHair.r, biggsHair.g, biggsHair.b,
                     biggsSkin.r, biggsSkin.g, biggsSkin.b,
                     biggsEyes.r, biggsEyes.g, biggsEyes.b,
+                    biggsPalette4.r, biggsPalette4.g, biggsPalette4.b,
+                    biggsPalette5.r, biggsPalette5.g, biggsPalette5.b,
+                    biggsPalette6.r, biggsPalette6.g, biggsPalette6.b,
+                    biggsPalette7.r, biggsPalette7.g, biggsPalette7.b,
                 });
         biggs.setTalkConvo(biggsRecruitment(), true, null);
         biggs.ai1 = Unit.AIType.ATTACK; biggs.ai2 = Unit.AIType.GUARD;
@@ -450,6 +521,10 @@ public class Chapter1Sequence : Chapter
                     oceanHair.r, oceanHair.g, oceanHair.b,
                     oceanSkin.r, oceanSkin.g, oceanSkin.b,
                     oceanEyes.r, oceanEyes.g, oceanEyes.b,
+                    oceanPalette4.r, oceanPalette4.g, oceanPalette4.b,
+                    oceanPalette5.r, oceanPalette5.g, oceanPalette5.b,
+                    oceanPalette6.r, oceanPalette6.g, oceanPalette6.b,
+                    oceanPalette7.r, oceanPalette7.g, oceanPalette7.b,
                 });
         ocean.setTalkConvo(oceanRecruitment(), false, null);
         ocean.ai1 = Unit.AIType.ATTACK; ocean.ai2 = Unit.AIType.GUARD;
@@ -472,6 +547,10 @@ public class Chapter1Sequence : Chapter
                     bismuthHair.r, bismuthHair.g, bismuthHair.b,
                     bismuthSkin.r, bismuthSkin.g, bismuthSkin.b,
                     bismuthEyes.r, bismuthEyes.g, bismuthEyes.b,
+                    bismuthPalette4.r, bismuthPalette4.g, bismuthPalette4.b,
+                    bismuthPalette5.r, bismuthPalette5.g, bismuthPalette5.b,
+                    bismuthPalette6.r, bismuthPalette6.g, bismuthPalette6.b,
+                    bismuthPalette7.r, bismuthPalette7.g, bismuthPalette7.b,
                 });
         bismuth.isEssential = true;
         bismuth.setTalkConvo(bismuthTalk(), true, Item.iron_sword);
@@ -493,6 +572,10 @@ public class Chapter1Sequence : Chapter
                     quartzHair.r, quartzHair.g, quartzHair.b,
                     quartzSkin.r, quartzSkin.g, quartzSkin.b,
                     quartzEyes.r, quartzEyes.g, quartzEyes.b,
+                    quartzPalette4.r, quartzPalette4.g, quartzPalette4.b,
+                    quartzPalette5.r, quartzPalette5.g, quartzPalette5.b,
+                    quartzPalette6.r, quartzPalette6.g, quartzPalette6.b,
+                    quartzPalette7.r, quartzPalette7.g, quartzPalette7.b,
                 });
         quartz.ai1 = Unit.AIType.ATTACK; quartz.ai2 = Unit.AIType.GUARD;
 
@@ -516,7 +599,7 @@ public class Chapter1Sequence : Chapter
         gridmap.gameObject.SetActive(true);
         Tile[,] mapArray = createMap(StaticData.findDeepChild(gridmap.transform, "MapTransform"));
         gridmap.constructor(mapArray, player, enemy, ally, other,
-            new EscapeObjective(), "Chapter 1 - Rebellion", teamNames, 10, new string[] { "map-music-1" });
+            new EscapeObjective(), CHAPTER_TITLE, teamNames, 10, new string[] { "map-music-1" });
         playerList = gridmap.player;
 
         setUnits(mapArray, enemy, Unit.UnitTeam.ENEMY, Quaternion.Euler(0, 180, 0));

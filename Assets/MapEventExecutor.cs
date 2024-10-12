@@ -77,6 +77,8 @@ public class MapEventExecutor : MonoBehaviour
     private void backToGridMap()
     {
         StaticData.findDeepChild(gridmap.transform, "DialogueBox").gameObject.SetActive(false);
+        StaticData.findDeepChild(gridmap.transform, "LeftSpeaker").gameObject.SetActive(false);
+        StaticData.findDeepChild(gridmap.transform, "RightSpeaker").gameObject.SetActive(false);
         if (music != null)
         {
             Destroy(music.gameObject);
@@ -175,7 +177,10 @@ public class MapEventExecutor : MonoBehaviour
                 }
                 else if (parts[2] == "playMusic")
                 {
-                    Destroy(music);
+                    if (music != null)
+                    {
+                        Destroy(music.gameObject);
+                    }
                     music = gridmap.getAudioSource(AssetDictionary.getAudio(soundName));
                     music.loop = true;
                     music.Play();
@@ -302,7 +307,32 @@ public class MapEventExecutor : MonoBehaviour
                 speaker.model.setCircleColor();
                 StaticData.members.Add(speaker);
             }
-
+            else if (comm == "right")
+            {
+                if (parts[1] == "null")
+                {
+                    StaticData.findDeepChild(gridmap.transform, "RightSpeaker").gameObject.SetActive(false);
+                }
+                else
+                {
+                    StaticData.findDeepChild(gridmap.transform, "RightSpeaker").gameObject.SetActive(true);
+                    StaticData.findDeepChild(gridmap.transform, "RightSpeaker").GetComponent<Image>()
+                        .sprite = AssetDictionary.getImage(parts[1].Replace('_', ' '));
+                }
+            }
+            else if (comm == "left")
+            {
+                if (parts[1] == "null")
+                {
+                    StaticData.findDeepChild(gridmap.transform, "LeftSpeaker").gameObject.SetActive(false);
+                }
+                else
+                {
+                    StaticData.findDeepChild(gridmap.transform, "LeftSpeaker").gameObject.SetActive(true);
+                    StaticData.findDeepChild(gridmap.transform, "LeftSpeaker").GetComponent<Image>()
+                        .sprite = AssetDictionary.getImage(parts[1].Replace('_', ' '));
+                }
+            }
         }
     }
 }

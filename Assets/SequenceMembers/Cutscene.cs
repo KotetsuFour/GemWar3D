@@ -28,6 +28,7 @@ public class Cutscene : SequenceMember
     {
         this.dialogue = dialogue;
         ifStack = new Stack<string>();
+        audioPlaying = new Dictionary<string, AudioSource>();
         nextSaying();
     }
 
@@ -276,13 +277,34 @@ public class Cutscene : SequenceMember
             {
                 StaticData.findDeepChild(transform, "DialogueBox").gameObject.SetActive(false);
             }
+            else if (comm == "right")
+            {
+                if (parts[1] == "null")
+                {
+                    StaticData.findDeepChild(transform, "RightSpeaker").gameObject.SetActive(false);
+                }
+                else
+                {
+                    StaticData.findDeepChild(transform, "RightSpeaker").gameObject.SetActive(true);
+                    StaticData.findDeepChild(transform, "RightSpeaker").GetComponent<Image>()
+                        .sprite = AssetDictionary.getImage(parts[1].Replace('_', ' '));
+                }
+            }
+            else if (comm == "left")
+            {
+                if (parts[1] == "null")
+                {
+                    StaticData.findDeepChild(transform, "LeftSpeaker").gameObject.SetActive(false);
+                }
+                else
+                {
+                    StaticData.findDeepChild(transform, "LeftSpeaker").gameObject.SetActive(true);
+                    StaticData.findDeepChild(transform, "LeftSpeaker").GetComponent<Image>()
+                        .sprite = AssetDictionary.getImage(parts[1].Replace('_', ' '));
+                }
+            }
         }
 
-    }
-
-    void Start()
-    {
-        audioPlaying = new Dictionary<string, AudioSource>();
     }
 
     // Update is called once per frame
@@ -307,11 +329,11 @@ public class Cutscene : SequenceMember
     {
         foreach (AudioSource source in audioPlaying.Values)
         {
-            Destroy(source);
+            Destroy(source.gameObject);
         }
         foreach (CutsceneModel model in models)
         {
-            Destroy(model);
+            Destroy(model.gameObject);
         }
         storyComplete = true;
     }

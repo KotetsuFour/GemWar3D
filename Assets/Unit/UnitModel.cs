@@ -79,6 +79,7 @@ public class UnitModel : MonoBehaviour
         anim = model.GetComponent<Animator>();
         setPalette(unit.palette);
         setCircleColor();
+        name = unit.unitName;
     }
     public void setCircleColor()
     {
@@ -169,6 +170,20 @@ public class UnitModel : MonoBehaviour
             else
             {
                 attAnim = Weapon.weaponTypeName(unit.getEquippedWeapon().weaponType) + " Throw";
+            }
+            if (wep is Armor)
+            {
+                AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
+                foreach (AnimationClip clip in clips)
+                {
+                    if (clip.name == attAnim)
+                    {
+                        anim.Play(attAnim);
+                        return clip.length + 1;
+                    }
+                }
+                anim.Play(attAnim);
+                return 0;
             }
         }
         /*

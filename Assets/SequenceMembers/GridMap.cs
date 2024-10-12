@@ -2610,6 +2610,7 @@ public class GridMap : SequenceMember
                 selectionMode = selection[teamPhase];
                 if (teamPhase == 0)
                 {
+                    enableChild("HUD", true);
                     setCursor(player[0].model.getTile());
                     setCameraPosition();
                 }

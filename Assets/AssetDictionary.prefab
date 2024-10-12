@@ -121,16 +121,16 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 610564cf02df823408b427adae3b06fd, type: 3}
   - {fileID: 21300000, guid: bd1c41c5b6a3e884baba76bee5bdcc1f, type: 3}
   modelValues:
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
-  - {fileID: 1789139880428247242, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
+  - {fileID: 6422181147470550412, guid: 4cce61fe84857a34a8b554853885abf4, type: 3}
+  - {fileID: 8860643157110146660, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
+  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
+  - {fileID: 3334101361408871266, guid: 6b259d10be3d735498faf4c6f3e4f0c9, type: 3}
+  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
+  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
+  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
+  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
+  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
+  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
   decoKeys: []
   decoValues: []
   audioKeys:
@@ -159,6 +159,15 @@ MonoBehaviour:
   - itemget
   - recruit
   - broken
+  - convo-music
+  - recruit-music
+  - peaceful-music
+  - sad-music
+  - storytelling-music
+  - rally-music
+  - trouble-music
+  - before-chapter-music1
+  - before-chapter-music2
   audioValues:
   - {fileID: 8300000, guid: 87f4d4c1f429e1e42b1237cb43a4fc0d, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
@@ -185,6 +194,15 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 2ca14f9fb5645a84fa390eda02277e38, type: 3}
   - {fileID: 8300000, guid: 0a1a5f5017e4df642b794b9fc992c1d7, type: 3}
   - {fileID: 8300000, guid: 007c161c4e24a62448efa1f363efe3b8, type: 3}
+  - {fileID: 8300000, guid: e5560405367360c408ce76444161d5d6, type: 3}
+  - {fileID: 8300000, guid: 18eca3eec00f0ff44b80b52416e6ca11, type: 3}
+  - {fileID: 8300000, guid: 46a6b43eea65b284da82e98a9dd78f49, type: 3}
+  - {fileID: 8300000, guid: f57a2e99f304ab34ab5826c15cbdc7b0, type: 3}
+  - {fileID: 8300000, guid: 4b7f2c0cde80ad242aa599e1122e5dd1, type: 3}
+  - {fileID: 8300000, guid: 086bf5d6fe29d36408b5ce916de2edd7, type: 3}
+  - {fileID: 8300000, guid: 190ca04acc6ffe449af2cf827c08d20b, type: 3}
+  - {fileID: 8300000, guid: 7c79b74e86fff024b9b284a353b8151d, type: 3}
+  - {fileID: 8300000, guid: d742d024e0a235b49ae30fac8501b0cc, type: 3}
   wepKeys:
   - Rose Quartz Shield
   - Pearl Spear
