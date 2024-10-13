@@ -16,7 +16,7 @@ public class FightObjective : Objective
 		return false;
     }
 
-	public override string getName()
+	public override string getName(GridMap map)
     {
 		//TODO change to Defeat left/total enemies
 		return "Defeat " + unitsToDefeat + " enemies";

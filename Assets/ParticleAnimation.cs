@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class ParticleAnimation : MonoBehaviour
 {
-    [SerializeField] private float duration;
+    private float duration;
     private float timer;
     // Start is called before the first frame update
     void Start()
     {
         GetComponent<ParticleSystem>().Play();
+        duration = GetComponent<ParticleSystem>().main.duration;
     }
 
     // Update is called once per frame

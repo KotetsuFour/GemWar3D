@@ -1115,6 +1115,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poofEffect: {fileID: -4682109959442920250, guid: 11bbf0ae6fb42ec48a858679df793310, type: 3}
+  criticalEffect: {fileID: 6253713485259512342, guid: 3f1e16c8e8b50de438fed8742ceeecff, type: 3}
 --- !u!1 &1136123507900616798
 GameObject:
   m_ObjectHideFlags: 0
@@ -2127,8 +2128,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -16.794, y: 37.5}
-  m_SizeDelta: {x: 66.4117, y: 25}
+  m_AnchoredPosition: {x: -25, y: 37.5}
+  m_SizeDelta: {x: 50, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6930212374642584411
 CanvasRenderer:
@@ -2158,7 +2159,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: LEVEL
+  m_text: LVL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4728,8 +4729,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 58, y: 128}
-  m_SizeDelta: {x: 58.559, y: 50}
+  m_AnchoredPosition: {x: 53.603, y: 128}
+  m_SizeDelta: {x: 67.353, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &181595206590370413
 CanvasRenderer:
@@ -4759,7 +4760,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Lv
+  m_text: LVL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

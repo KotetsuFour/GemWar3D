@@ -102,7 +102,7 @@ public class GridMap : SequenceMember
         turn = 1;
 
         StaticData.findDeepChild(transform, "HUDObjective").GetComponent<TextMeshProUGUI>()
-            .text = objective.getName();
+            .text = objective.getName(this);
 
         menuOptions = new List<Button>();
 
@@ -341,14 +341,13 @@ public class GridMap : SequenceMember
         {
             if (specialMenuIdx == 0)
             {
-                SpecialMenuLogic.restartChapter();
+                restartChapter();
             }
             else if (specialMenuIdx == 1)
             {
-                SpecialMenuLogic.mainMenu();
+                mainMenu();
             }
         }
-
     }
 
     public override void X()
@@ -421,10 +420,7 @@ public class GridMap : SequenceMember
         }
         else if (selectionMode == SelectionMode.ESCAPE_MENU)
         {
-            /*
-            Destroy(instantiatedSpecialMenu);
-            instantiatedMapHUD.SetActive(true);
-            */
+            enableChild("EscapeMenu", false);
             selectionMode = SelectionMode.ROAM;
         }
     }
@@ -528,15 +524,13 @@ public class GridMap : SequenceMember
         }
         else if (selectionMode == SelectionMode.GAMEOVER || selectionMode == SelectionMode.ESCAPE_MENU)
         {
-            /*
-            instantiatedSpecialMenu.transform.GetChild(0).GetChild(specialMenuIdx).GetComponent<TextMeshProUGUI>().color = Color.white;
-            specialMenuIdx--;
-            if (specialMenuIdx < 0)
-            {
-                specialMenuIdx = instantiatedSpecialMenu.transform.GetChild(0).childCount - 1;
-            }
-            instantiatedSpecialMenu.transform.GetChild(0).GetChild(specialMenuIdx).GetComponent<TextMeshProUGUI>().color = Color.cyan;
-            */
+            Transform menu = selectionMode == SelectionMode.GAMEOVER ? StaticData.findDeepChild(transform, "GameOverMenu")
+                : StaticData.findDeepChild(transform, "EscapeMenu");
+            specialMenuIdx = 1 - specialMenuIdx;
+            StaticData.findDeepChild(menu, "SpecialMenu" + specialMenuIdx).GetComponent<TextMeshProUGUI>()
+                .color = Color.cyan;
+            StaticData.findDeepChild(menu, "SpecialMenu" + (1 - specialMenuIdx)).GetComponent<TextMeshProUGUI>()
+                .color = Color.white;
         }
     }
     public override void DOWN()
@@ -575,11 +569,7 @@ public class GridMap : SequenceMember
         }
         else if (selectionMode == SelectionMode.GAMEOVER || selectionMode == SelectionMode.ESCAPE_MENU)
         {
-            /*
-            instantiatedSpecialMenu.transform.GetChild(0).GetChild(specialMenuIdx).GetComponent<TextMeshProUGUI>().color = Color.white;
-            specialMenuIdx = (specialMenuIdx + 1) % instantiatedSpecialMenu.transform.GetChild(0).childCount;
-            instantiatedSpecialMenu.transform.GetChild(0).GetChild(specialMenuIdx).GetComponent<TextMeshProUGUI>().color = Color.cyan;
-            */
+            UP();
         }
     }
     public override void LEFT()
@@ -639,20 +629,23 @@ public class GridMap : SequenceMember
     }
     public override void ESCAPE()
     {
-        /*
-        if (selectionMode == SelectionMode.ROAM)
-        {
-            instantiatedSpecialMenu = Instantiate(escapeMenu);
-            instantiatedSpecialMenu.transform.position = new Vector3(cam.transform.position.x,
-                cam.transform.position.y, SPECIAL_MENU_LAYER);
-            instantiatedMapHUD.SetActive(false);
-            instantiatedSpecialMenu.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.cyan;
-            specialMenuIdx = 0;
-            selectionMode = SelectionMode.ESCAPE_MENU;
-        }
-        */
+        enableChild("EscapeMenu", true);
+        Transform escape = StaticData.findDeepChild(transform, "EscapeMenu");
+        StaticData.findDeepChild(escape, "SpecialMenu0").GetComponent<TextMeshProUGUI>()
+            .color = Color.cyan;
+        StaticData.findDeepChild(escape, "SpecialMenu1").GetComponent<TextMeshProUGUI>()
+            .color = Color.cyan;
+        specialMenuIdx = 0;
+        selectionMode = SelectionMode.ESCAPE_MENU;
     }
-
+    public void restartChapter()
+    {
+        SpecialMenuLogic.restartChapter();
+    }
+    public void mainMenu()
+    {
+        SpecialMenuLogic.mainMenu();
+    }
     private void initiateMapMenu()
     {
         enableChild("HUD", false);
@@ -927,10 +920,10 @@ public class GridMap : SequenceMember
         if (moveDest.hasLoot() && Random.Range(0, 100) < selectedUnit.luck) //OR selectedUnit is a thief
         {
             string note = takeFrom.takeLoot(taker);
-            makeNotification(note, null/*TODO add sound effect*/);
+            makeNotification(note, "itemget");
             timer = 2;
 
-            selectionMode = SelectionMode.NOTIFICATION;
+            selectionMode = SelectionMode.ITEM_NOTE;
         }
         else
         {
@@ -938,9 +931,11 @@ public class GridMap : SequenceMember
             selectionMode = SelectionMode.ROAM;
         }
     }
-    private void makeNotification(string note, AudioClip soundEffect)
+    private void makeNotification(string note, string soundEffect)
     {
-        //TODO
+        enableChild("Notification", true);
+        StaticData.findDeepChild(transform, "NotificationMessage").GetComponent<TextMeshProUGUI>()
+            .text = note;
         if (soundEffect != null)
         {
             playOneTimeSound(soundEffect);
@@ -1236,7 +1231,7 @@ public class GridMap : SequenceMember
             makeNotification(note, null);
             timer = 2;
 
-            selectionMode = SelectionMode.NOTIFICATION;
+            selectionMode = SelectionMode.ITEM_NOTE;
         }
         else if (choice == MenuChoice.SEIZE)
         {
@@ -1346,7 +1341,7 @@ public class GridMap : SequenceMember
             }
 
             StaticData.findDeepChild(transform, "StatusObjective").GetComponent<TextMeshProUGUI>()
-                .text = "Objective: " + objective.getName();
+                .text = "Objective: " + objective.getName(this);
             StaticData.findDeepChild(transform, "StatusFailure").GetComponent<TextMeshProUGUI>()
                 .text = "Defeat: " + objective.getFailure();
             StaticData.findDeepChild(transform, "Turn").GetComponent<TextMeshProUGUI>()
@@ -1756,6 +1751,30 @@ public class GridMap : SequenceMember
 
         StaticData.findDeepChild(transform, "StatsPortrait").GetComponent<Image>()
             .sprite = AssetDictionary.getImage(unit.unitName);
+        if (unit.talkConvo != null)
+        {
+            enableChild("TalkIcon", true);
+            if (unit.talkRestricted)
+            {
+                StaticData.findDeepChild(transform, "TalkIcon").GetComponent<Image>()
+                    .sprite = AssetDictionary.getImage("Rose Quartz");
+            }
+            else
+            {
+                StaticData.findDeepChild(transform, "TalkIcon").GetComponent<Image>()
+                    .sprite = AssetDictionary.getImage("Talk");
+            }
+        }
+        else if (unit.isEssential)
+        {
+            enableChild("TalkIcon", true);
+            StaticData.findDeepChild(transform, "TalkIcon").GetComponent<Image>()
+                .sprite = AssetDictionary.getImage("Star");
+        }
+        else
+        {
+            enableChild("TalkIcon", false);
+        }
         StaticData.findDeepChild(transform, "UnitName").GetComponent<TextMeshProUGUI>()
             .text = unit.unitName;
         StaticData.findDeepChild(transform, "Class").GetComponent<TextMeshProUGUI>()
@@ -2499,11 +2518,13 @@ public class GridMap : SequenceMember
             {
                 selectionMode = SelectionMode.GAMEOVER;
                 enableChild("HUD", false);
-                //TODO game over screen
-                enableChild("GameOver", true);
+                enableChild("GameOverMenu", true);
                 specialMenuIdx = 0;
                 Destroy(music.gameObject);
+                music = getAudioSource(AssetDictionary.getAudio("gameover-music"));
+                music.Play();
 
+                selectionMode = SelectionMode.GAMEOVER;
                 Debug.Log("CHAPTER FAILED");
                 return;
             }
@@ -2515,7 +2536,7 @@ public class GridMap : SequenceMember
                     StaticData.bonusEXP += (turnPar - turn) * 50;
                 }
                 timer = 3;
-                enableChild("Victory", false);
+                enableChild("Victory", true);
                 enableChild("HUD", false);
 
                 foreach (Unit u in player)
@@ -2546,6 +2567,14 @@ public class GridMap : SequenceMember
             if (timer <= 0)
             {
                 objectiveComplete = true;
+            }
+        }
+        if (selectionMode == SelectionMode.ITEM_NOTE)
+        {
+            if (timer <= 0)
+            {
+                enableChild("Notification", false);
+                selectionMode = SelectionMode.ROAM;
             }
         }
 
@@ -2669,7 +2698,7 @@ public class GridMap : SequenceMember
     public enum SelectionMode
     {
         ROAM, MOVE, TRAVEL, MENU, SELECT_ENEMY, SELECT_TALKER, SELECT_WEAPON, FORECAST, BATTLE, MAP_MENU, IN_CONVO,
-        SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, NOTIFICATION, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER, USE_ITEM,
+        SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, ITEM_NOTE, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER, USE_ITEM,
         ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
         ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
         OTHERPHASE_SELECT_UNIT, OTHERPHASE_MOVE, OTHERPHASE_ATTACK, OTHERPHASE_BURN, OTHERPHASE_COMBAT_PAUSE,

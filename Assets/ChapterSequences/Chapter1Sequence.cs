@@ -599,7 +599,7 @@ public class Chapter1Sequence : Chapter
         gridmap.gameObject.SetActive(true);
         Tile[,] mapArray = createMap(StaticData.findDeepChild(gridmap.transform, "MapTransform"));
         gridmap.constructor(mapArray, player, enemy, ally, other,
-            new EscapeObjective(), CHAPTER_TITLE, teamNames, 10, new string[] { "map-music-1" });
+            new EscapeObjective(), CHAPTER_TITLE, teamNames, 10, new string[] { "map-music-1", "enemyphase-music" });
         playerList = gridmap.player;
 
         setUnits(mapArray, enemy, Unit.UnitTeam.ENEMY, Quaternion.Euler(0, 180, 0));

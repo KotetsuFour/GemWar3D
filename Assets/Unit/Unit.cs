@@ -62,6 +62,10 @@ public class Unit
 	public AIType ai2;
 	public UnitTeam team;
 
+	public int battles;
+	public int wins;
+	public int losses;
+
 	public string talkIconName;
 
 	public bool deployed;

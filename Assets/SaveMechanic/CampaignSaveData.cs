@@ -63,6 +63,10 @@ public class CampaignSaveData
 	public int[] fusionSkillBonus;
 	public int[] affinity;
 
+	public int[] battles;
+	public int[] wins;
+	public int[] losses;
+
 	public string[] punitName;
 	public int[] punitClass;
 	public string[] pdescription;
@@ -114,6 +118,10 @@ public class CampaignSaveData
 	public int[] pfusionSkill2;
 	public int[] pfusionSkillBonus;
 	public int[] pAffinity;
+
+	public int[] pBattles;
+	public int[] pWins;
+	public int[] pLosses;
 
 	public int[] supportAmounts;
 	public int[] supportLevels;
@@ -187,6 +195,10 @@ public class CampaignSaveData
 		fusionSkillBonus = new int[StaticData.members.Count];
 		affinity = new int[StaticData.members.Count];
 
+		battles = new int[StaticData.members.Count];
+		wins = new int[StaticData.members.Count];
+		losses = new int[StaticData.members.Count];
+
 		for (int q = 0; q < StaticData.members.Count; q++)
         {
 			Unit m = StaticData.members[q];
@@ -248,6 +260,10 @@ public class CampaignSaveData
 			fusionSkill2[q] = (int)m.fusionSkill2;
 			fusionSkillBonus[q] = (int)m.fusionSkillBonus;
 			affinity[q] = (int)m.affinity;
+
+			battles[q] = m.battles;
+			wins[q] = m.wins;
+			losses[q] = m.losses;
 		}
 
 		punitName = new string[StaticData.prisoners.Count];
@@ -293,7 +309,7 @@ public class CampaignSaveData
 
 		pdeathQuote = new string[StaticData.prisoners.Count][];
 
-		ppalette = new float[StaticData.members.Count][];
+		ppalette = new float[StaticData.prisoners.Count][];
 
 		psupportId1 = new int[StaticData.prisoners.Count];
 		psupportId2 = new int[StaticData.prisoners.Count];
@@ -301,6 +317,10 @@ public class CampaignSaveData
 		pfusionSkill2 = new int[StaticData.prisoners.Count];
 		pfusionSkillBonus = new int[StaticData.prisoners.Count];
 		pAffinity = new int[StaticData.prisoners.Count];
+
+		pBattles = new int[StaticData.prisoners.Count];
+		pWins = new int[StaticData.prisoners.Count];
+		pLosses = new int[StaticData.prisoners.Count];
 
 		for (int q = 0; q < StaticData.prisoners.Count; q++)
 		{
@@ -363,6 +383,10 @@ public class CampaignSaveData
 			pfusionSkill2[q] = (int)m.fusionSkill2;
 			pfusionSkillBonus[q] = (int)m.fusionSkillBonus;
 			pAffinity[q] = (int)m.affinity;
+
+			pBattles[q] = m.battles;
+			pWins[q] = m.wins;
+			pLosses[q] = m.losses;
 		}
 
 		supportAmounts = new int[SupportLog.supportLog.Length];
@@ -430,6 +454,10 @@ public class CampaignSaveData
 			mem.fusionSkill2 = (Unit.FusionSkill)fusionSkill2[q];
 			mem.fusionSkillBonus = (Unit.FusionSkill)fusionSkillBonus[q];
 
+			mem.battles = battles[q];
+			mem.wins = wins[q];
+			mem.losses = losses[q];
+
 			StaticData.members.Add(mem);
 		}
 
@@ -471,6 +499,10 @@ public class CampaignSaveData
 			mem.fusionSkill1 = (Unit.FusionSkill)pfusionSkill1[q];
 			mem.fusionSkill2 = (Unit.FusionSkill)pfusionSkill2[q];
 			mem.fusionSkillBonus = (Unit.FusionSkill)pfusionSkillBonus[q];
+
+			mem.battles = pBattles[q];
+			mem.wins = pWins[q];
+			mem.losses = pLosses[q];
 
 			StaticData.prisoners.Add(new Gemstone(mem));
 		}

@@ -171,72 +171,19 @@ public class UnitModel : MonoBehaviour
             {
                 attAnim = Weapon.weaponTypeName(unit.getEquippedWeapon().weaponType) + " Throw";
             }
-            if (wep is Armor)
-            {
-                AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
-                foreach (AnimationClip clip in clips)
-                {
-                    if (clip.name == attAnim)
-                    {
-                        anim.Play(attAnim);
-                        return clip.length + 1;
-                    }
-                }
-                anim.Play(attAnim);
-                return 0;
-            }
         }
-        /*
-        AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
-        foreach (AnimationClip clip in clips)
-        {
-            if (clip.name == attAnim)
-            {
-                anim.Play(attAnim);
-                return clip.length + 1;
-            }
-        }
-        anim.Play(attAnim);
-        return 0;
-        */
         anim.Play(attAnim);
         return 2;
     }
     public float playDodge()
     {
         string dodge = "Dodge";
-        /*
-        AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
-        foreach (AnimationClip clip in clips)
-        {
-            if (clip.name == dodge)
-            {
-                anim.Play(dodge);
-                return clip.length + 1;
-            }
-        }
-        anim.Play(dodge);
-        return 0;
-        */
         anim.Play(dodge);
         return 1;
     }
-    public float playGotHit()
+    public float playGotHit(int damage)
     {
-        string gothit = "Got Hit";
-        /*
-        AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
-        foreach (AnimationClip clip in clips)
-        {
-            if (clip.name == gothit)
-            {
-                anim.Play(gothit);
-                return clip.length + 1;
-            }
-        }
-        anim.Play(gothit);
-        return 0;
-        */
+        string gothit = damage > 0 ? "Got Hit" : "Parry";
         anim.Play(gothit);
         return 1;
     }

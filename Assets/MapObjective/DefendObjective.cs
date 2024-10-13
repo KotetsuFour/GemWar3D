@@ -19,7 +19,7 @@ public class DefendObjective : Objective
         return base.checkFailed(chpt) || chpt.seized;
     }
 
-    public override string getName()
+    public override string getName(GridMap map)
     {
         return "Defend for " + turnsToDefendFor + " turns";
     }

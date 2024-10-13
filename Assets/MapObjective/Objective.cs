@@ -18,11 +18,48 @@ public abstract class Objective
         return false;
     }
 
-    public abstract string getName();
+    public abstract string getName(GridMap map);
 
     public string getFailure()
     {
         return "Rose Quartz is poofed";
+    }
+
+    public string starredUnits(GridMap map)
+    {
+        if (map == null)
+        {
+            return "Starred units";
+        }
+        List<Unit> starredUnits = new List<Unit>();
+        foreach (Unit u in map.player)
+        {
+            if (u.isEssential)
+            {
+                starredUnits.Add(u);
+            }
+        }
+        if (starredUnits.Count == 1)
+        {
+            return "Rose Quartz ";
+        }
+        if (starredUnits.Count == 2)
+        {
+            return $"{starredUnits[0].unitName} and {starredUnits[1].unitName} ";
+        }
+        string ret = $"{starredUnits[0]}, ";
+        for (int q = 1; q < starredUnits.Count; q++)
+        {
+            if (q == starredUnits.Count - 1)
+            {
+                ret += $"and {starredUnits[q]} ";
+            }
+            else
+            {
+                ret += $"{starredUnits[q]}, ";
+            }
+        }
+        return ret;
     }
 
 }

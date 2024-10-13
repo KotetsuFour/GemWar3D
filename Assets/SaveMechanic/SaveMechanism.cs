@@ -6,12 +6,12 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveMechanism
 {
-    private static string folderPath = "Saves/";
+    private static string folderPath = "Assets/Saves/";
     public static void saveGame(int savefile)
     {
         BinaryFormatter formatter = new BinaryFormatter();
-        //      string path = Application.persistentDataPath + "/gamefile" + savefile + ".save";
-        string path = folderPath + "gamefile" + savefile + ".save";
+        string path = savefile == 4 ? Application.persistentDataPath + "/secretsave.save"
+            : folderPath + "gamefile" + savefile + ".save";
         FileStream stream = new FileStream(path, FileMode.Create);
         StaticData.savefile = savefile;
         CampaignSaveData info = new CampaignSaveData();
@@ -23,8 +23,9 @@ public static class SaveMechanism
 
     public static void loadGame(int savefile)
     {
-//        string path = Application.persistentDataPath + "/gamefile" + savefile + ".save";
-        string path = folderPath + "gamefile" + savefile + ".save";
+
+        string path = savefile == 4 ? Application.persistentDataPath + "/secretsave.save"
+            : folderPath + "gamefile" + savefile + ".save";
         Debug.Log(path);
         if (File.Exists(path))
         {

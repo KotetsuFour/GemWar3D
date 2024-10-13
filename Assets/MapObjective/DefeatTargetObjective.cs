@@ -14,7 +14,7 @@ public class DefeatTargetObjective : Objective
 		return !chpt.enemy.Contains(target);
     }
 
-	public override string getName()
+	public override string getName(GridMap map)
     {
 		return "Defeat " + target.unitName;
     }

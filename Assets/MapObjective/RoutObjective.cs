@@ -9,7 +9,7 @@ public class RoutObjective : Objective
 		return chpt.enemy.Count == 0;
     }
 
-	public override string getName()
+	public override string getName(GridMap map)
     {
         return "Defeat all enemies";
     }

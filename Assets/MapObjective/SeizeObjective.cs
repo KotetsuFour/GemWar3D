@@ -9,8 +9,8 @@ public class SeizeObjective : Objective
 		return chpt.seized;
     }
 
-	public override string getName()
+	public override string getName(GridMap map)
     {
-		return "Seize the seize point";
+		return "Rose Quartz must seize the seize point";
     }
 }

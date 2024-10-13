@@ -275,6 +275,14 @@ public class Battle
 	{
 		return finalState.dfdFinalWepDurability;
 	}
+	public int atkFinalWepEXP()
+    {
+		return finalState.atkFinalWepEXP;
+    }
+	public int dfdFinalWepEXP()
+    {
+		return finalState.dfdFinalWepEXP;
+    }
 	public class BattleEvent
     {
 		public int atkInitialHP;
@@ -284,9 +292,11 @@ public class Battle
 		public int atkFinalWepDurability;
 		public int dfdFinalWepDurability;
 		public bool isATKAttacking;
+		public int atkFinalWepEXP;
+		public int dfdFinalWepEXP;
 	}
 
-    public class Attack : BattleEvent
+	public class Attack : BattleEvent
     {
 		public bool hit;
 		public bool crit;
@@ -300,7 +310,8 @@ public class Battle
 			atkFinalWepDurability = act.atkFinalWepDurability;
 			dfdFinalWepDurability = act.dfdFinalWepDurability;
 			isATKAttacking = atkTurn;
-
+			atkFinalWepEXP = act.atkFinalWepEXP;
+			dfdFinalWepEXP = act.dfdFinalWepEXP;
 			if (atkTurn)
             {
 				int might = forecast[ATKMT];
@@ -337,6 +348,7 @@ public class Battle
 
 					dfdFinalHP -= damage;
 					dfdFinalWepDurability--;
+					atkFinalWepEXP++;
                 }
 			}
 			else
@@ -375,6 +387,7 @@ public class Battle
 
 					atkFinalHP -= damage;
 					atkFinalWepDurability--;
+					dfdFinalWepEXP++;
 				}
 			}
 		}
@@ -395,7 +408,9 @@ public class Battle
 			atkFinalWepDurability = prev.atkFinalWepDurability;
 			dfdFinalWepDurability = prev.dfdFinalWepDurability;
 			isATKAttacking = prev.isATKAttacking;
-        }
+			atkFinalWepEXP = prev.atkFinalWepEXP;
+			dfdFinalWepEXP = prev.dfdFinalWepEXP;
+		}
 
 		public void execute(Unit atk, Unit dfd, bool atkTurn)
         {
@@ -487,6 +502,8 @@ public class Battle
 			dfdFinalHP = dfdInitialHP;
 			atkFinalWepDurability = prev.atkFinalWepDurability;
 			dfdFinalWepDurability = prev.dfdFinalWepDurability;
+			atkFinalWepEXP = prev.atkFinalWepEXP;
+			dfdFinalWepEXP = prev.dfdFinalWepEXP;
 		}
 
 		public void execute(LinkedList<BattleEvent> events, int[] forecast, Unit atk, Unit dfd,

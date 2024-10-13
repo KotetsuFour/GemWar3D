@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class BattleAnimation : MonoBehaviour
 {
     [SerializeField] private ParticleAnimation poofEffect;
+    [SerializeField] private ParticleAnimation criticalEffect;
 
     private UnitModel playerUnit;
     private UnitModel enemyUnit;
@@ -198,10 +199,18 @@ public class BattleAnimation : MonoBehaviour
         if (playerUnit != null)
         {
             playerUnit.transform.SetPositionAndRotation(playerReturnPos, playerReturnRot);
+            if (playerWep != null && playerWep.weaponType == playerUnit.getUnit().weaponType)
+            {
+                playerUnit.getUnit().proficiency += isPlayerAttack ? battle.atkFinalWepEXP() : battle.dfdFinalWepEXP();
+            }
         }
         if (enemyUnit != null)
         {
             enemyUnit.transform.SetPositionAndRotation(enemyReturnPos, enemyReturnRot);
+            if (enemyWep != null && enemyWep.weaponType == enemyUnit.getUnit().weaponType)
+            {
+                enemyUnit.getUnit().proficiency += isPlayerAttack ? battle.dfdFinalWepEXP() : battle.atkFinalWepEXP();
+            }
         }
 
         foreach (Unit u in gridmap.player)
@@ -318,6 +327,11 @@ public class BattleAnimation : MonoBehaviour
                 timer = 1;
                 currentActor.playIdle();
                 gridmap.playOneTimeSound(AssetDictionary.getAudio("crit-activate"));
+                Instantiate(criticalEffect, new Vector3(
+                    currentActor.transform.position.x,
+                    currentActor.transform.position.y + 1,
+                    currentActor.transform.position.z
+                    ), criticalEffect.transform.rotation);
                 phase = Phase.ACTIVATE_CRITICAL;
             }
             else
@@ -356,7 +370,8 @@ public class BattleAnimation : MonoBehaviour
             {
                 if (((Battle.Attack)currentEvent).hit)
                 {
-                    timer = target.playGotHit();
+                    timer = target.playGotHit(((Battle.Attack)currentEvent).damage);
+                    currentActor.playIdle();
                     updateHPs();
 
                     if (((Battle.Attack)currentEvent).damage <= 0)
@@ -376,6 +391,7 @@ public class BattleAnimation : MonoBehaviour
                 {
                     gridmap.playOneTimeSound(AssetDictionary.getAudio("dodge"));
                     timer = target.playDodge();
+                    currentActor.playIdle();
                 }
                 phase = Phase.HITANIM;
             }
@@ -389,7 +405,8 @@ public class BattleAnimation : MonoBehaviour
                 if (((Battle.Attack)currentEvent).hit)
                 {
                     setCamera(target);
-                    timer = target.playGotHit();
+                    timer = target.playGotHit(((Battle.Attack)currentEvent).damage);
+                    currentActor.playIdle();
                     updateHPs();
 
                     if (((Battle.Attack)currentEvent).damage <= 0)
@@ -407,8 +424,10 @@ public class BattleAnimation : MonoBehaviour
                 }
                 else
                 {
+                    setCamera(target);
                     gridmap.playOneTimeSound(AssetDictionary.getAudio("dodge"));
                     timer = target.playDodge();
+                    currentActor.playIdle();
                 }
                 phase = Phase.HITANIM;
             }

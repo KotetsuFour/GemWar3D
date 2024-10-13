@@ -13,7 +13,7 @@ public class SurviveObjective : Objective
     {
 		return chpt.turn > turnsToSurvive;
     }
-	public override string getName()
+	public override string getName(GridMap map)
     {
 		return "Survive for " + turnsToSurvive + " turns";
     }

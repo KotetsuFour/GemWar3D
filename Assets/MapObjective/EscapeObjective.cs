@@ -16,9 +16,8 @@ public class EscapeObjective : Objective
         return true;
     }
 
-	public override string getName()
+	public override string getName(GridMap map)
     {
-        //TODO make it more clear that it's only the essential units that need to escape
-        return "Starred units escape to Warp Pad";
+        return starredUnits(map) + "must escape to Warp Pad";
     }
 }
