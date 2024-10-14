@@ -102,7 +102,7 @@ public class GridMap : SequenceMember
         turn = 1;
 
         StaticData.findDeepChild(transform, "HUDObjective").GetComponent<TextMeshProUGUI>()
-            .text = objective.getName(this);
+            .text = "Objective: " + objective.getName(this);
 
         menuOptions = new List<Button>();
 
@@ -154,7 +154,7 @@ public class GridMap : SequenceMember
             Unit unitHere = tile.getOccupant().getUnit();
             enableChild("UnitHere", true);
             StaticData.findDeepChild(transform, "UnitHerePortrait").GetComponent<Image>()
-                .sprite = AssetDictionary.getImage(unitHere.unitName);
+                .sprite = AssetDictionary.getPortrait(unitHere.unitName);
             StaticData.findDeepChild(transform, "UnitHereName").GetComponent<TextMeshProUGUI>()
                 .text = unitHere.unitName;
             StaticData.findDeepChild(transform, "UnitHereHP").GetComponent<TextMeshProUGUI>()
@@ -241,7 +241,64 @@ public class GridMap : SequenceMember
                 initiateTravel(hit.collider.GetComponent<Tile>());
             }
         }
-
+        else if (selectionMode == SelectionMode.SELECT_TALKER)
+        {
+            Tile tile = null;
+            RaycastHit hit;
+            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
+            {
+                tile = hit.collider.GetComponent<UnitModel>().getTile();
+            }
+            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
+            {
+                tile = hit.collider.GetComponent<Tile>();
+            }
+            if (tile != null && interactableUnits.Contains(tile))
+            {
+                interactIdx = interactableUnits.IndexOf(tile);
+                Z();
+            }
+        }
+        else if (selectionMode == SelectionMode.IN_CONVO)
+        {
+            Z();
+        }
+        else if (selectionMode == SelectionMode.SELECT_TRADER)
+        {
+            Tile tile = null;
+            RaycastHit hit;
+            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
+            {
+                tile = hit.collider.GetComponent<UnitModel>().getTile();
+            }
+            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
+            {
+                tile = hit.collider.GetComponent<Tile>();
+            }
+            if (tile != null && interactableUnits.Contains(tile))
+            {
+                interactIdx = interactableUnits.IndexOf(tile);
+                Z();
+            }
+        }
+        else if (selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
+        {
+            Tile tile = null;
+            RaycastHit hit;
+            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
+            {
+                tile = hit.collider.GetComponent<UnitModel>().getTile();
+            }
+            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
+            {
+                tile = hit.collider.GetComponent<Tile>();
+            }
+            if (tile != null && interactableUnits.Contains(tile))
+            {
+                interactIdx = interactableUnits.IndexOf(tile);
+                Z();
+            }
+        }
     }
     public override void RIGHT_MOUSE()
     {
@@ -294,7 +351,8 @@ public class GridMap : SequenceMember
             finalizeMove();
             startBattle();
         }
-        else if (selectionMode == SelectionMode.BATTLE)
+        else if (selectionMode == SelectionMode.BATTLE || selectionMode == SelectionMode.ENEMYPHASE_ATTACK
+            || selectionMode == SelectionMode.ALLYPHASE_ATTACK || selectionMode == SelectionMode.OTHERPHASE_ATTACK)
         {
             instantiatedBattleAnimation.levelUpOK();
         }
@@ -618,7 +676,8 @@ public class GridMap : SequenceMember
 
     public override void ENTER()
     {
-        if (selectionMode == SelectionMode.BATTLE)
+        if (selectionMode == SelectionMode.BATTLE || selectionMode == SelectionMode.ENEMYPHASE_ATTACK
+            || selectionMode == SelectionMode.ALLYPHASE_ATTACK || selectionMode == SelectionMode.OTHERPHASE_ATTACK)
         {
             instantiatedBattleAnimation.skip();
         }
@@ -1720,9 +1779,116 @@ public class GridMap : SequenceMember
 
     private Vector3[] getPath()
     {
-        //TODO use A Star
+        Debug.Log(moveDest.name);
+        List<Tile> open = new List<Tile>();
+        List<Tile> closed = new List<Tile>();
+        Dictionary<Tile, int> f = new Dictionary<Tile, int>();
+        Dictionary<Tile, int> g = new Dictionary<Tile, int>();
+        Dictionary<Tile, int> pos = new Dictionary<Tile, int>();
+        Dictionary<Tile, Tile> parent = new Dictionary<Tile, Tile>();
 
-        return new Vector3[] { moveDest.getStage().position };
+        open.Add(selectedTile);
+        f.Add(selectedTile, 0);
+        g.Add(selectedTile, 0);
+        pos.Add(selectedTile, 0);
+        while (open.Count > 0)
+        {
+            Tile check = open[0];
+            for (int idx = 1; idx < open.Count; idx++)
+            {
+                if (f[check] > f[open[idx]])
+                {
+                    check = open[idx];
+                }
+            }
+            open.Remove(check);
+            List<Tile> successor = new List<Tile>();
+            if (check.x > 0)
+            {
+                Tile child = map[check.x - 1, check.y];
+                successor.Add(child);
+            }
+            if (check.x < width - 1)
+            {
+                Tile child = map[check.x + 1, check.y];
+                successor.Add(child);
+            }
+            if (check.y > 0)
+            {
+                Tile child = map[check.x, check.y - 1];
+                successor.Add(child);
+            }
+            if (check.y < height - 1)
+            {
+                Tile child = map[check.x, check.y + 1];
+                successor.Add(child);
+            }
+            foreach (Tile child in successor)
+            {
+                if (child == moveDest)
+                {
+                    parent.Add(child, check);
+                    return interpretPath(parent);
+                }
+                if (closed.Contains(child)
+                    || (child.getOccupant() != null && (child.getOccupant().getUnit().team == Unit.UnitTeam.ENEMY) != (selectedUnit.team == Unit.UnitTeam.ENEMY))
+                    || child.getCost(selectedUnit.isFlying()) == int.MaxValue)
+                {
+                    continue;
+                }
+                addToDictionary(child, pos[check] + 1, pos);
+                addToDictionary(child, g[check] + child.getCost(selectedUnit.isFlying()), g);
+                int h = Mathf.Abs(child.x - check.x) + Mathf.Abs(child.y - check.y);
+                int calculateF = g[child] + h;
+                if (!f.ContainsKey(child) || f[child] > calculateF)
+                {
+                    open.Add(child);
+                    addToDictionary(child, check, parent);
+                    addToDictionary(child, calculateF, f);
+                }
+            }
+            closed.Add(check);
+        }
+        return interpretPath(parent);
+    }
+    private Vector3[] interpretPath(Dictionary<Tile, Tile> pathData)
+    {
+        Tile current = moveDest;
+        List<Vector3> backwards = new List<Vector3>();
+        while (current != selectedTile)
+        {
+            backwards.Add(current.getStage().position);
+            current = pathData[current];
+        }
+        backwards.Add(selectedTile.getStage().position);
+        Vector3[] ret = new Vector3[backwards.Count];
+        for (int q = backwards.Count - 1; q >= 0; q--)
+        {
+            ret[(backwards.Count - 1) - q] = backwards[q];
+        }
+        return ret;
+    }
+    private void addToDictionary(Tile key, Tile value, Dictionary<Tile, Tile> dictionary)
+    {
+        if (dictionary.ContainsKey(key))
+        {
+            dictionary[key] = value;
+        }
+        else
+        {
+            dictionary.Add(key, value);
+        }
+    }
+    private void addToDictionary(Tile key, int value, Dictionary<Tile, int> dictionary)
+    {
+        if (dictionary.ContainsKey(key))
+        {
+            dictionary[key] = value;
+        }
+        else
+        {
+            dictionary.Add(key, value);
+        }
     }
 
     private void statsPage(Unit unit)
@@ -1750,7 +1916,7 @@ public class GridMap : SequenceMember
         }
 
         StaticData.findDeepChild(transform, "StatsPortrait").GetComponent<Image>()
-            .sprite = AssetDictionary.getImage(unit.unitName);
+            .sprite = AssetDictionary.getPortrait(unit.unitName);
         if (unit.talkConvo != null)
         {
             enableChild("TalkIcon", true);
@@ -1903,11 +2069,15 @@ public class GridMap : SequenceMember
         {
             StaticData.findDeepChild(transform, "BonusSkill").GetComponent<TextMeshProUGUI>()
                 .text = "---";
+            StaticData.findDeepChild(transform, "BonusSkill").GetComponent<TextMeshProUGUI>()
+                .text = "";
         }
         else
         {
             StaticData.findDeepChild(transform, "BonusSkill").GetComponent<TextMeshProUGUI>()
-                .text = ("" + unit.fusionSkillBonus).Replace('_', ' ');
+                .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkillBonus].skillName;
+            StaticData.findDeepChild(transform, "BonusSkillDesc").GetComponent<TextMeshProUGUI>()
+                .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkillBonus].description;
         }
 
         Unit[] partners = StaticData.findLivingSupportPartners(unit);
@@ -1925,7 +2095,9 @@ public class GridMap : SequenceMember
             StaticData.findDeepChild(transform, "Support1Level").GetComponent<TextMeshProUGUI>()
                 .text = "" + SupportLog.supportLog[unit.supportId1].level;
             StaticData.findDeepChild(transform, "Support1Skill").GetComponent<TextMeshProUGUI>()
-                .text = "" + unit.fusionSkill1;
+            .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkill1].skillName;
+            StaticData.findDeepChild(transform, "Support1Skill").GetComponent<TextMeshProUGUI>()
+            .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkill2].description;
         }
         if (partners[1] == null)
         {
@@ -1941,7 +2113,9 @@ public class GridMap : SequenceMember
             StaticData.findDeepChild(transform, "Support2Level").GetComponent<TextMeshProUGUI>()
                 .text = "" + SupportLog.supportLog[unit.supportId2].level;
             StaticData.findDeepChild(transform, "Support2Skill").GetComponent<TextMeshProUGUI>()
-                .text = "" + unit.fusionSkill2;
+            .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkill2].skillName;
+            StaticData.findDeepChild(transform, "Support2SkillDesc").GetComponent<TextMeshProUGUI>()
+            .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkill2].description;
         }
     }
     private void switchStatsPage()
@@ -2037,12 +2211,12 @@ public class GridMap : SequenceMember
         StaticData.findDeepChild(forecastDisplay, "PlayerName").GetComponent<TextMeshProUGUI>()
             .text = selectedUnit.unitName;
         StaticData.findDeepChild(forecastDisplay, "PlayerPortrait").GetComponent<Image>()
-            .sprite = AssetDictionary.getImage(selectedUnit.unitName);
+            .sprite = AssetDictionary.getPortrait(selectedUnit.unitName);
 
         StaticData.findDeepChild(forecastDisplay, "EnemyName").GetComponent<TextMeshProUGUI>()
             .text = targetEnemy.unitName;
         StaticData.findDeepChild(forecastDisplay, "EnemyPortrait").GetComponent<Image>()
-            .sprite = AssetDictionary.getImage(targetEnemy.unitName);
+            .sprite = AssetDictionary.getPortrait(targetEnemy.unitName);
 
         if (selectedUnit.getEquippedWeapon() == null)
         {
@@ -2587,7 +2761,6 @@ public class GridMap : SequenceMember
         {
             if (timer <= 0)
             {
-                targetTile = (Tile)npcAction[3];
                 targetEnemy = targetTile.getOccupant().getUnit();
                 startBattle();
             }
@@ -2595,12 +2768,13 @@ public class GridMap : SequenceMember
         else if (selectionMode == SelectionMode.ENEMYPHASE_MOVE && selectedUnit.model.reachedDestination())
         {
             finalizeMove();
-            setCursor(moveDest);
             setCameraPosition();
             if ((Unit.AIType)npcAction[0] == Unit.AIType.GUARD || (Unit.AIType)npcAction[0] == Unit.AIType.ATTACK
                 || ((Unit.AIType)npcAction[0] == Unit.AIType.PURSUE && (Tile)npcAction[3] != null))
             {
                 timer = 1;
+                targetTile = (Tile)npcAction[3];
+                setCursor(targetTile);
 
                 selectionMode = SelectionMode.ENEMYPHASE_COMBAT_PAUSE;
             }

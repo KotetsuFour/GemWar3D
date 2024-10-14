@@ -242,6 +242,10 @@ public class BattleAnimation : MonoBehaviour
 
     public void skip()
     {
+        if (phase > Phase.END)
+        {
+            return;
+        }
         if (isPlayerAttack)
         {
             playerUnit.getUnit().currentHP = battle.getATKFinalHP();
@@ -748,7 +752,7 @@ public class BattleAnimation : MonoBehaviour
         StaticData.findDeepChild(transform, "LevelUpBanner").gameObject.SetActive(false);
         StaticData.findDeepChild(transform, "LevelUp").gameObject.SetActive(true);
         StaticData.findDeepChild(transform, "LevelUpPortrait").GetComponent<Image>()
-            .sprite = AssetDictionary.getImage(playerUnit.getUnit().unitName);
+            .sprite = AssetDictionary.getPortrait(playerUnit.getUnit().unitName);
         StaticData.findDeepChild(transform, "LevelUpClass").GetComponent<TextMeshProUGUI>()
             .text = "" + playerUnit.getUnit().unitClass.className;
         StaticData.findDeepChild(transform, "LevelUpLevel").GetComponent<TextMeshProUGUI>()

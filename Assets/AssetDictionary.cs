@@ -13,12 +13,24 @@ public class AssetDictionary : MonoBehaviour
     [SerializeField] private List<AudioClip> audioValues;
     [SerializeField] private List<string> wepKeys;
     [SerializeField] private List<GameObject> wepValues;
+    [SerializeField] private List<Sprite> portraits;
 
     private static Dictionary<string, Sprite> imageDictionary;
     private static List<GameObject> modelDictionary;
     private static Dictionary<string, GameObject> decoDictionary;
     private static Dictionary<string, AudioClip> audioDictionary;
     private static Dictionary<string, GameObject> weaponDictionary;
+    private static Dictionary<string, Sprite> portraitDictionary;
+
+    public static string PORTRAIT_NEUTRAL = "_neutral";
+    public static string PORTRAIT_HAPPY = "_happy";
+    public static string PORTRAIT_NERVOUS = "_nervous";
+    public static string PORTRAIT_DARING = "_daring";
+    public static string PORTRAIT_SAD = "_sad";
+    public static string PORTRAIT_ANGRY = "_angry";
+    public static string PORTRAIT_CONFUSED = "_confused";
+    public static string PORTRAIT_TEASE = "_tease";
+    public static string PORTRAIT_SKEPTIC = "_skeptic";
 
     private void Start()
     {
@@ -43,6 +55,11 @@ public class AssetDictionary : MonoBehaviour
         {
             weaponDictionary.Add(wepKeys[q], wepValues[q]);
         }
+        portraitDictionary = new Dictionary<string, Sprite>();
+        foreach (Sprite sprite in portraits)
+        {
+            portraitDictionary.Add(sprite.name.Replace(".png", ""), sprite);
+        }
     }
 
     public static Sprite getImage(string key)
@@ -64,5 +81,13 @@ public class AssetDictionary : MonoBehaviour
     public static GameObject getWeapon(string key)
     {
         return weaponDictionary[key];
+    }
+    public static Sprite getPortrait(string unitName)
+    {
+        return getPortrait(unitName, PORTRAIT_NEUTRAL);
+    }
+    public static Sprite getPortrait(string unitName, string expression)
+    {
+        return portraitDictionary[unitName.ToLower().Replace(' ', '_') + expression];
     }
 }

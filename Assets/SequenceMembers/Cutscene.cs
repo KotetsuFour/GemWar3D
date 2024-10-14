@@ -62,7 +62,7 @@ public class Cutscene : SequenceMember
                 StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().color
                     = Color.white;
                 StaticData.findDeepChild(transform, "Portrait").GetComponent<Image>().sprite
-                    = AssetDictionary.getImage(speakerAndText[1].Replace('_', ' '));
+                    = AssetDictionary.getPortrait(speakerAndText[1]);
             }
             StaticData.findDeepChild(transform, "Dialogue").GetComponent<TextMeshProUGUI>().text
                 = dialogue[idx].Substring(speakerAndText[0].Length + speakerAndText[1].Length + 2);
@@ -256,7 +256,7 @@ public class Cutscene : SequenceMember
             else if (comm == "image")
             {
                 string imageName = parts[1];
-                Sprite image = AssetDictionary.getImage(imageName);
+                Sprite image = AssetDictionary.getPortrait(imageName);
                 Image display = StaticData.findDeepChild(transform, "DisplayImage").GetComponent<Image>();
                 display.sprite = image;
                 display.gameObject.SetActive(true);
@@ -286,8 +286,16 @@ public class Cutscene : SequenceMember
                 else
                 {
                     StaticData.findDeepChild(transform, "RightSpeaker").gameObject.SetActive(true);
-                    StaticData.findDeepChild(transform, "RightSpeaker").GetComponent<Image>()
-                        .sprite = AssetDictionary.getImage(parts[1].Replace('_', ' '));
+                    if (parts.Length > 2)
+                    {
+                        StaticData.findDeepChild(transform, "RightSpeaker").GetComponent<Image>()
+                            .sprite = AssetDictionary.getPortrait(parts[1], parts[2]);
+                    }
+                    else
+                    {
+                        StaticData.findDeepChild(transform, "RightSpeaker").GetComponent<Image>()
+                            .sprite = AssetDictionary.getPortrait(parts[1]);
+                    }
                 }
             }
             else if (comm == "left")
@@ -299,8 +307,16 @@ public class Cutscene : SequenceMember
                 else
                 {
                     StaticData.findDeepChild(transform, "LeftSpeaker").gameObject.SetActive(true);
-                    StaticData.findDeepChild(transform, "LeftSpeaker").GetComponent<Image>()
-                        .sprite = AssetDictionary.getImage(parts[1].Replace('_', ' '));
+                    if (parts.Length > 2)
+                    {
+                        StaticData.findDeepChild(transform, "LeftSpeaker").GetComponent<Image>()
+                            .sprite = AssetDictionary.getPortrait(parts[1], parts[2]);
+                    }
+                    else
+                    {
+                        StaticData.findDeepChild(transform, "LeftSpeaker").GetComponent<Image>()
+                            .sprite = AssetDictionary.getPortrait(parts[1]);
+                    }
                 }
             }
         }

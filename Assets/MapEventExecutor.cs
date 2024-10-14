@@ -67,7 +67,7 @@ public class MapEventExecutor : MonoBehaviour
                 StaticData.findDeepChild(gridmap.transform, "Portrait").GetComponent<Image>().color
                     = Color.white;
                 StaticData.findDeepChild(gridmap.transform, "Portrait").GetComponent<Image>().sprite
-                    = AssetDictionary.getImage(speakerAndText[1].Replace('_', ' '));
+                    = AssetDictionary.getPortrait(speakerAndText[1]);
             }
             StaticData.findDeepChild(gridmap.transform, "Dialogue").GetComponent<TextMeshProUGUI>().text
                 = script[idx].Substring(speakerAndText[0].Length + speakerAndText[1].Length + 2);
@@ -292,7 +292,6 @@ public class MapEventExecutor : MonoBehaviour
                 gridmap.enemy.Remove(speaker);
                 gridmap.ally.Remove(speaker);
                 gridmap.other.Remove(speaker);
-                //            talkerTile.getOccupant().setTalkIcon(null);
                 Destroy(speaker.model.gameObject);
                 talkerTile.setOccupant(null);
             }
@@ -302,7 +301,6 @@ public class MapEventExecutor : MonoBehaviour
                 gridmap.ally.Remove(speaker);
                 gridmap.other.Remove(speaker);
                 gridmap.player.Add(speaker);
-                //            speaker.setTalkIcon(null);
                 speaker.team = Unit.UnitTeam.PLAYER;
                 speaker.model.setCircleColor();
                 StaticData.members.Add(speaker);
@@ -316,8 +314,16 @@ public class MapEventExecutor : MonoBehaviour
                 else
                 {
                     StaticData.findDeepChild(gridmap.transform, "RightSpeaker").gameObject.SetActive(true);
-                    StaticData.findDeepChild(gridmap.transform, "RightSpeaker").GetComponent<Image>()
-                        .sprite = AssetDictionary.getImage(parts[1].Replace('_', ' '));
+                    if (parts.Length > 2)
+                    {
+                        StaticData.findDeepChild(gridmap.transform, "RightSpeaker").GetComponent<Image>()
+                            .sprite = AssetDictionary.getPortrait(parts[1], parts[2]);
+                    }
+                    else
+                    {
+                        StaticData.findDeepChild(gridmap.transform, "RightSpeaker").GetComponent<Image>()
+                            .sprite = AssetDictionary.getPortrait(parts[1]);
+                    }
                 }
             }
             else if (comm == "left")
@@ -329,8 +335,16 @@ public class MapEventExecutor : MonoBehaviour
                 else
                 {
                     StaticData.findDeepChild(gridmap.transform, "LeftSpeaker").gameObject.SetActive(true);
-                    StaticData.findDeepChild(gridmap.transform, "LeftSpeaker").GetComponent<Image>()
-                        .sprite = AssetDictionary.getImage(parts[1].Replace('_', ' '));
+                    if (parts.Length > 2)
+                    {
+                        StaticData.findDeepChild(gridmap.transform, "LeftSpeaker").GetComponent<Image>()
+                            .sprite = AssetDictionary.getPortrait(parts[1], parts[2]);
+                    }
+                    else
+                    {
+                        StaticData.findDeepChild(gridmap.transform, "LeftSpeaker").GetComponent<Image>()
+                            .sprite = AssetDictionary.getPortrait(parts[1]);
+                    }
                 }
             }
         }

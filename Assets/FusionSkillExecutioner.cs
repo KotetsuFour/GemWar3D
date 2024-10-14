@@ -9,7 +9,7 @@ public class FusionSkillExecutioner
 
     public static FusionSkillExecutioner[] SKILL_LIST =
     {
-        new FusionSkillExecutioner("Locked", "Unavailable"),
+        new FusionSkillExecutioner("Locked", ""),
         new FusionSkillExecutioner("Future Vision", "Battle forecasts become predictable for the rest of the turn (usable once per chapter)."),
         new FusionSkillExecutioner("Plants", ""),
         new FusionSkillExecutioner("Hologram", "Summon a hologram of this unit as an ally, with the same basic stats."),

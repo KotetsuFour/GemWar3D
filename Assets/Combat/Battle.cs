@@ -347,7 +347,7 @@ public class Battle
                     }
 
 					dfdFinalHP -= damage;
-					dfdFinalWepDurability--;
+					atkFinalWepDurability--;
 					atkFinalWepEXP++;
                 }
 			}
@@ -386,7 +386,7 @@ public class Battle
 					}
 
 					atkFinalHP -= damage;
-					atkFinalWepDurability--;
+					dfdFinalWepDurability--;
 					dfdFinalWepEXP++;
 				}
 			}

@@ -50,6 +50,7 @@ public class Tile : MonoBehaviour
         this.height = height;
         this.type = type;
         gemstones = new List<Gemstone>();
+        name = $"Tile {x},{y}";
 
         float meshHeight = (height + 0.0f) * TILE_HEIGHT_MULTIPLIER;
         setUtilityPositions(meshHeight);
