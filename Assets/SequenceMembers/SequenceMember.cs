@@ -59,7 +59,10 @@ public abstract class SequenceMember : MonoBehaviour
     {
         //nothing
     }
-
+    public AudioSource getAudioSource(string soundName)
+    {
+        return getAudioSource(AssetDictionary.getAudio(soundName));
+    }
     public AudioSource getAudioSource(AudioClip clip)
     {
         AudioSource ret = Instantiate(sound_effect);

@@ -158,8 +158,6 @@ MonoBehaviour:
   - exp
   - warp
   - level
-  - map-music-1-c
-  - battle-music-c
   - itemget
   - recruit
   - broken
@@ -195,8 +193,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a687239aa55aba3458243434c7092eab, type: 3}
   - {fileID: 8300000, guid: 4f075dd1588edf24d87471f8ef11e860, type: 3}
   - {fileID: 8300000, guid: 8cae1602d9f0cd944aa747b39513fb27, type: 3}
-  - {fileID: 8300000, guid: 3ab02bb2777e6a746a59533ebe48d1fb, type: 3}
-  - {fileID: 8300000, guid: 87b0fd941ac98c7489d6f9e5937861c8, type: 3}
   - {fileID: 8300000, guid: 2ca14f9fb5645a84fa390eda02277e38, type: 3}
   - {fileID: 8300000, guid: 0a1a5f5017e4df642b794b9fc992c1d7, type: 3}
   - {fileID: 8300000, guid: 007c161c4e24a62448efa1f363efe3b8, type: 3}
@@ -211,6 +207,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d742d024e0a235b49ae30fac8501b0cc, type: 3}
   - {fileID: 8300000, guid: acff377e44c876b41ada7f6f5511ff90, type: 3}
   - {fileID: 8300000, guid: e02cca695255d7a4d8b7702256eb147c, type: 3}
+  copyrightAudioKeys:
+  - main-theme
+  copyrightAudioValues:
+  - {fileID: 8300000, guid: 874af7b454432694186c2052fddc9e78, type: 3}
   wepKeys:
   - Rose Quartz Shield
   - Pearl Spear
@@ -269,3 +269,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a7f95f87fe420274e85f59c8c763d311, type: 3}
   - {fileID: 21300000, guid: e399765733a23134080941d57de76815, type: 3}
   - {fileID: 21300000, guid: 8fedcca8a4fdc714c9a3bc7a8022d45f, type: 3}
+  - {fileID: 21300000, guid: 04cf1c5acce3d0d4dad94e85e144f500, type: 3}
+  - {fileID: 21300000, guid: b60e99a09d09ed14397f7c5de560a75a, type: 3}
+  - {fileID: 21300000, guid: 4f8c773e9ae6ef7488cdbb5e20319151, type: 3}
+  - {fileID: 21300000, guid: e646e865e27b77e4fa0453763ef11720, type: 3}
+  - {fileID: 21300000, guid: 081e1cd0d9293bf439d88eada4ab9b86, type: 3}
+  - {fileID: 21300000, guid: 51972cf6c71741d40974d473e7ce7ac0, type: 3}
+  - {fileID: 21300000, guid: 4017551455f3dac45b87a4f142b30137, type: 3}
+  - {fileID: 21300000, guid: da86db7a02285b64c91a02aa253eb5a1, type: 3}
+  - {fileID: 21300000, guid: 3a88273bebd538e44924bc13d18e81ad, type: 3}

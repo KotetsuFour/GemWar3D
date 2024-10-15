@@ -11,7 +11,6 @@ public class GridMap : SequenceMember
 
     [SerializeField] private bool testingMode;
     [SerializeField] private bool testFutureVision;
-    [SerializeField] private bool copyrightMode;
 
     public List<Unit> player;
     public List<Unit> enemy;
@@ -84,8 +83,6 @@ public class GridMap : SequenceMember
         Objective objective, string chapterName, string[] teamNames, int turnPar,
         string[] teamMusic)
     {
-        StaticData.copyrightMusic = copyrightMode;
-
         this.map = map;
         width = map.GetLength(0);
         height = map.GetLength(1);

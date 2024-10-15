@@ -525,4 +525,29 @@ public class CampaignSaveData
 		StaticData.chapterPrep = chapterPrep;
 		StaticData.positions = positions;
 	}
+
+	public static void wipeMemory()
+    {
+		StaticData.iron = 0;
+		StaticData.steel = 0;
+		StaticData.silver = 0;
+		StaticData.bonusEXP = 0;
+
+		StaticData.members.Clear();
+		StaticData.prisoners.Clear();
+		for (int q = 0; q < SupportLog.supportLog.Length; q++)
+		{
+			SupportLog.supportLog[q].supportAmount = 0;
+			SupportLog.supportLog[q].level = SupportData.SupportLevel.NONE;
+		}
+		StaticData.scene = 1;
+		for (int q = 0; q < StaticData.convoyIds.Length; q++)
+		{
+			StaticData.convoyIds[q] = new List<int>();
+			StaticData.convoyDurabilities[q] = new List<int>();
+		}
+		StaticData.savefile = 0;
+		StaticData.chapterPrep = 0;
+		StaticData.positions = null;
+	}
 }

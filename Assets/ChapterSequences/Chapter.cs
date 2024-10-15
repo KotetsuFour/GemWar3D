@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Chapter : MonoBehaviour
 {
-    [SerializeField] private UnitModel model;
+    [SerializeField] private UnitModel model; //This is the UnitModel.cs class, not the 3D model
+                                                //PLEASE DO NOT DELETE
     [SerializeField] private Tile tile;
 
     public string[] tileMap;

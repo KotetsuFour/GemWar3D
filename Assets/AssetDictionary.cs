@@ -11,6 +11,8 @@ public class AssetDictionary : MonoBehaviour
     [SerializeField] private List<GameObject> decoValues;
     [SerializeField] private List<string> audioKeys;
     [SerializeField] private List<AudioClip> audioValues;
+    [SerializeField] private List<string> copyrightAudioKeys;
+    [SerializeField] private List<AudioClip> copyrightAudioValues;
     [SerializeField] private List<string> wepKeys;
     [SerializeField] private List<GameObject> wepValues;
     [SerializeField] private List<Sprite> portraits;
@@ -19,6 +21,7 @@ public class AssetDictionary : MonoBehaviour
     private static List<GameObject> modelDictionary;
     private static Dictionary<string, GameObject> decoDictionary;
     private static Dictionary<string, AudioClip> audioDictionary;
+    private static Dictionary<string, AudioClip> copyrightAudioDictionary;
     private static Dictionary<string, GameObject> weaponDictionary;
     private static Dictionary<string, Sprite> portraitDictionary;
 
@@ -50,6 +53,11 @@ public class AssetDictionary : MonoBehaviour
         {
             audioDictionary.Add(audioKeys[q], audioValues[q]);
         }
+        copyrightAudioDictionary = new Dictionary<string, AudioClip>();
+        for (int q = 0; q < copyrightAudioKeys.Count; q++)
+        {
+            copyrightAudioDictionary.Add(copyrightAudioKeys[q], copyrightAudioValues[q]);
+        }
         weaponDictionary = new Dictionary<string, GameObject>();
         for (int q = 0; q < wepKeys.Count; q++)
         {
@@ -76,6 +84,11 @@ public class AssetDictionary : MonoBehaviour
     }
     public static AudioClip getAudio(string key)
     {
+        if ((StaticData.copyrightMusic && copyrightAudioDictionary.ContainsKey(key))
+            || !audioDictionary.ContainsKey(key))
+        {
+            return copyrightAudioDictionary[key];
+        }
         return audioDictionary[key];
     }
     public static GameObject getWeapon(string key)
