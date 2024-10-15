@@ -78,6 +78,8 @@ public class GridMap : SequenceMember
     private AudioSource music;
     private string[] teamMusic;
 
+    private static int NUM_CAMERA_POSITIONS = 5;
+
     public void constructor(Tile[,] map,
         Unit[] playerUnits, Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits,
         Objective objective, string chapterName, string[] teamNames, int turnPar,
@@ -177,30 +179,48 @@ public class GridMap : SequenceMember
     }
     private void moveCursor(int xDirection, int yDirection)
     {
+        int[] actualDirection = transformCoordsBasedOnCamera(xDirection, yDirection);
         playOneTimeSound(AssetDictionary.getAudio("tile"));
 
-        setCursor(cursorX + xDirection, cursorY + yDirection);
+        setCursor(cursorX + actualDirection[0], cursorY + actualDirection[1]);
 
         setCameraPosition();
     }
     private void setCameraPosition()
     {
-        if (camOrientation == 0)
+        Vector3 pos = cursor.transform.position;
+        if (camOrientation == 4)
         {
-            Vector3 pos = cursor.transform.position;
-            pos += new Vector3(0, 1, -1);
-            Vector3 newPos = cursor.transform.position - ((cursor.transform.position - pos).normalized * cameraDistance);
-            getCamera().transform.position = newPos;
-            getCamera().transform.rotation = Quaternion.LookRotation(cursor.transform.position - getCamera().transform.position);
+            pos += new Vector3(0, 1.5f, 0);
+        }
+        else
+        {
+            int[] displacement = transformCoordsBasedOnCamera(0, -1);
+            pos += new Vector3(displacement[0], 1, displacement[1]);
+        }
+        Vector3 newPos = cursor.transform.position - ((cursor.transform.position - pos).normalized * cameraDistance);
+        getCamera().transform.position = newPos;
+        getCamera().transform.rotation = Quaternion.LookRotation(cursor.transform.position - getCamera().transform.position);
+    }
+    private int[] transformCoordsBasedOnCamera(int x, int y)
+    {
+        if (camOrientation == 0 || camOrientation == 4)
+        {
+            return new int[] { x, y };
         }
         else if (camOrientation == 1)
         {
-            Vector3 pos = cursor.transform.position;
-            pos += new Vector3(0, 1.5f, 0);
-            Vector3 newPos = cursor.transform.position - ((cursor.transform.position - pos).normalized * cameraDistance);
-            getCamera().transform.position = newPos;
-            getCamera().transform.rotation = Quaternion.LookRotation(cursor.transform.position - getCamera().transform.position);
+            return new int[] { y, -x };
         }
+        else if (camOrientation == 2)
+        {
+            return new int[] { -x, -y };
+        }
+        else if (camOrientation == 3)
+        {
+            return new int[] { -y, x };
+        }
+        return null;
     }
     public override void LEFT_MOUSE()
     {
@@ -238,7 +258,8 @@ public class GridMap : SequenceMember
                 initiateTravel(hit.collider.GetComponent<Tile>());
             }
         }
-        else if (selectionMode == SelectionMode.SELECT_TALKER)
+        else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
+            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
         {
             Tile tile = null;
             RaycastHit hit;
@@ -253,48 +274,17 @@ public class GridMap : SequenceMember
             if (tile != null && interactableUnits.Contains(tile))
             {
                 interactIdx = interactableUnits.IndexOf(tile);
+                setCursor(tile);
                 Z();
             }
+        }
+        else if (selectionMode == SelectionMode.FORECAST)
+        {
+            Z();
         }
         else if (selectionMode == SelectionMode.IN_CONVO)
         {
             Z();
-        }
-        else if (selectionMode == SelectionMode.SELECT_TRADER)
-        {
-            Tile tile = null;
-            RaycastHit hit;
-            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
-            {
-                tile = hit.collider.GetComponent<UnitModel>().getTile();
-            }
-            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
-            {
-                tile = hit.collider.GetComponent<Tile>();
-            }
-            if (tile != null && interactableUnits.Contains(tile))
-            {
-                interactIdx = interactableUnits.IndexOf(tile);
-                Z();
-            }
-        }
-        else if (selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
-        {
-            Tile tile = null;
-            RaycastHit hit;
-            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
-            {
-                tile = hit.collider.GetComponent<UnitModel>().getTile();
-            }
-            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
-            {
-                tile = hit.collider.GetComponent<Tile>();
-            }
-            if (tile != null && interactableUnits.Contains(tile))
-            {
-                interactIdx = interactableUnits.IndexOf(tile);
-                Z();
-            }
         }
     }
     public override void RIGHT_MOUSE()
@@ -770,6 +760,7 @@ public class GridMap : SequenceMember
     }
     private void initiateMenu()
     {
+        setCameraPosition();
         StaticData.findDeepChild(transform, "Menu").gameObject.SetActive(true);
         enableChild("HUD", false);
         getMenuOptions();
@@ -2205,15 +2196,54 @@ public class GridMap : SequenceMember
         }
         forecastDisplay.gameObject.SetActive(true);
 
+        float atkPotentialPercentage = (forecast[Battle.ATKHP] - ((forecast[Battle.DFDMT] - forecast[Battle.ATKDEF]) * forecast[Battle.DFDCOUNT]))
+            / (0.0f + selectedUnit.maxHP);
+        float dfdPotentialPercentage = (forecast[Battle.DFDHP] - ((forecast[Battle.ATKMT] - forecast[Battle.DFDDEF]) * forecast[Battle.ATKCOUNT]))
+            / (0.0f + targetEnemy.maxHP);
+        string atkExpression = null;
+        string dfdExpression = null;
+        if (atkPotentialPercentage >= 0.667f)
+        {
+            atkExpression = dfdPotentialPercentage >= 0.667f ? AssetDictionary.PORTRAIT_ANGRY
+                : AssetDictionary.PORTRAIT_DARING;
+        }
+        else if (atkPotentialPercentage >= 0.333f)
+        {
+            atkExpression = dfdPotentialPercentage >= 0.667f ? AssetDictionary.PORTRAIT_NERVOUS
+                : dfdPotentialPercentage >= 0.333f ? AssetDictionary.PORTRAIT_NEUTRAL
+                : AssetDictionary.PORTRAIT_DARING;
+        }
+        else
+        {
+            atkExpression = dfdPotentialPercentage >= 0.333f ? AssetDictionary.PORTRAIT_SAD
+                : AssetDictionary.PORTRAIT_NERVOUS;
+        }
+        if (dfdPotentialPercentage >= 0.667f)
+        {
+            dfdExpression = atkPotentialPercentage >= 0.667f ? AssetDictionary.PORTRAIT_ANGRY
+                : AssetDictionary.PORTRAIT_DARING;
+        }
+        else if (dfdPotentialPercentage >= 0.333f)
+        {
+            dfdExpression = atkPotentialPercentage >= 0.667f ? AssetDictionary.PORTRAIT_NERVOUS
+                : atkPotentialPercentage >= 0.333f ? AssetDictionary.PORTRAIT_NEUTRAL
+                : AssetDictionary.PORTRAIT_DARING;
+        }
+        else
+        {
+            dfdExpression = atkPotentialPercentage >= 0.333f ? AssetDictionary.PORTRAIT_SAD
+                : AssetDictionary.PORTRAIT_NERVOUS;
+        }
+
         StaticData.findDeepChild(forecastDisplay, "PlayerName").GetComponent<TextMeshProUGUI>()
             .text = selectedUnit.unitName;
         StaticData.findDeepChild(forecastDisplay, "PlayerPortrait").GetComponent<Image>()
-            .sprite = AssetDictionary.getPortrait(selectedUnit.unitName);
+            .sprite = AssetDictionary.getPortrait(selectedUnit.unitName, atkExpression);
 
         StaticData.findDeepChild(forecastDisplay, "EnemyName").GetComponent<TextMeshProUGUI>()
             .text = targetEnemy.unitName;
         StaticData.findDeepChild(forecastDisplay, "EnemyPortrait").GetComponent<Image>()
-            .sprite = AssetDictionary.getPortrait(targetEnemy.unitName);
+            .sprite = AssetDictionary.getPortrait(targetEnemy.unitName, dfdExpression);
 
         if (selectedUnit.getEquippedWeapon() == null)
         {
@@ -2677,9 +2707,23 @@ public class GridMap : SequenceMember
         {
             timer -= Time.deltaTime;
         }
-        if (Input.GetKeyDown(KeyCode.P) && selectionMode == SelectionMode.ROAM)
+        if (Input.GetKeyDown(KeyCode.P)
+            && selectionMode != SelectionMode.BATTLE && selectionMode != SelectionMode.IN_CONVO
+            && selectionMode != SelectionMode.STATUS && selectionMode != SelectionMode.CONTROLS
+            && selectionMode != SelectionMode.ITEM_NOTE && selectionMode != SelectionMode.ESCAPE_MENU
+            && selectionMode != SelectionMode.PHASE
+            && !selectionMode.ToString().StartsWith("ENEMYPHASE")
+            && !selectionMode.ToString().StartsWith("ALLYPHASE") && !selectionMode.ToString().StartsWith("OTHERPHASE"))
         {
-            camOrientation = 1 - camOrientation;
+            /*
+        ROAM, MOVE, TRAVEL, MENU, SELECT_ENEMY, SELECT_TALKER, SELECT_WEAPON, FORECAST, BATTLE, MAP_MENU, IN_CONVO,
+        SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, ITEM_NOTE, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER, USE_ITEM,
+        ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
+        ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
+        OTHERPHASE_SELECT_UNIT, OTHERPHASE_MOVE, OTHERPHASE_ATTACK, OTHERPHASE_BURN, OTHERPHASE_COMBAT_PAUSE,
+        STANDBY, GAMEOVER, ESCAPE_MENU, PHASE
+             */
+            camOrientation = (camOrientation + 1) % NUM_CAMERA_POSITIONS;
             setCameraPosition();
         }
 

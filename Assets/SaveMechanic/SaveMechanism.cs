@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveMechanism
 {
-    private static string folderPath = "Assets/Saves/";
+    private static string folderPath = "Saves/";
     public static void saveGame(int savefile)
     {
         BinaryFormatter formatter = new BinaryFormatter();
