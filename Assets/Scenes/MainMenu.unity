@@ -385,6 +385,7 @@ MonoBehaviour:
   turnsTaken: 0
   menu: {fileID: 794819806592184084, guid: e7a0cd45e168f234c9eaa08be967df8c, type: 3}
   openingScene: {fileID: 589003831}
+  useCopyrightMusic: 1
   sequenceNum: 0
   seqMem: {fileID: 0}
 --- !u!4 &950377069

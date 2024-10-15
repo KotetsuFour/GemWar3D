@@ -217,7 +217,7 @@ public class Chapter1Sequence : Chapter
             }
             else if (sequenceNum == 6)
             {
-                SceneManager.LoadScene("Chapter" + StaticData.scene);
+                goToChapter(2);
             }
         }
     }

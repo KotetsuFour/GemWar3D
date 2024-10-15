@@ -180,14 +180,7 @@ public class BattleAnimation : MonoBehaviour
         playerUnit.transform.SetLocalPositionAndRotation(playerStart.position, playerStart.rotation);
         enemyUnit.transform.SetLocalPositionAndRotation(enemyStart.position, enemyStart.rotation);
 
-        if (StaticData.copyrightMusic)
-        {
-            music = gridmap.getAudioSource(AssetDictionary.getAudio("battle-music-c"));
-        }
-        else
-        {
-            music = gridmap.getAudioSource(AssetDictionary.getAudio("battle-music"));
-        }
+        music = gridmap.getAudioSource(AssetDictionary.getAudio("battle-music"));
         music.Play();
 
         getNextEvent();

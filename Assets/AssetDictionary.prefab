@@ -172,8 +172,9 @@ MonoBehaviour:
   - before-chapter-music2
   - gameover-music
   - enemyphase-music
+  - rose-and-pearl-music
   audioValues:
-  - {fileID: 8300000, guid: 87f4d4c1f429e1e42b1237cb43a4fc0d, type: 3}
+  - {fileID: 8300000, guid: e41f665d7207b364ca554e1978697170, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
   - {fileID: 8300000, guid: 10e33c19caab98b419cb66264df760fb, type: 3}
   - {fileID: 8300000, guid: 9cb1e5a076a55384582c06ed19a2db40, type: 3}
@@ -200,17 +201,22 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 18eca3eec00f0ff44b80b52416e6ca11, type: 3}
   - {fileID: 8300000, guid: 46a6b43eea65b284da82e98a9dd78f49, type: 3}
   - {fileID: 8300000, guid: f57a2e99f304ab34ab5826c15cbdc7b0, type: 3}
-  - {fileID: 8300000, guid: 4b7f2c0cde80ad242aa599e1122e5dd1, type: 3}
+  - {fileID: 8300000, guid: ef82414e12624a8449cb2bba42bd59ab, type: 3}
   - {fileID: 8300000, guid: 086bf5d6fe29d36408b5ce916de2edd7, type: 3}
   - {fileID: 8300000, guid: 190ca04acc6ffe449af2cf827c08d20b, type: 3}
   - {fileID: 8300000, guid: 7c79b74e86fff024b9b284a353b8151d, type: 3}
   - {fileID: 8300000, guid: d742d024e0a235b49ae30fac8501b0cc, type: 3}
   - {fileID: 8300000, guid: acff377e44c876b41ada7f6f5511ff90, type: 3}
   - {fileID: 8300000, guid: e02cca695255d7a4d8b7702256eb147c, type: 3}
+  - {fileID: 8300000, guid: 4b7f2c0cde80ad242aa599e1122e5dd1, type: 3}
   copyrightAudioKeys:
   - main-theme
+  - map-music-1
+  - battle-music
   copyrightAudioValues:
   - {fileID: 8300000, guid: 874af7b454432694186c2052fddc9e78, type: 3}
+  - {fileID: 8300000, guid: 3ab02bb2777e6a746a59533ebe48d1fb, type: 3}
+  - {fileID: 8300000, guid: 87b0fd941ac98c7489d6f9e5937861c8, type: 3}
   wepKeys:
   - Rose Quartz Shield
   - Pearl Spear

@@ -6,6 +6,7 @@ public class BeginningSequence : Chapter
 {
     [SerializeField] private MainMenu menu; //Prefab
     [SerializeField] private Cutscene openingScene; //Object in scene
+    [SerializeField] private bool useCopyrightMusic;
 
     public int sequenceNum;
     public SequenceMember seqMem;
@@ -14,6 +15,8 @@ public class BeginningSequence : Chapter
 
     void Start()
     {
+        StaticData.copyrightMusic = useCopyrightMusic;
+
         openingScene.gameObject.SetActive(true);
         openingScene.constructor(openingDialogue());
         seqMem = openingScene;
@@ -40,8 +43,8 @@ public class BeginningSequence : Chapter
         return new string[]
         {
             "$solidColor 0 0 0",
-            "$sound storytelling-music start",
-            "$sound storytelling-music loop",
+            "$sound rose-and-pearl-music start",
+            "$sound rose-and-pearl-music loop",
             rose + "Pearl...",
             "$left Pearl",
             pearl + "Yes?",

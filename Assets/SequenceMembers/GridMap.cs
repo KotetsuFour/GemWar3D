@@ -2860,14 +2860,7 @@ public class GridMap : SequenceMember
                 }
 
                 string mapMusic = teamMusic[teamPhase % teamMusic.Length];
-                if (StaticData.copyrightMusic)
-                {
-                    music = getAudioSource(AssetDictionary.getAudio(mapMusic + "-c"));
-                }
-                else
-                {
-                    music = getAudioSource(AssetDictionary.getAudio(mapMusic));
-                }
+                music = getAudioSource(AssetDictionary.getAudio(mapMusic));
                 music.loop = true;
                 music.Play();
 

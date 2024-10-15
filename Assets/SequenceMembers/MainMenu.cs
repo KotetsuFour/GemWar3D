@@ -10,13 +10,9 @@ public class MainMenu : SequenceMember
     private string currentPage;
 
     private int selectedFile;
-    private int nextTODOChapter = 4;
     private AudioSource music;
-    [SerializeField] private bool useCopyrightMusic;
     void Start()
     {
-        StaticData.copyrightMusic = useCopyrightMusic;
-
         music = getAudioSource(AssetDictionary.getAudio("main-theme"));
         music.loop = true;
         music.Play();
@@ -90,17 +86,13 @@ public class MainMenu : SequenceMember
             SaveMechanism.saveGame(file);
         }
         SaveMechanism.loadGame(file);
-        if (Mathf.Abs(StaticData.scene) == nextTODOChapter)
+        if (Mathf.Abs(StaticData.scene) == Chapter.nextTODOChapter)
         {
             switchToPage("ProgressNote");
         }
-        else if (StaticData.scene < 0)
-        {
-            //TODO go to base
-        }
         else
         {
-            SceneManager.LoadScene("Chapter" + StaticData.scene);
+            Chapter.goToChapter(StaticData.scene);
         }
     }
     public void deleteFile(int file)

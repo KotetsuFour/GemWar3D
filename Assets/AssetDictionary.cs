@@ -84,6 +84,7 @@ public class AssetDictionary : MonoBehaviour
     }
     public static AudioClip getAudio(string key)
     {
+        Debug.Log($"Copyright music is {StaticData.copyrightMusic} and key is {key}");
         if ((StaticData.copyrightMusic && copyrightAudioDictionary.ContainsKey(key))
             || !audioDictionary.ContainsKey(key))
         {

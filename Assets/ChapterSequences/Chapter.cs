@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Chapter : MonoBehaviour
 {
@@ -19,7 +20,8 @@ public class Chapter : MonoBehaviour
     public Dictionary<char, Material> materialDictionary;
 
     public int turnsTaken;
-    
+
+    public static int nextTODOChapter = 2;
     public void handleInput(SequenceMember seqMem)
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -184,5 +186,21 @@ public class Chapter : MonoBehaviour
     public UnitModel getUnitModelPrefab()
     {
         return model;
+    }
+    public static void goToChapter(int chapter)
+    {
+        StaticData.scene = chapter;
+        if (Mathf.Abs(StaticData.scene) == Chapter.nextTODOChapter)
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+        else if (StaticData.scene < 0)
+        {
+            //TODO go to base
+        }
+        else
+        {
+            SceneManager.LoadScene("Chapter" + StaticData.scene);
+        }
     }
 }
