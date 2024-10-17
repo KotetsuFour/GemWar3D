@@ -630,3 +630,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound_effect: {fileID: 4180955342499958800, guid: ac026c1596c529549b9e78b970de22b5, type: 3}
   cam: {fileID: 5737627183156650288}
+  oneTimeSound: {fileID: 2747771020700787980, guid: a97a041e56fec9f499abbe14cf729545, type: 3}

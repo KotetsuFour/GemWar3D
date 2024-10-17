@@ -175,6 +175,12 @@ public class Chapter : MonoBehaviour
         }
     }
 
+    public List<Tile> getPlayerDeploymentTiles(Tile[,] map)
+    {
+        //TODO
+        return null;
+    }
+
     public void finalize(List<Unit> playerList)
     {
         StaticData.dealWithGemstones();

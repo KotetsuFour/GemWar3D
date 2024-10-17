@@ -2438,7 +2438,6 @@ MonoBehaviour:
   sound_effect: {fileID: 4180955342499958800, guid: ac026c1596c529549b9e78b970de22b5, type: 3}
   cam: {fileID: 4820647821740115058}
   oneTimeSound: {fileID: 2747771020700787980, guid: a97a041e56fec9f499abbe14cf729545, type: 3}
-  useCopyrightMusic: 0
 --- !u!1 &4446831386817433872
 GameObject:
   m_ObjectHideFlags: 0
@@ -3251,7 +3250,7 @@ GameObject:
   - component: {fileID: 4969561301964865422}
   - component: {fileID: 8600739587010965536}
   m_Layer: 5
-  m_Name: Message
+  m_Name: DeleteMessage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3854,7 +3853,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 2
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

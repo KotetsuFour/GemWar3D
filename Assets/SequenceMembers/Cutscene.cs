@@ -368,6 +368,10 @@ public class Cutscene : SequenceMember
         {
             finish();
         }
+        else
+        {
+            playOneTimeSound("next-dialogue");
+        }
     }
     public override void ENTER()
     {

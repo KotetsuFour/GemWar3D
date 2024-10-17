@@ -89,6 +89,7 @@ public class MapEventExecutor : MonoBehaviour
     public void Z()
     {
         nextAction();
+        gridmap.playOneTimeSound("next-dialogue");
     }
     public void skip()
     {

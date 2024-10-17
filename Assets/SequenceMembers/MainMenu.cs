@@ -103,7 +103,8 @@ public class MainMenu : SequenceMember
             return;
         }
         selectedFile = file;
-        StaticData.findDeepChild(transform, $"DELETE File {selectedFile}?");
+        StaticData.findDeepChild(transform, "DeleteMessage").GetComponent<TextMeshProUGUI>()
+            .text = $"DELETE File {selectedFile}?";
         playOneTimeSound("select");
         switchToPage("DeleteCheck");
     }

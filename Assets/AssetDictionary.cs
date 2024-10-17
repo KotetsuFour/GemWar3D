@@ -35,7 +35,7 @@ public class AssetDictionary : MonoBehaviour
     public static string PORTRAIT_TEASE = "_tease";
     public static string PORTRAIT_SKEPTIC = "_skeptic";
 
-    private void Start()
+    private void Awake()
     {
         imageDictionary = new Dictionary<string, Sprite>();
         for (int q = 0; q < imageKeys.Count; q++)
@@ -84,7 +84,6 @@ public class AssetDictionary : MonoBehaviour
     }
     public static AudioClip getAudio(string key)
     {
-        Debug.Log($"Copyright music is {StaticData.copyrightMusic} and key is {key}");
         if ((StaticData.copyrightMusic && copyrightAudioDictionary.ContainsKey(key))
             || !audioDictionary.ContainsKey(key))
         {

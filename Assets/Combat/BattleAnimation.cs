@@ -38,7 +38,7 @@ public class BattleAnimation : MonoBehaviour
     private bool[] levelup;
 
     private AudioSource music;
-    public void constructor(Battle battle, GridMap gridmap)
+    public void constructor(Battle battle, string musicName, GridMap gridmap)
     {
         this.battle = battle;
         this.gridmap = gridmap;
@@ -180,8 +180,12 @@ public class BattleAnimation : MonoBehaviour
         playerUnit.transform.SetLocalPositionAndRotation(playerStart.position, playerStart.rotation);
         enemyUnit.transform.SetLocalPositionAndRotation(enemyStart.position, enemyStart.rotation);
 
-        music = gridmap.getAudioSource(AssetDictionary.getAudio("battle-music"));
-        music.Play();
+        if (musicName != null)
+        {
+            music = gridmap.getAudioSource(AssetDictionary.getAudio(musicName));
+            music.loop = true;
+            music.Play();
+        }
 
         getNextEvent();
     }

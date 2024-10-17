@@ -11,6 +11,6 @@ public class SeizeObjective : Objective
 
 	public override string getName(GridMap map)
     {
-		return "Rose Quartz must seize the seize point";
+		return "Rose Quartz must capture the seize point";
     }
 }

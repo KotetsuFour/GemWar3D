@@ -84,6 +84,7 @@ MonoBehaviour:
   - item
   - Star
   - Talk
+  - green-check
   imageValues:
   - {fileID: 21300000, guid: 5d21a8ff6d9c67d4da065d3015918b21, type: 3}
   - {fileID: 21300000, guid: 2bf5e4a84745aa94ab2d85f712347b41, type: 3}
@@ -124,6 +125,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: bd1c41c5b6a3e884baba76bee5bdcc1f, type: 3}
   - {fileID: 21300000, guid: ba39889ba2b765c499864ead4290303f, type: 3}
   - {fileID: 21300000, guid: 337a7a22d86964442959c34a0754a3e6, type: 3}
+  - {fileID: 21300000, guid: 50539ffbb19cbce419468d28796a14f4, type: 3}
   modelValues:
   - {fileID: 6422181147470550412, guid: 4cce61fe84857a34a8b554853885abf4, type: 3}
   - {fileID: 8860643157110146660, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
@@ -145,7 +147,7 @@ MonoBehaviour:
   - damage
   - parry
   - dodge
-  - battle-music
+  - player-battle-music-1
   - boss-music
   - map-music-1
   - map-music-2
@@ -171,8 +173,11 @@ MonoBehaviour:
   - before-chapter-music1
   - before-chapter-music2
   - gameover-music
-  - enemyphase-music
+  - enemyphase-music-1
   - rose-and-pearl-music
+  - next-dialogue
+  - enemy-battle-music-1
+  - equip
   audioValues:
   - {fileID: 8300000, guid: e41f665d7207b364ca554e1978697170, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
@@ -209,14 +214,23 @@ MonoBehaviour:
   - {fileID: 8300000, guid: acff377e44c876b41ada7f6f5511ff90, type: 3}
   - {fileID: 8300000, guid: e02cca695255d7a4d8b7702256eb147c, type: 3}
   - {fileID: 8300000, guid: 4b7f2c0cde80ad242aa599e1122e5dd1, type: 3}
+  - {fileID: 8300000, guid: b9e3297fe81249f4582c5dab5b356b01, type: 3}
+  - {fileID: 8300000, guid: 5ea2c0d9c31b6e24090e213c4ed0fca8, type: 3}
+  - {fileID: 8300000, guid: 527e18e72ea9ddd40a7cee8238b0e157, type: 3}
   copyrightAudioKeys:
   - main-theme
   - map-music-1
-  - battle-music
+  - player-battle-music-1
+  - enemy-battle-music-1
+  - enemyphase-music-1
+  - map-music-2
   copyrightAudioValues:
   - {fileID: 8300000, guid: 874af7b454432694186c2052fddc9e78, type: 3}
-  - {fileID: 8300000, guid: 3ab02bb2777e6a746a59533ebe48d1fb, type: 3}
+  - {fileID: 8300000, guid: ad3e15494a22853429026cd6dd1ba65a, type: 3}
   - {fileID: 8300000, guid: 87b0fd941ac98c7489d6f9e5937861c8, type: 3}
+  - {fileID: 8300000, guid: f9af7a244ae40e640ab0e60d988d9b55, type: 3}
+  - {fileID: 8300000, guid: f1d048e2d05e9ce49b17305cba53f8df, type: 3}
+  - {fileID: 8300000, guid: 3ab02bb2777e6a746a59533ebe48d1fb, type: 3}
   wepKeys:
   - Rose Quartz Shield
   - Pearl Spear

@@ -77,13 +77,14 @@ public class GridMap : SequenceMember
 
     private AudioSource music;
     private string[] teamMusic;
+    private string[] battleMusic;
 
     private static int NUM_CAMERA_POSITIONS = 5;
 
     public void constructor(Tile[,] map,
         Unit[] playerUnits, Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits,
         Objective objective, string chapterName, string[] teamNames, int turnPar,
-        string[] teamMusic)
+        string[] teamMusic, string[] battleMusic)
     {
         this.map = map;
         width = map.GetLength(0);
@@ -109,6 +110,7 @@ public class GridMap : SequenceMember
         cursor = Instantiate(cursorPrefab);
 
         this.teamMusic = teamMusic;
+        this.battleMusic = battleMusic;
 
         teamPhase = -1;
         nextTeamPhase();
@@ -2057,7 +2059,7 @@ public class GridMap : SequenceMember
         {
             StaticData.findDeepChild(transform, "BonusSkill").GetComponent<TextMeshProUGUI>()
                 .text = "---";
-            StaticData.findDeepChild(transform, "BonusSkill").GetComponent<TextMeshProUGUI>()
+            StaticData.findDeepChild(transform, "BonusSkillDesc").GetComponent<TextMeshProUGUI>()
                 .text = "";
         }
         else
@@ -2084,8 +2086,8 @@ public class GridMap : SequenceMember
                 .text = "" + SupportLog.supportLog[unit.supportId1].level;
             StaticData.findDeepChild(transform, "Support1Skill").GetComponent<TextMeshProUGUI>()
             .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkill1].skillName;
-            StaticData.findDeepChild(transform, "Support1Skill").GetComponent<TextMeshProUGUI>()
-            .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkill2].description;
+            StaticData.findDeepChild(transform, "Support1SkillDesc").GetComponent<TextMeshProUGUI>()
+            .text = FusionSkillExecutioner.SKILL_LIST[(int)unit.fusionSkill1].description;
         }
         if (partners[1] == null)
         {
@@ -2297,7 +2299,9 @@ public class GridMap : SequenceMember
         StaticData.findDeepChild(targetEnemy.model.transform, "TeamCircle").gameObject.SetActive(false);
 
         instantiatedBattleAnimation = Instantiate(battleAnimation);
-        instantiatedBattleAnimation.constructor(battle, this);
+        instantiatedBattleAnimation.constructor(battle,
+            battleMusic.Length > ((int)selectedUnit.team) ? battleMusic[(int)selectedUnit.team] : null,
+            this);
 
         if (selectedUnit.team == Unit.UnitTeam.PLAYER)
         {
@@ -2715,14 +2719,6 @@ public class GridMap : SequenceMember
             && !selectionMode.ToString().StartsWith("ENEMYPHASE")
             && !selectionMode.ToString().StartsWith("ALLYPHASE") && !selectionMode.ToString().StartsWith("OTHERPHASE"))
         {
-            /*
-        ROAM, MOVE, TRAVEL, MENU, SELECT_ENEMY, SELECT_TALKER, SELECT_WEAPON, FORECAST, BATTLE, MAP_MENU, IN_CONVO,
-        SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, ITEM_NOTE, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER, USE_ITEM,
-        ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
-        ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
-        OTHERPHASE_SELECT_UNIT, OTHERPHASE_MOVE, OTHERPHASE_ATTACK, OTHERPHASE_BURN, OTHERPHASE_COMBAT_PAUSE,
-        STANDBY, GAMEOVER, ESCAPE_MENU, PHASE
-             */
             camOrientation = (camOrientation + 1) % NUM_CAMERA_POSITIONS;
             setCameraPosition();
         }
@@ -2804,6 +2800,33 @@ public class GridMap : SequenceMember
             {
                 targetEnemy = targetTile.getOccupant().getUnit();
                 startBattle();
+            }
+        }
+        else if (selectionMode == SelectionMode.ENEMYPHASE_MOVE_PAUSE)
+        {
+            if (timer <= 0)
+            {
+                selectedUnit.model.setPath(getPath());
+                setCursor(moveDest);
+                selectionMode = SelectionMode.ENEMYPHASE_MOVE;
+            }
+        }
+        else if (selectionMode == SelectionMode.ALLYPHASE_MOVE_PAUSE)
+        {
+            if (timer <= 0)
+            {
+                selectedUnit.model.setPath(getPath());
+                setCursor(moveDest);
+                selectionMode = SelectionMode.ALLYPHASE_MOVE;
+            }
+        }
+        else if (selectionMode == SelectionMode.OTHERPHASE_MOVE_PAUSE)
+        {
+            if (timer <= 0)
+            {
+                selectedUnit.model.setPath(getPath());
+                setCursor(moveDest);
+                selectionMode = SelectionMode.OTHERPHASE_MOVE;
             }
         }
         else if (selectionMode == SelectionMode.ENEMYPHASE_MOVE && selectedUnit.model.reachedDestination())
@@ -2896,9 +2919,10 @@ public class GridMap : SequenceMember
                 }
             }
             moveDest = (Tile)npcAction[2];
-            selectedUnit.model.setPath(getPath());
 
-            selectionMode = SelectionMode.ENEMYPHASE_MOVE;
+            timer = 1;
+            setCursor(selectedTile);
+            selectionMode = SelectionMode.ENEMYPHASE_MOVE_PAUSE;
         }
     }
 
@@ -2907,9 +2931,9 @@ public class GridMap : SequenceMember
     {
         ROAM, MOVE, TRAVEL, MENU, SELECT_ENEMY, SELECT_TALKER, SELECT_WEAPON, FORECAST, BATTLE, MAP_MENU, IN_CONVO,
         SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, ITEM_NOTE, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER, USE_ITEM,
-        ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
-        ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
-        OTHERPHASE_SELECT_UNIT, OTHERPHASE_MOVE, OTHERPHASE_ATTACK, OTHERPHASE_BURN, OTHERPHASE_COMBAT_PAUSE,
+        ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE_PAUSE, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
+        ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE_PAUSE, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
+        OTHERPHASE_SELECT_UNIT, OTHERPHASE_MOVE_PAUSE, OTHERPHASE_MOVE, OTHERPHASE_ATTACK, OTHERPHASE_BURN, OTHERPHASE_COMBAT_PAUSE,
         STANDBY, GAMEOVER, ESCAPE_MENU, PHASE
     }
 
