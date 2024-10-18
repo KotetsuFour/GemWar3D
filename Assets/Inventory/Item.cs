@@ -29,7 +29,7 @@ public abstract class Item
     public static UsableItem mag = new UsableItem("", "Incrases Magic by 2", UsableItem.StatToEdit.MAGIC, 2, 1, 21);
     public static UsableItem skl = new UsableItem("", "Increases Skill by 2", UsableItem.StatToEdit.SKILL, 2, 1, 22);
     public static UsableItem spd = new UsableItem("", "Increases Speed by 2", UsableItem.StatToEdit.SPEED, 2, 1, 23);
-    public static UsableItem lck = new UsableItem("Moon Goddess Icon", "Increases Luck by 2", UsableItem.StatToEdit.LUCK, 2, 1, 24);
+    public static UsableItem lck = new UsableItem("Moon Goddess Pedestal", "Increases Luck by 2", UsableItem.StatToEdit.LUCK, 2, 1, 24);
     public static UsableItem def = new UsableItem("", "Increases Defense by 2", UsableItem.StatToEdit.DEFENSE, 2, 1, 25);
     public static UsableItem res = new UsableItem("", "Increases Resistance by 2", UsableItem.StatToEdit.RESISTANCE, 2, 1, 26);
     public static UsableItem mov = new UsableItem("", "Increases Movement by 2", UsableItem.StatToEdit.MOVEMENT, 2, 1, 27);

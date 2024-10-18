@@ -79,7 +79,7 @@ public class GridMap : SequenceMember
     private string[] teamMusic;
     private string[] battleMusic;
 
-    private static int NUM_CAMERA_POSITIONS = 5;
+    public static int NUM_CAMERA_POSITIONS = 5;
 
     public void constructor(Tile[,] map,
         Unit[] playerUnits, Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits,
@@ -1276,6 +1276,7 @@ public class GridMap : SequenceMember
 
             finalizeMove();
 
+            moveDest.getDeco().GetComponent<DecoMorph>().morph();
             string note = moveDest.takeLoot(selectedUnit);
             makeNotification(note, null);
             timer = 2;

@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class PreBattleMenu : SequenceMember
 {
@@ -14,12 +14,8 @@ public class PreBattleMenu : SequenceMember
     public List<Unit> enemy;
     public List<Unit> ally;
     public List<Unit> other;
-    private int numUnitsAllowed;
 
     [SerializeField] private UnitModel unitModelPrefab;
-
-    private Objective objective;
-    private string chapterName;
 
     private Tile[,] map;
     private List<Tile> playerTiles;
@@ -31,6 +27,9 @@ public class PreBattleMenu : SequenceMember
     [SerializeField] private float cameraDistance;
     private int camOrientation;
     private Quaternion playerRotation;
+    [SerializeField] private LayerMask unitLayer;
+    [SerializeField] private LayerMask tileLayer;
+
 
     public int cursorX;
     public int cursorY;
@@ -59,9 +58,6 @@ public class PreBattleMenu : SequenceMember
         enemy = new List<Unit>(enemyUnits);
         ally = new List<Unit>(allyUnits);
         other = new List<Unit>(otherUnits);
-        numUnitsAllowed = StaticData.positions.Length;
-        this.objective = objective;
-        this.chapterName = chapterName;
 
         this.map = map;
         this.playerTiles = playerTiles;
@@ -78,25 +74,52 @@ public class PreBattleMenu : SequenceMember
             }
         }
 
+        StaticData.findDeepChild(transform, "ChapterTitle").GetComponent<TextMeshProUGUI>()
+            .text = chapterName;
+        StaticData.findDeepChild(transform, "MenuObjective").GetComponent<TextMeshProUGUI>()
+            .text = objective.getName(null);
+        StaticData.findDeepChild(transform, "TurnPar").GetComponent<TextMeshProUGUI>()
+            .text = $"Turn Par: {turnPar}";
+
         constructPickUnits();
         constructItemMenu();
-
-        initializeCursorPosition();
 
         music = getAudioSource(prepMusic);
         music.loop = true;
         music.Play();
 
-        enableChild("MainMenu", true);
+        switchToPage("MainMenu");
+        selectionMode = SelectionMode.MAIN_MENU;
     }
 
     private void enableChild(string hudName, bool enable)
     {
         StaticData.findDeepChild(transform, hudName).gameObject.SetActive(enable);
     }
+    public void switchToPage(string page)
+    {
+        for (int q = 0; q < transform.childCount; q++)
+        {
+            transform.GetChild(q).gameObject.SetActive(false);
+        }
+        enableChild(page, true);
+        enableChild("Tooltip", false);
+    }
+    public void switchToConvoy()
+    {
+        switchToPage("Convoy");
+        selectionMode = SelectionMode.ITEM_MENU_PICK_UNIT;
+    }
+    public void switchToPickUnits()
+    {
+        switchToPage("PickUnits");
+        selectionMode = SelectionMode.PICK_UNITS;
+    }
+
 
     public void setTooltip(int menuIdx)
     {
+        enableChild("Tooltip", true);
         if (menuIdx == 0)
         {
             StaticData.findDeepChild(transform, "Tooltip").GetComponent<TextMeshProUGUI>().text
@@ -340,6 +363,7 @@ public class PreBattleMenu : SequenceMember
                 child.SetParent(list);
             }
         }
+        selectionMode = SelectionMode.MAIN_MENU;
     }
 
     private void constructItemMenu()
@@ -433,6 +457,7 @@ public class PreBattleMenu : SequenceMember
         enableChild("UnitPickedForConvoy", false);
         enableChild("PickUnitForConvoy", true);
         playOneTimeSound("back");
+        selectionMode = SelectionMode.ITEM_MENU_PICK_UNIT;
     }
 
     public void switchToItemType(int type)
@@ -551,24 +576,58 @@ public class PreBattleMenu : SequenceMember
         switchToItemType(0);
         enableChild("Convoy", false);
         enableChild("MainMenu", true);
+        selectionMode = SelectionMode.MAIN_MENU;
+    }
+
+    public void saveFile(int file)
+    {
+        SaveMechanism.saveGame(file);
+        enableChild("SaveMenu", false);
+        enableChild("MainMenu", true);
+        selectionMode = SelectionMode.MAIN_MENU;
+    }
+
+    public void toGameMenu()
+    {
+        SpecialMenuLogic.mainMenu();
+    }
+
+    public void checkMap()
+    {
+        switchToPage("HUD");
+        selectionMode = SelectionMode.ROAM;
     }
 
     public override void LEFT_MOUSE()
     {
-        //TODO
+        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.SWITCH)
+        {
+            Tile tile = null;
+            RaycastHit hit;
+            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
+            {
+                tile = hit.collider.GetComponent<UnitModel>().getTile();
+            }
+            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
+            {
+                tile = hit.collider.GetComponent<Tile>();
+            }
+            setCursor(tile);
+            Z();
+        }
     }
     public override void RIGHT_MOUSE()
     {
         if (selectionMode == SelectionMode.ROAM)
         {
             enableChild("MainMenu", true);
-            selectionMode = SelectionMode.MENU;
+            selectionMode = SelectionMode.MAIN_MENU;
         }
         else if (selectionMode == SelectionMode.MOVE)
         {
             unfillTraversableTiles();
             selectionMode = SelectionMode.ROAM;
-            //                selectedUnit = null;
+            selectedUnit = null;
         }
         else if (selectionMode == SelectionMode.SWITCH)
         {
@@ -579,65 +638,13 @@ public class PreBattleMenu : SequenceMember
         else if (selectionMode == SelectionMode.STATS_PAGE)
         {
             enableChild("StatsPage", false);
+            enableChild("HUD", true);
 
             selectionMode = SelectionMode.ROAM;
         }
     }
     public override void Z()
     {
-        /*
-        if (selectionMode == SelectionMode.MAIN_MENU)
-        {
-            if (mainMenuIdx == 0)
-            {
-                Destroy(instantiatedMainMenu);
-                constructPickUnits();
-
-                selectionMode = SelectionMode.PICK_UNITS;
-            }
-            else if (mainMenuIdx == 1)
-            {
-                //TODO
-                Destroy(instantiatedMainMenu);
-                constructItemMenu();
-
-                selectionMode = SelectionMode.ITEM_MENU_PICK_UNIT;
-            }
-            else if (mainMenuIdx == 2)
-            {
-                Destroy(instantiatedMainMenu);
-                initializeCamera();
-                instantiatedMapHUD.SetActive(true);
-                foreach (Tile t in playerTiles)
-                {
-                    t.traverseHighlight.SetActive(true);
-                }
-                selectionMode = SelectionMode.ROAM;
-            }
-            else if (mainMenuIdx == 3)
-            {
-                CampaignData.chapterPrep = CampaignData.scene;
-                CampaignData.positions = player.ToArray();
-                Destroy(instantiatedMainMenu);
-                instantiatedSaveScreen = Instantiate(saveScreen);
-                instantiatedSaveScreen.constructor(cam.GetComponent<Camera>());
-                selectionMode = SelectionMode.SAVE;
-            }
-            else if (mainMenuIdx == 4)
-            {
-                //TODO anything else
-                finish();
-            }
-            else if (mainMenuIdx == 5)
-            {
-                SpecialMenuLogic.mainMenu(instantiatableUnit);
-            }
-        }
-        if (selectionMode == SelectionMode.SAVE)
-        {
-            instantiatedSaveScreen.Z();
-        }
-        */
         if (selectionMode == SelectionMode.ROAM)
         {
             if (playerTiles.Contains(map[cursorX, cursorY]))
@@ -660,10 +667,10 @@ public class PreBattleMenu : SequenceMember
             if (playerTiles.Contains(map[cursorX, cursorY]))
             {
                 Tile second = map[cursorX, cursorY];
-                Unit temp = second.getOccupant().getUnit();
+                UnitModel temp = second.getOccupant();
                 second.setOccupant(selectedTile.getOccupant());
-                selectedTile.setOccupant(temp.model);
-                selectedTile.highlightInteract();
+                selectedTile.setOccupant(temp);
+                selectedTile.highlightMove();
 
                 int pos1 = playerTiles.IndexOf(selectedTile);
                 int pos2 = playerTiles.IndexOf(second);
@@ -674,110 +681,6 @@ public class PreBattleMenu : SequenceMember
                 selectionMode = SelectionMode.ROAM;
             }
         }
-        /*
-        else if (selectionMode == SelectionMode.PICK_UNITS)
-        {
-            Unit u = pickerUnits[pickCursorX, pickCursorY];
-            if (!u.isLeader && u.isAlive())
-            {
-                if (u.deployed)
-                {
-                    u.deployed = false;
-                    int idx = CampaignData.members.IndexOf(u);
-                    int mapIdx = player.IndexOf(idx);
-                    playerTiles[mapIdx].setOccupant(null);
-                    player[mapIdx] = -1;
-                    u.transform.position = unusedPosition;
-                    SpriteRenderer sr = pickerArray[pickCursorX, pickCursorY].transform.GetChild(1).GetComponent<SpriteRenderer>();
-                    sr.sprite = ImageDictionary.getImage("blank_square");
-                    sr.color = Color.blue;
-                }
-                else if (player.IndexOf(-1) != -1)
-                {
-                    u.deployed = true;
-                    int idx = CampaignData.members.IndexOf(u);
-                    int mapIdx = player.IndexOf(-1);
-                    playerTiles[mapIdx].setOccupant(u);
-                    player[mapIdx] = idx;
-                    SpriteRenderer sr = pickerArray[pickCursorX, pickCursorY].transform.GetChild(1).GetComponent<SpriteRenderer>();
-                    sr.size = new Vector2(1, 1);
-                    sr.sprite = ImageDictionary.getImage("checkmark.png");
-                    sr.color = Color.white;
-                }
-            }
-        }
-        else if (selectionMode == SelectionMode.ITEM_MENU_PICK_UNIT)
-        {
-            if (CampaignData.members[unitForConvoyIdx].isAlive())
-            {
-                inventoryIdx = 0;
-                selectedUnit = CampaignData.members[unitForConvoyIdx];
-                instantiatedItemsMenu.transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>().color = Color.white;
-                updateItemDescription(SelectionMode.ITEM_MENU_INVENTORY);
-
-                selectionMode = SelectionMode.ITEM_MENU_INVENTORY;
-            }
-        }
-        else if (selectionMode == SelectionMode.ITEM_MENU_INVENTORY)
-        {
-            if (inventoryIdx == 1 && CampaignData.members[unitForConvoyIdx].heldWeapon != null)
-            {
-                Weapon w = CampaignData.members[unitForConvoyIdx].heldWeapon;
-                CampaignData.addToConvoy(w);
-                CampaignData.members[unitForConvoyIdx].heldWeapon = null;
-                switchToItemType(itemTypeIdx, false);
-                instantiatedItemsMenu.transform.GetChild(0).GetChild(3).GetComponent<TextMeshProUGUI>().text
-                    = "_";
-            }
-            else if (inventoryIdx == 2 && CampaignData.members[unitForConvoyIdx].heldItem != null)
-            {
-                Item w = CampaignData.members[unitForConvoyIdx].heldItem;
-                CampaignData.addToConvoy(w);
-                CampaignData.members[unitForConvoyIdx].heldItem = null;
-                switchToItemType(itemTypeIdx, false);
-                instantiatedItemsMenu.transform.GetChild(0).GetChild(4).GetComponent<TextMeshProUGUI>().text
-                    = "_";
-            }
-        }
-        else if (selectionMode == SelectionMode.ITEM_MENU_CONVOY)
-        {
-            if (itemScrollListMembers.Count > 0)
-            {
-                if (itemTypeIdx == CampaignData.getConvoyIds().Length - 1 && selectedUnit.heldItem == null)
-                {
-                    Item item = CampaignData.takeFromConvoy(itemTypeIdx, itemIdx);
-                    Transform itemInList = instantiatedItemsMenu.transform.GetChild(0).GetChild(1).GetChild(0).GetChild(0)
-                        .GetChild(itemIdx);
-                    itemInList.SetParent(null);
-                    itemScrollListMembers.RemoveAt(itemIdx);
-                    itemIdx = Mathf.Max(0, itemIdx - 1);
-                    if (itemScrollListMembers.Count > 0)
-                    {
-                        itemScrollListMembers[itemIdx].color = Color.white;
-                    }
-                    selectedUnit.heldItem = item;
-                    instantiatedItemsMenu.transform.GetChild(0).GetChild(4).GetComponent<TextMeshProUGUI>().text
-                        = item.itemName;
-                }
-                else if (itemTypeIdx < CampaignData.getConvoyIds().Length - 1 && selectedUnit.heldWeapon == null)
-                {
-                    Item item = CampaignData.takeFromConvoy(itemTypeIdx, itemIdx);
-                    Transform itemInList = instantiatedItemsMenu.transform.GetChild(0).GetChild(1).GetChild(0).GetChild(0)
-                        .GetChild(itemIdx);
-                    itemInList.SetParent(null);
-                    itemScrollListMembers.RemoveAt(itemIdx);
-                    itemIdx = Mathf.Max(0, itemIdx - 1);
-                    if (itemScrollListMembers.Count > 0)
-                    {
-                        itemScrollListMembers[itemIdx].color = Color.white;
-                    }
-                    selectedUnit.heldWeapon = (Weapon)item;
-                    instantiatedItemsMenu.transform.GetChild(0).GetChild(3).GetComponent<TextMeshProUGUI>().text
-                        = item.itemName;
-                }
-            }
-        }
-        */
     }
     public override void X()
     {
@@ -802,6 +705,16 @@ public class PreBattleMenu : SequenceMember
         {
             moveCursor(0, 1);
         }
+        else if (selectionMode == SelectionMode.STATS_PAGE)
+        {
+            if (menuIdx == 1)
+            {
+                specialMenuIdx = specialMenuIdx <= 0 ? 2 : specialMenuIdx - 1;
+                getItemDescription(specialMenuIdx);
+                playOneTimeSound(AssetDictionary.getAudio("tile"));
+            }
+        }
+
     }
     public override void LEFT()
     {
@@ -811,6 +724,13 @@ public class PreBattleMenu : SequenceMember
         {
             moveCursor(-1, 0);
         }
+        else if (selectionMode == SelectionMode.STATS_PAGE)
+        {
+            menuIdx = menuIdx == 0 ? 2 : menuIdx - 1;
+            switchStatsPage();
+            playOneTimeSound(AssetDictionary.getAudio("tile"));
+        }
+
     }
     public override void DOWN()
     {
@@ -819,6 +739,15 @@ public class PreBattleMenu : SequenceMember
           && cursorY != 0)
         {
             moveCursor(0, -1);
+        }
+        else if (selectionMode == SelectionMode.STATS_PAGE)
+        {
+            if (menuIdx == 1)
+            {
+                specialMenuIdx = (specialMenuIdx + 1) % 3;
+                getItemDescription(specialMenuIdx);
+                playOneTimeSound(AssetDictionary.getAudio("tile"));
+            }
         }
     }
     public override void RIGHT()
@@ -829,10 +758,17 @@ public class PreBattleMenu : SequenceMember
         {
             moveCursor(1, 0);
         }
+        else if (selectionMode == SelectionMode.STATS_PAGE)
+        {
+            menuIdx = (menuIdx + 1) % 3;
+            switchStatsPage();
+            playOneTimeSound(AssetDictionary.getAudio("tile"));
+        }
     }
     public override void ENTER()
     {
-        if (selectionMode == SelectionMode.MAIN_MENU)
+        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.SWITCH
+            || selectionMode != SelectionMode.MOVE || selectionMode == SelectionMode.MAIN_MENU)
         {
             finish();
         }
@@ -1376,6 +1312,13 @@ public class PreBattleMenu : SequenceMember
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.P) &&
+            (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.SWITCH
+            || selectionMode != SelectionMode.MOVE))
+        {
+            camOrientation = (camOrientation + 1) % GridMap.NUM_CAMERA_POSITIONS;
+            setCameraPosition();
+        }
 
     }
 
@@ -1409,10 +1352,10 @@ public class PreBattleMenu : SequenceMember
 
     public enum SelectionMode
     {
-        MAIN_MENU, ROAM, SWITCH, MOVE, MENU, SELECT_WEAPON, MAP_MENU, STATUS, STATS_PAGE,
-        STATS_PAGE_PICK_UNITS, STATS_PAGE_ITEMS,
+        MAIN_MENU, ROAM, SWITCH, MOVE,
+        STATS_PAGE, STATS_PAGE_PICK_UNITS, STATS_PAGE_ITEMS,
         ITEM_MENU_PICK_UNIT, ITEM_MENU_INVENTORY, ITEM_MENU_CONVOY, PICK_UNITS,
-        STANDBY, ESCAPE_MENU, SAVE
+        STANDBY
     }
 
 }

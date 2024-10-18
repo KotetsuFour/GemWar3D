@@ -19,6 +19,7 @@ public class Tile : MonoBehaviour
     private List<Gemstone> gemstones;
     public int ironLoot, steelLoot, silverLoot;
     public Item itemLoot;
+    private GameObject deco;
 
     public static float HALF_LENGTH = 0.5f;
     public static float TILE_HEIGHT_MULTIPLIER = 0.25f;
@@ -32,7 +33,7 @@ public class Tile : MonoBehaviour
     public static TileType PILLAR = new TileType("PILLAR", 2, 6, 20);
     public static TileType WARP_PAD = new TileType("WARP PAD", 2, 3, 0);
     public static TileType DEEP_WATER = new TileType("DEEP WATER", int.MaxValue, 1, 0);
-    public static TileType wALL = new TileType("WALL", int.MaxValue, 1, 0);
+    public static TileType WALL = new TileType("WALL", int.MaxValue, 1, 0);
     public static TileType CHEST = new TileType("CHEST", 1, 4, 0);
     public static TileType SEIZE_POINT = new TileType("SEIZE POINT", 1, 4, 20);
     public static TileType HEAL_TILE = new TileType("HEAL TILE", 1, 1, 20);
@@ -285,11 +286,17 @@ public class Tile : MonoBehaviour
 
     public void decorate(GameObject deco)
     {
+        this.deco = deco;
         deco.transform.position = getStage().position;
         deco.transform.SetParent(transform);
         RaycastHit hit;
         Physics.Raycast(getStage().position + new Vector3(0, MAX_DECORATION_HEIGHT, 0), Vector3.down, out hit, int.MaxValue);
         setUtilityPositions(hit.point.y);
+    }
+
+    public GameObject getDeco()
+    {
+        return deco;
     }
 
     public Transform getStage()

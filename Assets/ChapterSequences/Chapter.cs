@@ -125,6 +125,26 @@ public class Chapter : MonoBehaviour
                 {
                     toPut.draw(x, y, height, Tile.WARP_PAD);
                 }
+                else if (tileId == '~')
+                {
+                    toPut.draw(x, y, height, Tile.DEEP_WATER);
+                }
+                else if (tileId == 'T')
+                {
+                    toPut.draw(x, y, height, Tile.SEIZE_POINT);
+                }
+                else if (tileId == 'W')
+                {
+                    toPut.draw(x, y, height, Tile.WALL);
+                }
+                else if (tileId == 'e')
+                {
+                    toPut.draw(x, y, height, Tile.CHEST);
+                }
+                else if (tileId == '+')
+                {
+                    toPut.draw(x, y, height, Tile.HEAL_TILE);
+                }
                 else
                 {
                     Debug.Log($"Found unidentified tile: '{tileId}'");
@@ -162,6 +182,11 @@ public class Chapter : MonoBehaviour
                 }
                 if (deployMap[y][x] == spot)
                 {
+                    if (units[idx] == null)
+                    {
+                        idx++;
+                        continue;
+                    }
                     Transform pos = map[x, y].getStage();
                     UnitModel myUnit = Instantiate(model,
                         new Vector3(pos.position.x, pos.position.y, pos.position.z), Quaternion.identity);
@@ -177,8 +202,18 @@ public class Chapter : MonoBehaviour
 
     public List<Tile> getPlayerDeploymentTiles(Tile[,] map)
     {
-        //TODO
-        return null;
+        List<Tile> ret = new List<Tile>();
+        for (int y = 0; y < deployMap.Length; y++)
+        {
+            for (int x = 0; x < deployMap[y].Length; x++)
+            {
+                if (deployMap[y][x] == '*')
+                {
+                    ret.Add(map[x, y]);
+                }
+            }
+        }
+        return ret;
     }
 
     public void finalize(List<Unit> playerList)
