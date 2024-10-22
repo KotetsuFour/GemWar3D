@@ -190,17 +190,23 @@ public class UnitModel : MonoBehaviour
     public void equip()
     {
         Transform hand = StaticData.findDeepChild(model.transform, "Hand");
+        Transform leftHand = StaticData.findDeepChild(model.transform, "LeftHand");
         for (int q = 0; q < hand.childCount; q++)
         {
             Destroy(hand.GetChild(q).gameObject);
         }
         hand.DetachChildren();
+        for (int q = 0; q < leftHand.childCount; q++)
+        {
+            Destroy(leftHand.GetChild(q).gameObject);
+        }
+        leftHand.DetachChildren();
 
         Weapon wep = unit.getEquippedWeapon();
         if (wep != null)
         {
             GameObject wepModel = Instantiate(AssetDictionary.getWeapon(wep.itemName));
-            wepModel.transform.SetParent(hand);
+            wepModel.transform.SetParent(wep is Bow ? leftHand : hand);
             wepModel.transform.localPosition = hand.localPosition;
             Vector3 euler = hand.eulerAngles;
             wepModel.transform.rotation = Quaternion.Euler(euler.x, euler.y, euler.z);

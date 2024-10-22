@@ -44,10 +44,11 @@ public class Unit
 
 	public string[] talkConvo;
 	public string[] battleQuote;
-	public string[] deathQuote;
+	public string[] recruitQuote;
 	public bool talkRestricted;
 	public Item talkReward;
 	public bool dropsHeldItem;
+	public int recruitability;
 
 	public List<Color> palette;
 
@@ -418,7 +419,7 @@ public class Unit
 	}
 	public void setDeathQuote(string[] de)
 	{
-		this.deathQuote = de;
+		this.recruitQuote = de;
 	}
 
 	public bool isFusion()

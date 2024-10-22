@@ -49,7 +49,7 @@ public class PreBattleMenu : SequenceMember
     private AudioSource music;
 
     private SelectionMode selectionMode;
-    private bool done = false;
+    private bool done;
 
     public void constructor(Tile[,] map, List<Tile> playerTiles,
         Unit[] enemyUnits, Unit[] allyUnits, Unit[] otherUnits, Quaternion playerRotation,
@@ -60,16 +60,24 @@ public class PreBattleMenu : SequenceMember
         other = new List<Unit>(otherUnits);
 
         this.map = map;
+        width = map.GetLength(0);
+        height = map.GetLength(1);
         this.playerTiles = playerTiles;
         this.teamNames = teamNames;
         this.turnPar = turnPar;
         this.playerRotation = playerRotation;
+
+        foreach (Tile tile in playerTiles)
+        {
+            tile.highlightMove();
+        }
 
         for (int q = 0; q < StaticData.positions.Length; q++)
         {
             int idx = StaticData.positions[q];
             if (idx != -1)
             {
+                StaticData.members[idx].deployed = true;
                 createAndPlaceUnit(StaticData.members[idx], playerTiles[q]);
             }
         }
@@ -77,6 +85,8 @@ public class PreBattleMenu : SequenceMember
         StaticData.findDeepChild(transform, "ChapterTitle").GetComponent<TextMeshProUGUI>()
             .text = chapterName;
         StaticData.findDeepChild(transform, "MenuObjective").GetComponent<TextMeshProUGUI>()
+            .text = objective.getName(null);
+        StaticData.findDeepChild(transform, "HUDObjective").GetComponent<TextMeshProUGUI>()
             .text = objective.getName(null);
         StaticData.findDeepChild(transform, "TurnPar").GetComponent<TextMeshProUGUI>()
             .text = $"Turn Par: {turnPar}";
@@ -98,9 +108,10 @@ public class PreBattleMenu : SequenceMember
     }
     public void switchToPage(string page)
     {
-        for (int q = 0; q < transform.childCount; q++)
+        Transform canvas = StaticData.findDeepChild(transform, "Canvas");
+        for (int q = 0; q < canvas.childCount; q++)
         {
-            transform.GetChild(q).gameObject.SetActive(false);
+            canvas.GetChild(q).gameObject.SetActive(false);
         }
         enableChild(page, true);
         enableChild("Tooltip", false);
@@ -290,22 +301,16 @@ public class PreBattleMenu : SequenceMember
     }
     private void toggleUnitDeployment(Unit unit, Transform deployOption)
     {
-        if (unit.deployed)
+        if (unit.deployed && !unit.isLeader)
         {
             unit.deployed = false;
+            Tile tile = unit.model.getTile();
             unit.model.getTile().setOccupant(null);
             Destroy(unit.model.gameObject);
-            int idx = StaticData.members.IndexOf(unit);
-            for (int q = 0; q < StaticData.positions.Length; q++)
-            {
-                if (StaticData.positions[q] == idx)
-                {
-                    StaticData.positions[q] = -1;
-                }
-            }
+            StaticData.positions[playerTiles.IndexOf(tile)] = -1;
             playOneTimeSound("back");
         }
-        else
+        else if (!unit.deployed)
         {
             int idx = -1;
             for (int q = 0; q < StaticData.positions.Length; q++)
@@ -475,6 +480,7 @@ public class PreBattleMenu : SequenceMember
         for (int q = 0; q < StaticData.convoyIds[type].Count; q++)
         {
             Transform option = Instantiate(optionPrefab, itemsList);
+            option.gameObject.SetActive(true);
             Item item = Item.itemIndex[StaticData.convoyIds[type][q]];
             int usesLeft = StaticData.convoyDurabilities[type][q];
 
@@ -541,6 +547,8 @@ public class PreBattleMenu : SequenceMember
         {
             selectedUnit.model.equip();
         }
+        switchToItemType(itemType);
+        selectUnitForConvoy(selectedUnit);
         playOneTimeSound("select");
     }
 
@@ -567,6 +575,8 @@ public class PreBattleMenu : SequenceMember
         {
             selectedUnit.model.equip();
         }
+        switchToItemType(itemType);
+        selectUnitForConvoy(selectedUnit);
         playOneTimeSound("select");
     }
 
@@ -582,11 +592,14 @@ public class PreBattleMenu : SequenceMember
     public void saveFile(int file)
     {
         SaveMechanism.saveGame(file);
+        backFromSave();
+    }
+    public void backFromSave()
+    {
         enableChild("SaveMenu", false);
         enableChild("MainMenu", true);
         selectionMode = SelectionMode.MAIN_MENU;
     }
-
     public void toGameMenu()
     {
         SpecialMenuLogic.mainMenu();
@@ -671,6 +684,14 @@ public class PreBattleMenu : SequenceMember
                 second.setOccupant(selectedTile.getOccupant());
                 selectedTile.setOccupant(temp);
                 selectedTile.highlightMove();
+                if (selectedTile.getOccupant() != null)
+                {
+                    selectedTile.getOccupant().transform.position = selectedTile.getStage().position;
+                }
+                if (second.getOccupant() != null)
+                {
+                    second.getOccupant().transform.position = second.getStage().position;
+                }
 
                 int pos1 = playerTiles.IndexOf(selectedTile);
                 int pos2 = playerTiles.IndexOf(second);

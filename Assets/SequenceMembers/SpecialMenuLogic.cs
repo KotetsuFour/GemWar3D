@@ -14,6 +14,6 @@ public static class SpecialMenuLogic
     public static void mainMenu()
     {
         SaveMechanism.loadGame(StaticData.savefile);
-        SceneManager.LoadScene("Main Menu");
+        SceneManager.LoadScene("MainMenu");
     }
 }

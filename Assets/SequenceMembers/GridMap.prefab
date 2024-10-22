@@ -3049,7 +3049,7 @@ GameObject:
   - component: {fileID: 1700287395768061202}
   - component: {fileID: 2081045276421056980}
   m_Layer: 5
-  m_Name: PlayerCRIT
+  m_Name: EnemyCRIT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21000,7 +21000,7 @@ GameObject:
   - component: {fileID: 6854696656835865515}
   - component: {fileID: 5962557962037911923}
   m_Layer: 5
-  m_Name: PlayerHIT
+  m_Name: EnemyHIT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21773,7 +21773,7 @@ GameObject:
   - component: {fileID: 6633276561461044458}
   - component: {fileID: 4981246445494960992}
   m_Layer: 5
-  m_Name: PlayerATK
+  m_Name: EnemyATK
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

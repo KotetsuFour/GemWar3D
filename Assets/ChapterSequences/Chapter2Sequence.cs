@@ -95,6 +95,9 @@ public class Chapter2Sequence : Chapter
         decoDictionary.Add('T', throne);
         decoDictionary.Add('e', chest);
 
+        loot = new int[] {0, 2, 0, -1,/*2 Steel*/0, 0, 0, 11,/*Iron Lance*/
+            0, 0, 0, 24,/*Moon Goddess Icon*/0, 0, 0, 15,/*Iron Whip*/4, 0, 0, -1/*4 Iron*/};
+
         tileMap = new string[]
         {
             "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
@@ -288,33 +291,40 @@ public class Chapter2Sequence : Chapter
             else if (sequenceNum == 2)
             {
                 seqMem.gameObject.SetActive(false);
+                introScene.gameObject.SetActive(true);
                 introScene.constructor(getMapIntro());
                 seqMem = introScene;
             }
             else if (sequenceNum == 3)
             {
                 seqMem.gameObject.SetActive(false);
-                SaveMechanism.loadGame(StaticData.savefile);
-
+                //                SaveMechanism.loadGame(StaticData.savefile);
+                Debug.Log("before making prep");
                 PreBattleMenu pbm = makePrepMenu();
-
+                Debug.Log("after making prep");
                 seqMem = pbm;
             }
             else if (sequenceNum == 4)
             {
+                Debug.Log("before disabling prep");
                 seqMem.gameObject.SetActive(false);
+                Debug.Log("after disabling prep");
                 seqMem = makeChapter();
+                gridmap.gameObject.SetActive(true);
+                seqMem = gridmap;
             }
             else if (sequenceNum == 5)
             {
                 seqMem.gameObject.SetActive(false);
                 playerList = gridmap.player;
                 turnsTaken = gridmap.turn;
+                finalScene.gameObject.SetActive(true);
                 finalScene.constructor(getEnding());
                 seqMem = finalScene;
             }
             else if (sequenceNum == 6)
             {
+                seqMem.gameObject.SetActive(false);
                 finalize(playerList);
                 SaveScreen save = Instantiate(saveScreenPrefab);
                 seqMem = save;
@@ -328,37 +338,159 @@ public class Chapter2Sequence : Chapter
 
     private string[] getOpening()
     {
+        string blue = "Blue_Diamond null ";
+        string yellow = "Yellow_Diamond null ";
+        string pink = "Pink_Diamond Pink_Diamond ";
+        string narrator = "_ null ";
+        string pearl = "Pearl Pearl ";
         return new string[]
         {
+            narrator + "The Crystal Gems, led by Rose Quartz, began sabotaging the colonial effort.",
+            narrator + "With this, Pink Diamond had the perfect excuse to end the colony. Or so she thought.",
 
+            pink + "Rose Quartz has become a significant threat. She has turned several of my Gems against me.",
+            yellow + "Well I think the solution is simple.",
+            pink + "We should stop the colony!",
+            yellow + "I was going to say you ought to bubble all of your Rose Quartzes.",
+            yellow + "They are a new model of quartz. For all we know, they could all be just as defective as this one.",
+            pink + "But that isn't enough!",
+            yellow + "Capturing the other Rose Quartzes will work as a scare tactic.",
+            yellow + "And if not, it should be easy enough still to hunt down these few traitors.",
+            pink + "You don't understand! They've organized into a rebellion! They're calling themselves the Crystal Gems!",
+            yellow + "Ugh. Blue, you handle this.",
+            pink + "I don't understand why you won't just let me leave the Earth alone!",
+            blue + "\"Leave the Earth alone\" ? Is that what you're asking of us?",
+            pink + "It's just--",
+            blue + "But this is what you wanted.",
+            blue + "You begged us for a colony of your own.And now all you want to do is be rid of it!",
+            blue + "First, there were too many organics, then their cities were too difficult to dismantle.",
+            blue + "And now these \"Crystal Gems\" ? We're tired of your excuses, Pink!",
+            pink + "...",
+            blue + "This Rose Quartz can't hurt you. You can't be swayed by a few unruly Gems.",
+            pink + "---",
+            blue + "Enough!",
+            blue + "You must understand. You are a Diamond. Everyone on this planet is looking to you.",
+            blue + "You don't even have to do anything. Just smile and wave.",
+            blue + "Show everyone you are unfazed by this little uprising.",
+            blue + "Your Gems will fall into line, and these Crystal Gems will be no more.",
+            blue + "As long as you are there to rule, this colony will be completed.",
+
+            pink + "Pearl? What are you doing with that sword?",
+            pearl + "Bringing it to you, my Diamond! It's a new sword that Bismuth made especially for you.",
+            pearl + "She says it's not balanced entirely correctly and that she'll make another one to replace it.",
+            pink + "That's not how you give someone a sword. I thought you were about to shatter me.",
+            pearl + "Oh! I'm terribly sorry!",
+            pink + "They didn't listen, Pearl. As usual. Looks like the war will go on.",
+            pink + "Thanks for bringing me the sword. Let's go find somewhere to use it."
         };
     }
     private string[] getMapIntro()
     {
+        string rose = "Rose_Quartz Rose_Quartz ";
+        string pearl = "Pearl Pearl ";
+        string bismuth = "Bismuth Bismuth ";
+        string ruby = "Ruby Ruby ";
         return new string[]
         {
-
+            rose + "This is perfect! Once we capture the Lunar Sea Spire, Blue and Yellow will have to leave the Earth alone.",
+            bismuth + "And Pink Diamond, right? This is her colony.",
+            rose + "Right! Obviously.",
+            rose + "But how are we going to approach? If we just come in the main entrance, we'll be seen from a mile away.",
+            pearl + "Wait a minute...",
+            pearl + "Halt! Who goes there?!",
+            ruby + "---",
+            ruby + "Whoa!",
+            rose + "A Ruby? What are you doing here?",
+            ruby + "I was just guarding the private entrance-- Wait, that's classified! If you ask me, I should be the one asking you what you're doing here.",
+            ruby + "And it seems like what your doing here is being up to no good!",
+            ruby + "I just caught you red-handed! Ha!",
+            bismuth + "You know you're outnumbered, right? And we're the ones who just caught you.",
+            ruby + "...",
+            ruby + "Dang it! How am I supposed to explain to my Turquiose that I got captured?! This is humiliating!",
+            rose + "You know, if you were to help us get in the private entrance and capture the spire, I suppose we could let you go.",
+            rose + "Your Turquoise wouldn't even have to know.",
+            ruby + "Hm... I guess I have no choice. Okay, I'll do it.",
+            ruby + "But if you see my Turquoise in there, tell her I had nothing to do with this."
         };
     }
     private string[] turquoiseRecruitment()
     {
+        string turq = "Turquoise Turquoise ";
+        string note = "_ null ";
         return new string[]
         {
-
+            turq + "Did I see a Ruby fighting with you? With her Gem on her foot and using a pike?",
+            turq + "Ugh, what does she think she's doing?!",
+            turq + "Well I can't let word get out that I can't keep control over my servants....",
+            turq + "Very well. I'm joining you! At least that way, everyone will know that I am in complete control over my life and what is mine!",
+            turq + "You may thank me for the privilege of having me on your team when we get out of this fiasco.",
+            note + "Turquoise joined your party!"
         };
     }
     private string[] moonstoneRecruitment()
     {
+        string rose = "Rose_Quartz Rose_Quartz ";
+        string moon = "Moonstone Moonstone ";
+        string note = "_ null ";
         return new string[]
         {
-
+            rose + "Hi there.",
+            moon + "Huh?",
+            rose + "Sorry to catch you offguard, but I just had the sudden impulse to talk to you.",
+            moon + "Why me? I'm just a nameless priestess for the Moon Goddess.",
+            moon + "I'm invisible.",
+            rose + "Is that how Homeworld has made you feel? Invisible?",
+            moon + "I--",
+            rose + "This might sound crazy, but maybe it's time you fought for someone who valued you as more than just a nameless priestess.",
+            moon + "You know... I think you may be right. I'll do it! I'll join you-- er-- if you'll have me.",
+            rose + "I would love to have you onboard, Moonstone!",
+            note + "Moonstone joined your party!"
         };
     }
     private string[] getEnding()
     {
+        string rose = "Rose_Quartz Rose_Quartz ";
+        string pearl = "Pearl Pearl ";
+        string turq = "Turquoise Turquoise ";
+        string ruby = "Ruby Ruby ";
+        string pink = "Pink_Diamond Pink_Diamond ";
+        string blue = "Blue_Diamond null ";
+        string yellow = "Yellow_Diamond null ";
         return new string[]
         {
+            rose + "Now that the spire is in Crystal Gem hands, all we have to do is wait.",
+            "$if alive Ruby",
+            "$putString ruby",
+            ruby + "That was really fun! I never get to fight real opponents with Turquoise!",
+            ruby + "Do you mind if I come along with you guys?",
+            rose + "You can absolutely come with us! We'll need Gems like you.",
+            "$if alive Turquoise",
+            turq + "Ahem...",
+            ruby + "Turquoise! I can explain! There was a tsunami! And if I hadn't--",
+            turq + "Save it. I can see you're quite taken with this rabble, so I have no choice.",
+            turq + "I'm seeing this war through to the end! You clearly need the help anyway.",
+            "$endif",
+            "$endif",
+            pearl + "Rose, are you sure this will be enough?",
+            rose + "It has to be. Or we have a long road ahead of us.",
 
+            blue + "*sigh*",
+            blue + "I have to admit, I am disappointed in you, Pink.",
+            blue + "All of these resources spent, all of this time scouting the landscape and examining the planet's conditions...",
+            blue + "We did it because we truly believed in you, Pink.We believed that you could run your own colony.",
+            pink + "I'm sorry I let you down. I really did want this, but...",
+            blue + "No \"but\"s. You may have lost faith in yourself, but I haven't lost faith in you.",
+            blue + "We're Diamonds. When we start something, we finish it, and we don't give up.",
+            yellow + "Especially when a lower Gem challenges our authority.",
+            yellow + "For the record, when this mess is cleaned up, I won't be trusting you with a new colony for at least another million years.",
+            blue + "You can do this, Pink.You just need some assistance.",
+            pink + "What are you saying?",
+            blue + "I will bring my court to Earth and we will help you deal with these rebels.",
+            yellow + "It will take some time for me to catch a free moment, but I intend to do the same.",
+            yellow + "And when I get there, you'd better have all of the Rose Quartzes you can locate bubbled.",
+            pink + "Blue, Yellow, I really don't think that's necessary.",
+            yellow + "Oh, what's this? You don't want us to embarrass you by showing you how simple a matter this is?",
+            yellow + "It's too late. You've had your chance to handle this. Now it's ours."
         };
     }
 
@@ -485,14 +617,11 @@ public class Chapter2Sequence : Chapter
             StaticData.members.Add(ruby_unit);
 
             StaticData.addToConvoy(Item.iron_blade.clone());
+            StaticData.positions = new int[] { 0, -1, -1, -1, -1, -1 };
+
+            StaticData.chapterPrep = StaticData.scene;
         }
 
-        //TODO everything to do
-        int[] playerPos = { 0, -1, -1, -1, -1, -1 };
-        if (StaticData.chapterPrep == StaticData.scene)
-        {
-            playerPos = StaticData.positions;
-        }
         enemy = new Unit[]{genericNoble(), genericPriestess(), genericPriestess(),
                     genericPriestess(), moonstone(), turquoise(), genericNoble(), genericNoble(),
                     genericNoble(), genericNoble(), genericNoble(),
@@ -512,6 +641,8 @@ public class Chapter2Sequence : Chapter
             new SeizeObjective(), CHAPTER_TITLE, teamNames, TURNPAR, "prep-music");
 
         setUnits(map, enemy, Unit.UnitTeam.ENEMY, Quaternion.identity);
+
+        ret.initializeCursorPosition();
 
         return ret;
     }
@@ -545,8 +676,8 @@ public class Chapter2Sequence : Chapter
         gridmap.constructor(map,
             playerList.ToArray(), enemy, ally, other,
             new SeizeObjective(), CHAPTER_TITLE, teamNames, TURNPAR,
-            new string[] {  },
-            new string[] {  });
+            new string[] { "map-music-1", "enemyphase-music-1" },
+            new string[] { "player-battle-music-1", "enemy-battle-music-1" });
 
         setUnits(map, player, Unit.UnitTeam.PLAYER, Quaternion.Euler(0, 180, 0));
         setUnits(map, enemy, Unit.UnitTeam.ENEMY, Quaternion.identity);

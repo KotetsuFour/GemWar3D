@@ -52,7 +52,8 @@ public class CampaignSaveData
 	public int[] equipped; //0 = personal, 1 = held, 2 = none
 	public bool[] isExhausted;
 
-	public string[][] deathQuote;
+	public string[][] recruitQuote;
+	public int[] recruitability;
 
 	public float[][] palette;
 
@@ -108,7 +109,8 @@ public class CampaignSaveData
 	public int[] pequipped; //0 = personal, 1 = held, 2 = none
 	public bool[] pisExhausted;
 
-	public string[][] pdeathQuote;
+	public string[][] precruitQuote;
+	public int[] precruitability;
 
 	public float[][] ppalette;
 
@@ -184,7 +186,8 @@ public class CampaignSaveData
 		equipped = new int[StaticData.members.Count]; //0 = personal, 1 = held, 2 = none
 		isExhausted = new bool[StaticData.members.Count];
 
-		deathQuote = new string[StaticData.members.Count][];
+		recruitQuote = new string[StaticData.members.Count][];
+		recruitability = new int[StaticData.members.Count];
 
 		palette = new float[StaticData.members.Count][];
 
@@ -244,14 +247,15 @@ public class CampaignSaveData
 			equipped[q] = m.equipped; //0 = personal, 1 = held, 2 = none
 			isExhausted[q] = m.isExhausted;
 
-			deathQuote[q] = m.deathQuote;
+			recruitQuote[q] = m.recruitQuote;
+			recruitability[q] = m.recruitability;
 
 			palette[q] = new float[m.palette.Count * 3];
 			for (int w = 0; w < m.palette.Count; w++)
             {
-				palette[q][w * 3] = m.palette[q].r;
-				palette[q][(w * 3) + 1] = m.palette[q].g;
-				palette[q][(w * 3) + 2] = m.palette[q].b;
+				palette[q][w * 3] = m.palette[w].r;
+				palette[q][(w * 3) + 1] = m.palette[w].g;
+				palette[q][(w * 3) + 2] = m.palette[w].b;
 			}
 
 			supportId1[q] = m.supportId1;
@@ -307,7 +311,8 @@ public class CampaignSaveData
 		pequipped = new int[StaticData.prisoners.Count]; //0 = personal, 1 = held, 2 = none
 		pisExhausted = new bool[StaticData.prisoners.Count];
 
-		pdeathQuote = new string[StaticData.prisoners.Count][];
+		precruitQuote = new string[StaticData.prisoners.Count][];
+		precruitability = new int[StaticData.members.Count];
 
 		ppalette = new float[StaticData.prisoners.Count][];
 
@@ -367,7 +372,8 @@ public class CampaignSaveData
 			pequipped[q] = m.equipped; //0 = personal, 1 = held, 2 = none
 			pisExhausted[q] = m.isExhausted;
 
-			pdeathQuote[q] = m.deathQuote;
+			precruitQuote[q] = m.recruitQuote;
+			precruitability[q] = m.recruitability;
 
 			ppalette[q] = new float[m.palette.Count * 3];
 			for (int w = 0; w < m.palette.Count; w++)
@@ -448,7 +454,8 @@ public class CampaignSaveData
 			mem.equipped = equipped[q]; //0 = personal, 1 = held, 2 = none
 			mem.isExhausted = isExhausted[q];
 
-			mem.deathQuote = deathQuote[q];
+			mem.recruitQuote = recruitQuote[q];
+			mem.recruitability = recruitability[q];
 
 			mem.fusionSkill1 = (Unit.FusionSkill)fusionSkill1[q];
 			mem.fusionSkill2 = (Unit.FusionSkill)fusionSkill2[q];
@@ -494,7 +501,8 @@ public class CampaignSaveData
 			mem.equipped = pequipped[q]; //0 = personal, 1 = held, 2 = none
 			mem.isExhausted = pisExhausted[q];
 
-			mem.deathQuote = pdeathQuote[q];
+			mem.recruitQuote = precruitQuote[q];
+			mem.recruitability = precruitability[q];
 
 			mem.fusionSkill1 = (Unit.FusionSkill)pfusionSkill1[q];
 			mem.fusionSkill2 = (Unit.FusionSkill)pfusionSkill2[q];

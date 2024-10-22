@@ -21,7 +21,7 @@ public class Chapter : MonoBehaviour
 
     public int turnsTaken;
 
-    public static int nextTODOChapter = 2;
+    public static int nextTODOChapter = 3;
     public void handleInput(SequenceMember seqMem)
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))

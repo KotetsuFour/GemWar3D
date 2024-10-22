@@ -12,6 +12,7 @@ public class Cutscene : SequenceMember
     private float timer;
 
     private Stack<string> ifStack;
+    private List<string> stringStorage;
 
     private Dictionary<string, AudioSource> audioPlaying;
 
@@ -28,6 +29,7 @@ public class Cutscene : SequenceMember
     {
         this.dialogue = dialogue;
         ifStack = new Stack<string>();
+        stringStorage = new List<string>();
         audioPlaying = new Dictionary<string, AudioSource>();
         nextSaying();
     }
@@ -93,6 +95,10 @@ public class Cutscene : SequenceMember
                         }
                     }
                 }
+                else if (parts[1] == "hasString")
+                {
+                    worked = stringStorage.Contains(parts[2]);
+                }
                 if (worked)
                 {
                     ifStack.Push("dontElse");
@@ -130,7 +136,15 @@ public class Cutscene : SequenceMember
 
         if (ifStack.Count == 0 || ifStack.Peek() == "dontElse" || ifStack.Peek() == "doingElse")
         {
-            if (comm == "pause")
+            if (comm == "putString")
+            {
+                stringStorage.Add(parts[1]);
+            }
+            else if (comm == "removeString")
+            {
+                stringStorage.Remove(parts[1]);
+            }
+            else if (comm == "pause")
             {
                 float time = float.Parse(parts[1]);
                 timer = time;
