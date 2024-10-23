@@ -77,6 +77,10 @@ public class UnitModel : MonoBehaviour
         model = Instantiate(AssetDictionary.getModel(unit.unitClass.id), transform);
         unit.model = this;
         anim = model.GetComponent<Animator>();
+        if (anim == null)
+        {
+            anim = StaticData.findDeepChild(model.transform, "animHolder").GetComponent<Animator>();
+        }
         setPalette(unit.palette);
         setCircleColor();
         name = unit.unitName;

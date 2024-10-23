@@ -783,6 +783,8 @@ public class GridMap : SequenceMember
         trader.heldItem = selectedUnit.heldItem;
         selectedUnit.heldItem = temp;
 
+        playOneTimeSound("switch");
+
         selectionMode = SelectionMode.ROAM;
     }
     private void tradeWeapon(Unit trader)
@@ -790,6 +792,8 @@ public class GridMap : SequenceMember
         Weapon temp = trader.heldWeapon;
         trader.heldWeapon = selectedUnit.heldWeapon;
         selectedUnit.heldWeapon = temp;
+
+        playOneTimeSound("switch");
 
         selectionMode = SelectionMode.ROAM;
     }
@@ -1087,6 +1091,7 @@ public class GridMap : SequenceMember
             selectedUnit.model.equip();
             unfillAttackableTiles();
             fillAttackableTiles();
+            playOneTimeSound("equip");
         }
         else if (choice == MenuChoice.EQUIP_HELD)
         {
@@ -1094,6 +1099,7 @@ public class GridMap : SequenceMember
             selectedUnit.model.equip();
             unfillAttackableTiles();
             fillAttackableTiles();
+            playOneTimeSound("equip");
         }
         else if (choice == MenuChoice.EQUIP_NONE)
         {
@@ -1101,6 +1107,7 @@ public class GridMap : SequenceMember
             selectedUnit.model.equip();
             unfillAttackableTiles();
             fillAttackableTiles();
+            playOneTimeSound("equip");
         }
         else if (choice == MenuChoice.ESCAPE)
         {

@@ -699,6 +699,7 @@ public class PreBattleMenu : SequenceMember
                 StaticData.positions[pos1] = StaticData.positions[pos2];
                 StaticData.positions[pos2] = temporary;
 
+                playOneTimeSound("switch");
                 selectionMode = SelectionMode.ROAM;
             }
         }

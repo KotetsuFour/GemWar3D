@@ -134,9 +134,9 @@ MonoBehaviour:
   - {fileID: 2270537017360220747, guid: 2eb3a2d8f4bbd704b87c0943cb1a07b8, type: 3}
   - {fileID: 3821552850105114383, guid: ff41efd7bf01b3e4b95e81e1f51d5bfe, type: 3}
   - {fileID: 6691694274023130016, guid: cec5b5d13078a2045ad23cf04d14970f, type: 3}
-  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
-  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
-  - {fileID: 4536958600166282455, guid: 9520224b50118d94997c7a3ef098d845, type: 3}
+  - {fileID: 7885597217485757445, guid: 3865b9cb663909c41a1e69c0adfc3362, type: 3}
+  - {fileID: 2248787671583392380, guid: c33352a554ec6304e9bf55148121d9d8, type: 3}
+  - {fileID: 5134989617159882605, guid: 50139aa638b6ef84fb1a82c97494983c, type: 3}
   decoKeys: []
   decoValues: []
   audioKeys:
@@ -179,6 +179,7 @@ MonoBehaviour:
   - enemy-battle-music-1
   - equip
   - prep-music
+  - switch
   audioValues:
   - {fileID: 8300000, guid: e41f665d7207b364ca554e1978697170, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
@@ -219,6 +220,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 5ea2c0d9c31b6e24090e213c4ed0fca8, type: 3}
   - {fileID: 8300000, guid: 527e18e72ea9ddd40a7cee8238b0e157, type: 3}
   - {fileID: 8300000, guid: a817137e3b677d54aa46fa57e45f0feb, type: 3}
+  - {fileID: 8300000, guid: 0a7ff7766bc4e20458e264f228ad8511, type: 3}
   copyrightAudioKeys:
   - main-theme
   - map-music-1
