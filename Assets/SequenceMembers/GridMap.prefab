@@ -7458,6 +7458,9 @@ MonoBehaviour:
   testFutureVision: 0
   seized: 0
   turn: 0
+  background: {fileID: 7089685494327394491, guid: 87dbe84fce647c940969e6a01221b15a, type: 3}
+  surroundings:
+  - {fileID: 2100000, guid: 9627bddcf7031af4eb8a2d4e40a146f1, type: 2}
   cursorPrefab: {fileID: 5567251825533974625, guid: 275db0d07084d074c873fde4addb5d97, type: 3}
   tileLayer:
     serializedVersion: 2
@@ -7473,6 +7476,7 @@ MonoBehaviour:
   mapBattleAnimation: {fileID: 5301887717012581333, guid: e4c8e3c115d10184cb53001c940c6b91, type: 3}
   mapEvent: {fileID: 1350778673254934627, guid: f5f55f0583ef11a419c8cda8a3c1c11d, type: 3}
   warpAnimation: {fileID: 2039320880806230488, guid: bdd8c1353e54e8e4dbbc86d300bae43f, type: 3}
+  healingEffect: {fileID: 2843279060849242998, guid: bde2e5a0648f63440b2cbfb91fea64de, type: 3}
 --- !u!1 &1697815353268774003
 GameObject:
   m_ObjectHideFlags: 0

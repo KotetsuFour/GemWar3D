@@ -9,6 +9,9 @@ public class Chapter : MonoBehaviour
                                                 //PLEASE DO NOT DELETE
     [SerializeField] private Tile tile;
 
+    [SerializeField] private Background background;
+    [SerializeField] private Material[] surroundings;
+
     public string[] tileMap;
     public string[] deployMap;
     public string[] lootMap;
@@ -161,6 +164,12 @@ public class Chapter : MonoBehaviour
 
                 ret[x, y] = toPut;
             }
+        }
+
+        for (int q = 0; q < 5; q++)
+        {
+            Background part = Instantiate(background, mapTransform);
+            part.draw(ret.GetLength(0), ret.GetLength(1), q, surroundings[q % surroundings.Length]);
         }
 
 

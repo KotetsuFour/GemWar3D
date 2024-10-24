@@ -258,6 +258,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 5615181118688199416, guid: 52e4a000d22c0a0429c7c95b25ae0ed3, type: 3}
   tile: {fileID: 117436326556354266, guid: e56e5907698fa9a4a847d9e6fad33795, type: 3}
+  background: {fileID: 7089685494327394491, guid: 87dbe84fce647c940969e6a01221b15a, type: 3}
+  surroundings:
+  - {fileID: 2100000, guid: 9627bddcf7031af4eb8a2d4e40a146f1, type: 2}
+  - {fileID: 2100000, guid: ede8c3e5ed228d44cbce3ce2261c9465, type: 2}
+  - {fileID: 2100000, guid: ede8c3e5ed228d44cbce3ce2261c9465, type: 2}
+  - {fileID: 2100000, guid: ede8c3e5ed228d44cbce3ce2261c9465, type: 2}
+  - {fileID: 2100000, guid: ede8c3e5ed228d44cbce3ce2261c9465, type: 2}
   tileMap: []
   deployMap: []
   lootMap: []

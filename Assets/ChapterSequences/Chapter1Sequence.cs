@@ -251,7 +251,7 @@ public class Chapter1Sequence : Chapter
         string quartz = "Quartz Quartz ";
         return new string[]
         {
-            "$solidColor 0 0 0",
+            "$image sky-arena-entrance",
             "$sound before-chapter-music1 start",
             "$sound before-chapter-music1 loop",
             "$left Rose_Quartz " + AssetDictionary.PORTRAIT_NEUTRAL,
@@ -396,7 +396,7 @@ public class Chapter1Sequence : Chapter
         string bismuth = "Bismuth Bismuth ";
         return new string[]
         {
-            "$solidColor 0 0 0",
+            "$image sunflowers",
             "$sound peaceful-music start",
             "$sound peaceful-music loop",
             "$left Rose_Quartz",

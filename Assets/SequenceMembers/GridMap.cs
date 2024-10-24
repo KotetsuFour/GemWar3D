@@ -29,7 +29,6 @@ public class GridMap : SequenceMember
 
     private Tile[,] map;
     private Transform mapTransform;
-    private List<Tile> healTiles;
 
     private float timer;
 
@@ -2443,7 +2442,7 @@ public class GridMap : SequenceMember
 
         foreach (Unit u in teams[teamPhase])
         {
-            if (u.model.getTile().getType().healing > 0)
+            if (u.model != null && u.model.getTile().getType().healing > 0)
             {
                 u.heal(u.model.getTile().getType().healing);
                 Instantiate(healingEffect, u.model.transform.position, healingEffect.transform.rotation);
