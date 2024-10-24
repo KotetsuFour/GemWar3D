@@ -73,6 +73,8 @@ public class Unit
 
 	public UnitModel model;
 
+	public bool animationOn;
+
 	public static int MAX_PALETTE_COLORS = 7;
 
 	public void constructor(string unitName, UnitClass unitClass, string description, int maxHP, int strength, int magic,

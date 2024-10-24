@@ -615,18 +615,13 @@ public class PreBattleMenu : SequenceMember
     {
         if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.SWITCH)
         {
-            Tile tile = null;
             RaycastHit hit;
-            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
+            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
             {
-                tile = hit.collider.GetComponent<UnitModel>().getTile();
+                Tile tile = hit.collider.GetComponent<Tile>();
+                setCursor(tile);
+                Z();
             }
-            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
-            {
-                tile = hit.collider.GetComponent<Tile>();
-            }
-            setCursor(tile);
-            Z();
         }
     }
     public override void RIGHT_MOUSE()

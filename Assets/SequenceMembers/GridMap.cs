@@ -35,9 +35,8 @@ public class GridMap : SequenceMember
 
     [SerializeField] private GameObject cursorPrefab;
     private GameObject cursor;
-    [SerializeField] private LayerMask unitOrTile;
-    [SerializeField] private LayerMask unitLayer;
     [SerializeField] private LayerMask tileLayer;
+    [SerializeField] private LayerMask unitLayer;
 
     [SerializeField] private Button menuOption;
     private List<Button> menuOptions;
@@ -53,8 +52,9 @@ public class GridMap : SequenceMember
 
     private SelectionMode selectionMode;
 
-    [SerializeField] private BattleAnimation battleAnimation;
-    private BattleAnimation instantiatedBattleAnimation;
+    [SerializeField] private CinematicBattleAnimation battleAnimation;
+    [SerializeField] private MapBattleAnimation mapBattleAnimation;
+    private AbstractBattleAnimation instantiatedBattleAnimation;
     [SerializeField] private MapEventExecutor mapEvent;
     private MapEventExecutor instantiatedMapEvent;
     [SerializeField] private ParticleAnimation warpAnimation;
@@ -78,6 +78,8 @@ public class GridMap : SequenceMember
     private AudioSource music;
     private string[] teamMusic;
     private string[] battleMusic;
+
+    [SerializeField] private ParticleAnimation healingEffect;
 
     public static int NUM_CAMERA_POSITIONS = 5;
 
@@ -229,26 +231,18 @@ public class GridMap : SequenceMember
         if (selectionMode == SelectionMode.ROAM)
         {
             RaycastHit hit;
-            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitOrTile))
+            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
             {
-                if (hit.collider.GetComponent<UnitModel>() != null)
-                {
-                    playOneTimeSound(AssetDictionary.getAudio("select"));
-
-                    initiateMove(hit.collider.GetComponent<UnitModel>().getTile());
-                }
-                else if (hit.collider.GetComponent<Tile>() != null)
-                {
-                    playOneTimeSound(AssetDictionary.getAudio("select"));
-
-                    Tile currentTile = hit.collider.GetComponent<Tile>();
-                    initiateMove(currentTile);
-                }
+                setCursor(hit.collider.GetComponent<UnitModel>().getTile());
+                Z();
             }
-            else
+            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
             {
-                selectedTile = null;
-                selectedUnit = null;
+                if (hit.collider.GetComponent<Tile>() != null)
+                {
+                    setCursor(hit.collider.GetComponent<Tile>());
+                    Z();
+                }
             }
         }
         else if (selectionMode == SelectionMode.MOVE)
@@ -257,24 +251,26 @@ public class GridMap : SequenceMember
             if (selectedUnit.team == Unit.UnitTeam.PLAYER
                 && Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
             {
-                initiateTravel(hit.collider.GetComponent<Tile>());
+                setCursor(hit.collider.GetComponent<Tile>());
+                Z();
             }
         }
         else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
             || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
         {
-            Tile tile = null;
             RaycastHit hit;
-            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer))
+            if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer)
+                && interactableUnits.Contains(hit.collider.GetComponent<Tile>()))
             {
-                tile = hit.collider.GetComponent<UnitModel>().getTile();
+                Tile tile = hit.collider.GetComponent<Tile>();
+                interactIdx = interactableUnits.IndexOf(tile);
+                setCursor(tile);
+                Z();
             }
-            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, tileLayer))
+            else if (Physics.Raycast(getCamera().ScreenPointToRay(Input.mousePosition), out hit, float.MaxValue, unitLayer)
+                && interactableUnits.Contains(hit.collider.GetComponent<UnitModel>().getTile()))
             {
-                tile = hit.collider.GetComponent<Tile>();
-            }
-            if (tile != null && interactableUnits.Contains(tile))
-            {
+                Tile tile = hit.collider.GetComponent<UnitModel>().getTile();
                 interactIdx = interactableUnits.IndexOf(tile);
                 setCursor(tile);
                 Z();
@@ -447,22 +443,25 @@ public class GridMap : SequenceMember
 
             selectionMode = SelectionMode.ROAM;
         }
-        else if (selectionMode == SelectionMode.CONTROLS)
+        else if (selectionMode == SelectionMode.OPTIONS_MENU)
         {
-            /*
-            controlsPage.SetActive(false);
-            Camera camCam = cam.GetComponent<Camera>();
-            camCam.orthographicSize = cameraOrthographicSize;
-            setCameraPosition(cursorX, cursorY);
-            instantiatedMapHUD.SetActive(true);
-            */
+            enableChild("HUD", true);
+            enableChild("OptionsMenu", false);
+            playOneTimeSound("back");
             selectionMode = SelectionMode.ROAM;
+        }
+        else if (selectionMode == SelectionMode.ANIM_OPTS)
+        {
+            enableChild("PersonalAnims", false);
+            enableChild("OptionsMenu", true);
+            selectionMode = SelectionMode.OPTIONS_MENU;
         }
         else if (selectionMode == SelectionMode.STATUS)
         {
             enableChild("Status", false);
             enableChild("Menu", false);
             enableChild("HUD", true);
+            playOneTimeSound("back");
             selectionMode = SelectionMode.ROAM;
         }
         else if (selectionMode == SelectionMode.ESCAPE_MENU)
@@ -1417,8 +1416,9 @@ public class GridMap : SequenceMember
         }
         else if (choice == MenuChoice.OPTIONS)
         {
-            //TODO show options page
-            selectionMode = SelectionMode.CONTROLS;
+            enableChild("Menu", false);
+            enableChild("OptionsMenu", true);
+            selectionMode = SelectionMode.OPTIONS_MENU;
         }
         else if (choice == MenuChoice.END)
         {
@@ -2301,12 +2301,25 @@ public class GridMap : SequenceMember
             selectedUnit.getEquippedWeapon(), targetEnemy.getEquippedWeapon(),
             moveDest, targetTile);
         Battle.RNGSTORE = new List<int>();
-        music.Pause();
 
         StaticData.findDeepChild(selectedUnit.model.transform, "TeamCircle").gameObject.SetActive(false);
         StaticData.findDeepChild(targetEnemy.model.transform, "TeamCircle").gameObject.SetActive(false);
 
-        instantiatedBattleAnimation = Instantiate(battleAnimation);
+        StaticData.AnimationSetting setting = (selectedUnit.team == Unit.UnitTeam.PLAYER || targetEnemy.team == Unit.UnitTeam.PLAYER) ? StaticData.playerAnimations
+            : (selectedUnit.team == Unit.UnitTeam.ALLY || targetEnemy.team == Unit.UnitTeam.ALLY) ? StaticData.allyAnimations
+            : StaticData.otherAnimations;
+
+        if (setting == StaticData.AnimationSetting.CINEMATIC
+            || (setting == StaticData.AnimationSetting.PERSONAL && (selectedUnit.animationOn || targetEnemy.animationOn)))
+        {
+            instantiatedBattleAnimation = Instantiate(battleAnimation);
+            music.Pause();
+        }
+        else
+        {
+            instantiatedBattleAnimation = Instantiate(mapBattleAnimation);
+        }
+
         instantiatedBattleAnimation.constructor(battle,
             battleMusic.Length > ((int)selectedUnit.team) ? battleMusic[(int)selectedUnit.team] : null,
             this);
@@ -2428,6 +2441,14 @@ public class GridMap : SequenceMember
         } while (teams[teamPhase].Count == 0);
         npcIdx = 0;
 
+        foreach (Unit u in teams[teamPhase])
+        {
+            if (u.model.getTile().getType().healing > 0)
+            {
+                u.heal(u.model.getTile().getType().healing);
+                Instantiate(healingEffect, u.model.transform.position, healingEffect.transform.rotation);
+            }
+        }
         if (teams[teamPhase] == player)
         {
             turn++;
@@ -2712,6 +2733,78 @@ public class GridMap : SequenceMember
         }
     }
 
+    public void changePlayerAnimations()
+    {
+        StaticData.playerAnimations = (StaticData.AnimationSetting)(((int)StaticData.playerAnimations + 1) % 3);
+        StaticData.findDeepChild(transform, "PlayerAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.playerAnimations;
+        StaticData.findDeepChild(transform, "TogglePersonal").gameObject.SetActive(StaticData.playerAnimations == StaticData.AnimationSetting.PERSONAL);
+    }
+    public void changeAllyAnimations()
+    {
+        StaticData.allyAnimations = (StaticData.AnimationSetting)(((int)StaticData.allyAnimations + 1) % 2);
+        StaticData.findDeepChild(transform, "AllyAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.allyAnimations;
+    }
+    public void changeOtherAnimations()
+    {
+        StaticData.otherAnimations = (StaticData.AnimationSetting)(((int)StaticData.otherAnimations + 1) % 2);
+        StaticData.findDeepChild(transform, "OtherAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.otherAnimations;
+    }
+    public void changeMusicVolume(float vol)
+    {
+        StaticData.musicVolume = vol;
+        if (music != null)
+        {
+            music.volume = StaticData.musicVolume;
+        }
+    }
+    public void changeSFXVolume(float vol)
+    {
+        StaticData.sfxVolume = vol;
+    }
+    public void switchToPersonalAnimationOptions()
+    {
+        Transform list = StaticData.findDeepChild(transform, "AnimOptions");
+        for (int q = 0; q < list.childCount; q++)
+        {
+            Destroy(list.GetChild(q).gameObject);
+        }
+        list.DetachChildren();
+
+        Transform prefab = StaticData.findDeepChild(transform, "AnimUnit");
+        for (int q = 0; q < StaticData.members.Count; q++)
+        {
+            Transform opt = Instantiate(prefab, list);
+            opt.gameObject.SetActive(true);
+            Unit unit = StaticData.members[q];
+            StaticData.findDeepChild(opt, "AnimUnitPortrait").GetComponent<Image>()
+                .sprite = AssetDictionary.getPortrait(unit.unitName);
+            StaticData.findDeepChild(opt, "AnimUnitName").GetComponent<TextMeshProUGUI>()
+                .text = unit.unitName;
+            StaticData.findDeepChild(opt, "AnimUnitMode").GetComponent<TextMeshProUGUI>()
+                .text = unit.animationOn ? "" + StaticData.AnimationSetting.CINEMATIC
+                : "" + StaticData.AnimationSetting.MAP;
+
+            Button.ButtonClickedEvent toggle = new Button.ButtonClickedEvent();
+            toggle.AddListener(delegate { toggleUnitAnimations(unit, StaticData.findDeepChild(opt, "ToggleAnim")); });
+            StaticData.findDeepChild(opt, "ToggleAnim").GetComponent<Button>()
+                .onClick = toggle;
+        }
+
+        enableChild("OptionsMenu", false);
+        enableChild("PersonalAnims", true);
+
+        selectionMode = SelectionMode.ANIM_OPTS;
+    }
+    public void toggleUnitAnimations(Unit unit, Transform toggleButton)
+    {
+        unit.animationOn = !unit.animationOn;
+        StaticData.findDeepChild(toggleButton, "AnimUnitMode").GetComponent<TextMeshProUGUI>()
+            .text = unit.animationOn ? "" + StaticData.AnimationSetting.CINEMATIC
+            : "" + StaticData.AnimationSetting.MAP;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -2942,7 +3035,7 @@ public class GridMap : SequenceMember
         ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE_PAUSE, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
         ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE_PAUSE, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
         OTHERPHASE_SELECT_UNIT, OTHERPHASE_MOVE_PAUSE, OTHERPHASE_MOVE, OTHERPHASE_ATTACK, OTHERPHASE_BURN, OTHERPHASE_COMBAT_PAUSE,
-        STANDBY, GAMEOVER, ESCAPE_MENU, PHASE
+        STANDBY, GAMEOVER, ESCAPE_MENU, PHASE, OPTIONS_MENU, ANIM_OPTS
     }
 
     public enum MenuChoice

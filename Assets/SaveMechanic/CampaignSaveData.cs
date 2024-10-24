@@ -68,6 +68,8 @@ public class CampaignSaveData
 	public int[] wins;
 	public int[] losses;
 
+	public bool[] animationOn;
+
 	public string[] punitName;
 	public int[] punitClass;
 	public string[] pdescription;
@@ -138,6 +140,10 @@ public class CampaignSaveData
 	public int chapterPrep;
 	public int[] positions;
 
+	public int playerAnimations;
+	public int allyAnimations;
+	public int otherAnimations;
+
 	public CampaignSaveData()
     {
         iron = StaticData.iron;
@@ -201,6 +207,8 @@ public class CampaignSaveData
 		battles = new int[StaticData.members.Count];
 		wins = new int[StaticData.members.Count];
 		losses = new int[StaticData.members.Count];
+
+		animationOn = new bool[StaticData.members.Count];
 
 		for (int q = 0; q < StaticData.members.Count; q++)
         {
@@ -268,6 +276,8 @@ public class CampaignSaveData
 			battles[q] = m.battles;
 			wins[q] = m.wins;
 			losses[q] = m.losses;
+
+			animationOn[q] = m.animationOn;
 		}
 
 		punitName = new string[StaticData.prisoners.Count];
@@ -413,6 +423,10 @@ public class CampaignSaveData
 		savefile = StaticData.savefile;
 		chapterPrep = StaticData.chapterPrep;
 		positions = StaticData.positions;
+
+		playerAnimations = (int)StaticData.playerAnimations;
+		allyAnimations = (int)StaticData.allyAnimations;
+		otherAnimations = (int)StaticData.otherAnimations;
 	}
 
 	public void unload()
@@ -464,6 +478,8 @@ public class CampaignSaveData
 			mem.battles = battles[q];
 			mem.wins = wins[q];
 			mem.losses = losses[q];
+
+			mem.animationOn = animationOn[q];
 
 			StaticData.members.Add(mem);
 		}
@@ -532,6 +548,10 @@ public class CampaignSaveData
 		StaticData.savefile = savefile;
 		StaticData.chapterPrep = chapterPrep;
 		StaticData.positions = positions;
+
+		StaticData.playerAnimations = (StaticData.AnimationSetting)playerAnimations;
+		StaticData.allyAnimations = (StaticData.AnimationSetting)allyAnimations;
+		StaticData.otherAnimations = (StaticData.AnimationSetting)otherAnimations;
 	}
 
 	public static void wipeMemory()
@@ -557,5 +577,9 @@ public class CampaignSaveData
 		StaticData.savefile = 0;
 		StaticData.chapterPrep = 0;
 		StaticData.positions = null;
+
+		StaticData.playerAnimations = StaticData.AnimationSetting.CINEMATIC;
+		StaticData.allyAnimations = StaticData.AnimationSetting.CINEMATIC;
+		StaticData.otherAnimations = StaticData.AnimationSetting.CINEMATIC;
 	}
 }

@@ -451,7 +451,7 @@ public class Chapter1Sequence : Chapter
         bismuth.constructor("Bismuth", UnitClass.architect, bismuth_desc,
             29, 9, 0, 3, 2, 0, 11, 0, 15, 6,
             60, 50, 5, 40, 30, 25, 30, 5,
-                Item.bismuth_hammer.clone(), Weapon.WeaponType.ARMOR, 0, Unit.UnitTeam.ENEMY, -1, -1,
+                Item.bismuth_hammer.clone(), Weapon.WeaponType.ARMOR, 0, Unit.UnitTeam.PLAYER, -1, -1,
                 Unit.Affinity.ANIMA,
                 new float[] {
                     bismuthHair.r, bismuthHair.g, bismuthHair.b,
@@ -541,6 +541,12 @@ public class Chapter1Sequence : Chapter
                 });
         biggs.setTalkConvo(biggsRecruitment(), true, null);
         biggs.ai1 = Unit.AIType.ATTACK; biggs.ai2 = Unit.AIType.GUARD;
+        biggs.recruitability = 100;
+        biggs.recruitQuote = new string[]
+        {
+            "Well when you put it that way, how can I refuse?",
+            "Maybe you should've just talked to me at the Sky Arena."
+        };
 
         return biggs;
     }
@@ -566,6 +572,13 @@ public class Chapter1Sequence : Chapter
                 });
         ocean.setTalkConvo(oceanRecruitment(), false, null);
         ocean.ai1 = Unit.AIType.ATTACK; ocean.ai2 = Unit.AIType.GUARD;
+        ocean.recruitability = 100;
+        ocean.recruitQuote = new string[]
+        {
+            "You're nuts!",
+            "But that's what makes me want to join you.",
+            "You know you could've just talked to me back at the Sky Arena?"
+        };
 
         return ocean;
     }
@@ -616,6 +629,11 @@ public class Chapter1Sequence : Chapter
                     quartzPalette7.r, quartzPalette7.g, quartzPalette7.b,
                 });
         quartz.ai1 = Unit.AIType.ATTACK; quartz.ai2 = Unit.AIType.GUARD;
+        quartz.recruitability = 10;
+        quartz.recruitQuote = new string[]
+        {
+            "Alright, I'm convinced. Need any more help?"
+        };
 
         return quartz;
     }

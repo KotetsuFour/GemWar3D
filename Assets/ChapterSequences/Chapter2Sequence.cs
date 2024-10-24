@@ -536,6 +536,11 @@ public class Chapter2Sequence : Chapter
                 });
         noble.ai1 = Unit.AIType.GUARD; noble.ai2 = Unit.AIType.GUARD;
         noble.movement = 0;
+        noble.recruitability = 10;
+        noble.recruitQuote = new string[]
+        {
+            "There's something... noble about your cause."
+        };
         return noble;
     }
 
@@ -559,6 +564,11 @@ public class Chapter2Sequence : Chapter
                     priestPalette7.r, priestPalette7.g, priestPalette7.b,
                 });
         priest.ai1 = Unit.AIType.ATTACK; priest.ai2 = Unit.AIType.GUARD;
+        priest.recruitability = 10;
+        priest.recruitQuote = new string[]
+        {
+            "May the Moon Goddess bring you victory."
+        };
         return priest;
     }
 
@@ -583,6 +593,12 @@ public class Chapter2Sequence : Chapter
                 });
         moon.setTalkConvo(moonstoneRecruitment(), true, null);
         moon.ai1 = Unit.AIType.ATTACK; moon.ai2 = Unit.AIType.GUARD;
+        moon.recruitability = 100;
+        moon.recruitQuote = new string[]
+        {
+            "You want me to join you? Me?",
+            "No one's ever chosen me for something before..."
+        };
         return moon;
     }
 
@@ -607,6 +623,13 @@ public class Chapter2Sequence : Chapter
                 });
         turq.setTalkConvo(turquoiseRecruitment(), false, null);
         turq.ai1 = Unit.AIType.GUARD; turq.ai2 = Unit.AIType.GUARD;
+        turq.recruitability = 100;
+        turq.recruitQuote = new string[]
+        {
+            "Ugh, fine!",
+            "If you're not going to return my Ruby into my service, I have no choice but to join you."
+        };
+
         return turq;
     }
     private PreBattleMenu makePrepMenu()

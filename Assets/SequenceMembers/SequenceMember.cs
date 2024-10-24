@@ -67,6 +67,7 @@ public abstract class SequenceMember : MonoBehaviour
     {
         AudioSource ret = Instantiate(sound_effect);
         ret.clip = clip;
+        ret.volume = StaticData.musicVolume;
         return ret;
     }
     public Camera getCamera()
@@ -76,6 +77,7 @@ public abstract class SequenceMember : MonoBehaviour
     public void playOneTimeSound(AudioClip clip)
     {
         OneTimeSound once = Instantiate(oneTimeSound);
+        once.GetComponent<AudioSource>().volume = StaticData.sfxVolume;
         once.playSound(clip);
     }
     public void playOneTimeSound(string soundName)

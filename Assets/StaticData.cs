@@ -28,6 +28,12 @@ public static class StaticData
 
     public static bool copyrightMusic;
 
+    public static AnimationSetting playerAnimations;
+    public static AnimationSetting allyAnimations;
+    public static AnimationSetting otherAnimations;
+    public static float musicVolume = 1;
+    public static float sfxVolume = 1;
+    
     public static Unit findUnit(string name)
     {
         foreach (Unit u in members)
@@ -241,4 +247,8 @@ public static class StaticData
         return null;
     }
 
+    public enum AnimationSetting
+    {
+        CINEMATIC, MAP, PERSONAL
+    }
 }

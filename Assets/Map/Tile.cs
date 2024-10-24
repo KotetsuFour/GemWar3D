@@ -27,22 +27,22 @@ public class Tile : MonoBehaviour
 
     private Vector3 cursorPosition;
 
-    public static TileType PLAIN = new TileType("PLAIN", 1, 1, 0);
-    public static TileType FLOOR = new TileType("FLOOR", 1, 5, 0);
-    public static TileType RUBBLE = new TileType("RUBBLE", 2, 1, 0);
-    public static TileType PILLAR = new TileType("PILLAR", 2, 6, 20);
-    public static TileType WARP_PAD = new TileType("WARP PAD", 2, 3, 0);
-    public static TileType DEEP_WATER = new TileType("DEEP WATER", int.MaxValue, 1, 0);
-    public static TileType WALL = new TileType("WALL", int.MaxValue, 1, 0);
-    public static TileType CHEST = new TileType("CHEST", 1, 4, 0);
-    public static TileType SEIZE_POINT = new TileType("SEIZE POINT", 1, 4, 20);
-    public static TileType HEAL_TILE = new TileType("HEAL TILE", 1, 1, 20);
-    public static TileType TREE = new TileType("TREE", 2, 1, 20);
-    public static TileType PEAK = new TileType("PEAK", 7, 1, 40);
-    public static TileType MOUNTAIN = new TileType("MOUNTAIN", 4, 1, 30);
-    public static TileType CAVE = new TileType("CAVE", 1, 1, 10);
-    public static TileType HOUSE = new TileType("HOUSE", 1, 1, 10);
-    public static TileType CLIFF = new TileType("CLIFF", int.MaxValue, 1, 0);
+    public static TileType PLAIN = new TileType("PLAIN", 1, 1, 0, 0);
+    public static TileType FLOOR = new TileType("FLOOR", 1, 5, 0, 0);
+    public static TileType RUBBLE = new TileType("RUBBLE", 2, 1, 0, 0);
+    public static TileType PILLAR = new TileType("PILLAR", 2, 6, 20, 0);
+    public static TileType WARP_PAD = new TileType("WARP PAD", 2, 3, 0, 0);
+    public static TileType DEEP_WATER = new TileType("DEEP WATER", int.MaxValue, 1, 0, 0);
+    public static TileType WALL = new TileType("WALL", int.MaxValue, 1, 0, 0);
+    public static TileType CHEST = new TileType("CHEST", 1, 4, 0, 0);
+    public static TileType SEIZE_POINT = new TileType("SEIZE POINT", 1, 4, 20, 0);
+    public static TileType HEAL_TILE = new TileType("HEAL TILE", 1, 1, 20, 10);
+    public static TileType TREE = new TileType("TREE", 2, 1, 20, 0);
+    public static TileType PEAK = new TileType("PEAK", 7, 1, 40, 0);
+    public static TileType MOUNTAIN = new TileType("MOUNTAIN", 4, 1, 30, 0);
+    public static TileType CAVE = new TileType("CAVE", 1, 1, 10, 0);
+    public static TileType HOUSE = new TileType("HOUSE", 1, 1, 10, 0);
+    public static TileType CLIFF = new TileType("CLIFF", int.MaxValue, 1, 0, 0);
 
     public void draw(int x, int y, int height, TileType type)
     {
@@ -343,13 +343,15 @@ public class Tile : MonoBehaviour
         public int onFootCost;
         public int inAirCost;
         public int avoidBonus;
+        public int healing;
 
-        public TileType(string tileName, int onFootCost, int inAirCost, int avoidBonus)
+        public TileType(string tileName, int onFootCost, int inAirCost, int avoidBonus, int healing)
         {
             this.tileName = tileName;
             this.onFootCost = onFootCost;
             this.inAirCost = inAirCost;
             this.avoidBonus = avoidBonus;
+            this.healing = healing;
         }
     }
 }
