@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4685286820578383407}
   - component: {fileID: 1225064475005965740}
   - component: {fileID: 5881033129234121162}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,7 +115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5634689385754942473}
   - component: {fileID: 4463124668414768247}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 5878371412301003311}
   - component: {fileID: 8855106654072351287}
   - component: {fileID: 1447885318375898857}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LidClosed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -273,7 +273,7 @@ GameObject:
   - component: {fileID: 2790460146369705841}
   - component: {fileID: 7501383206080155623}
   - component: {fileID: 4686587034226677500}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LidOpen
   m_TagString: Untagged
   m_Icon: {fileID: 0}

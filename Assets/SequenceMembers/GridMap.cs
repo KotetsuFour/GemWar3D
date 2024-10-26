@@ -29,6 +29,7 @@ public class GridMap : SequenceMember
 
     private Tile[,] map;
     private Transform mapTransform;
+    public Material combatBackground;
 
     private float timer;
 
@@ -3022,6 +3023,7 @@ public class GridMap : SequenceMember
 
             timer = 1;
             setCursor(selectedTile);
+            setCameraPosition();
             selectionMode = SelectionMode.ENEMYPHASE_MOVE_PAUSE;
         }
     }

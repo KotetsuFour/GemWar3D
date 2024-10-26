@@ -376,6 +376,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 0}
   tile: {fileID: 0}
+  background: {fileID: 0}
+  surroundings: []
   tileMap: []
   deployMap: []
   lootMap: []

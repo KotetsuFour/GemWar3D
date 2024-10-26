@@ -262,9 +262,6 @@ MonoBehaviour:
   surroundings:
   - {fileID: 2100000, guid: 9627bddcf7031af4eb8a2d4e40a146f1, type: 2}
   - {fileID: 2100000, guid: ede8c3e5ed228d44cbce3ce2261c9465, type: 2}
-  - {fileID: 2100000, guid: ede8c3e5ed228d44cbce3ce2261c9465, type: 2}
-  - {fileID: 2100000, guid: ede8c3e5ed228d44cbce3ce2261c9465, type: 2}
-  - {fileID: 2100000, guid: ede8c3e5ed228d44cbce3ce2261c9465, type: 2}
   tileMap: []
   deployMap: []
   lootMap: []

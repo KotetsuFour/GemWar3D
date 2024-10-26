@@ -338,16 +338,14 @@ public class Chapter2Sequence : Chapter
 
     private string[] getOpening()
     {
-        string blue = "Blue_Diamond null ";
-        string yellow = "Yellow_Diamond null ";
+        string blue = "Blue_Diamond Blue_Diamond ";
+        string yellow = "Yellow_Diamond Yellow_Diamond ";
         string pink = "Pink_Diamond Pink_Diamond ";
-        string narrator = "_ null ";
         string pearl = "Pearl Pearl ";
         return new string[]
         {
-            narrator + "The Crystal Gems, led by Rose Quartz, began sabotaging the colonial effort.",
-            narrator + "With this, Pink Diamond had the perfect excuse to end the colony. Or so she thought.",
-
+            "$sound diamond-music start",
+            "$sound diamond-music loop",
             pink + "Rose Quartz has become a significant threat. She has turned several of my Gems against me.",
             yellow + "Well I think the solution is simple.",
             pink + "We should stop the colony!",
@@ -355,14 +353,14 @@ public class Chapter2Sequence : Chapter
             yellow + "They are a new model of quartz. For all we know, they could all be just as defective as this one.",
             pink + "But that isn't enough!",
             yellow + "Capturing the other Rose Quartzes will work as a scare tactic.",
-            yellow + "And if not, it should be easy enough still to hunt down these few traitors.",
+            yellow + "And if not, it should be easy enough still to hunt down these few traitors and rejuvenate them.",
             pink + "You don't understand! They've organized into a rebellion! They're calling themselves the Crystal Gems!",
-            yellow + "Ugh. Blue, you handle this.",
+            yellow + "Ugh. I am so done with this.",
             pink + "I don't understand why you won't just let me leave the Earth alone!",
             blue + "\"Leave the Earth alone\" ? Is that what you're asking of us?",
             pink + "It's just--",
             blue + "But this is what you wanted.",
-            blue + "You begged us for a colony of your own.And now all you want to do is be rid of it!",
+            blue + "You begged us for a colony of your own. And now all you want to do is be rid of it!",
             blue + "First, there were too many organics, then their cities were too difficult to dismantle.",
             blue + "And now these \"Crystal Gems\" ? We're tired of your excuses, Pink!",
             pink + "...",
@@ -375,9 +373,11 @@ public class Chapter2Sequence : Chapter
             blue + "Your Gems will fall into line, and these Crystal Gems will be no more.",
             blue + "As long as you are there to rule, this colony will be completed.",
 
+            "$sound diamond-music stop",
+
             pink + "Pearl? What are you doing with that sword?",
-            pearl + "Bringing it to you, my Diamond! It's a new sword that Bismuth made especially for you.",
-            pearl + "She says it's not balanced entirely correctly and that she'll make another one to replace it.",
+            pearl + "Bringing it to you, my Diamond! It's an iron blade that Bismuth made especially for you.",
+            pearl + "She says the balance will make it difficult to use, but she'll make another one to replace it.",
             pink + "That's not how you give someone a sword. I thought you were about to shatter me.",
             pearl + "Oh! I'm terribly sorry!",
             pink + "They didn't listen, Pearl. As usual. Looks like the war will go on.",
@@ -392,22 +392,37 @@ public class Chapter2Sequence : Chapter
         string ruby = "Ruby Ruby ";
         return new string[]
         {
+            "$image sea-spire-entrance",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_HAPPY,
+            "$right Bismuth " + AssetDictionary.PORTRAIT_HAPPY,
             rose + "This is perfect! Once we capture the Lunar Sea Spire, Blue and Yellow will have to leave the Earth alone.",
             bismuth + "And Pink Diamond, right? This is her colony.",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_NERVOUS,
             rose + "Right! Obviously.",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_NEUTRAL,
             rose + "But how are we going to approach? If we just come in the main entrance, we'll be seen from a mile away.",
+            "$right Pearl " + AssetDictionary.PORTRAIT_NEUTRAL,
             pearl + "Wait a minute...",
+            "$right Pearl " + AssetDictionary.PORTRAIT_ANGRY,
             pearl + "Halt! Who goes there?!",
-            ruby + "---",
             ruby + "Whoa!",
+            "$left Ruby " + AssetDictionary.PORTRAIT_NERVOUS,
+            "$right Rose_Quartz " + AssetDictionary.PORTRAIT_NEUTRAL,
             rose + "A Ruby? What are you doing here?",
-            ruby + "I was just guarding the private entrance-- Wait, that's classified! If you ask me, I should be the one asking you what you're doing here.",
+            ruby + "I was just guarding the private entrance--",
+            "$left Ruby " + AssetDictionary.PORTRAIT_ANGRY,
+            ruby + "Wait, that's classified! If you ask me, I should be the one asking you what you're doing here.",
+            "$left Ruby " + AssetDictionary.PORTRAIT_DARING,
             ruby + "And it seems like what your doing here is being up to no good!",
             ruby + "I just caught you red-handed! Ha!",
+            "$right Bismuth " + AssetDictionary.PORTRAIT_TEASE,
             bismuth + "You know you're outnumbered, right? And we're the ones who just caught you.",
+            "$left Ruby " + AssetDictionary.PORTRAIT_NEUTRAL,
             ruby + "...",
+            "$left Ruby " + AssetDictionary.PORTRAIT_ANGRY,
             ruby + "Dang it! How am I supposed to explain to my Turquiose that I got captured?! This is humiliating!",
-            rose + "You know, if you were to help us get in the private entrance and capture the spire, I suppose we could let you go.",
+            "$right Rose_Quartz " + AssetDictionary.PORTRAIT_TEASE,
+            rose + "You know, if you were to help us get in that private entrance and capture the spire, I suppose we could let you go.",
             rose + "Your Turquoise wouldn't even have to know.",
             ruby + "Hm... I guess I have no choice. Okay, I'll do it.",
             ruby + "But if you see my Turquoise in there, tell her I had nothing to do with this."
@@ -419,11 +434,17 @@ public class Chapter2Sequence : Chapter
         string note = "_ null ";
         return new string[]
         {
+            "$removeConvo",
+            "$sound recruit-music playMusic",
+            "$right Turquoise " + AssetDictionary.PORTRAIT_ANGRY,
             turq + "Did I see a Ruby fighting with you? With her Gem on her foot and using a pike?",
             turq + "Ugh, what does she think she's doing?!",
             turq + "Well I can't let word get out that I can't keep control over my servants....",
+            "$right Turquoise " + AssetDictionary.PORTRAIT_DARING,
             turq + "Very well. I'm joining you! At least that way, everyone will know that I am in complete control over my life and what is mine!",
             turq + "You may thank me for the privilege of having me on your team when we get out of this fiasco.",
+            "$sound recruit play",
+            "$join",
             note + "Turquoise joined your party!"
         };
     }
@@ -434,16 +455,29 @@ public class Chapter2Sequence : Chapter
         string note = "_ null ";
         return new string[]
         {
+            "$removeConvo",
+            "$sound recruit-music playMusic",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_HAPPY,
+            "$right Moonstone " + AssetDictionary.PORTRAIT_NEUTRAL,
             rose + "Hi there.",
             moon + "Huh?",
             rose + "Sorry to catch you offguard, but I just had the sudden impulse to talk to you.",
             moon + "Why me? I'm just a nameless priestess for the Moon Goddess.",
+            "$right Moonstone " + AssetDictionary.PORTRAIT_SAD,
             moon + "I'm invisible.",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_NERVOUS,
             rose + "Is that how Homeworld has made you feel? Invisible?",
             moon + "I--",
             rose + "This might sound crazy, but maybe it's time you fought for someone who valued you as more than just a nameless priestess.",
-            moon + "You know... I think you may be right. I'll do it! I'll join you-- er-- if you'll have me.",
+            "$right Moonstone " + AssetDictionary.PORTRAIT_ANGRY,
+            moon + "You know... I think you may be right. I'll do it! I'll join you",
+            "$right Moonstone " + AssetDictionary.PORTRAIT_SAD,
+            moon + "--Er-- if you'll have me.",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_HAPPY,
+            "$right Moonstone " + AssetDictionary.PORTRAIT_NERVOUS,
             rose + "I would love to have you onboard, Moonstone!",
+            "$sound recruit play",
+            "$join",
             note + "Moonstone joined your party!"
         };
     }
@@ -454,42 +488,70 @@ public class Chapter2Sequence : Chapter
         string turq = "Turquoise Turquoise ";
         string ruby = "Ruby Ruby ";
         string pink = "Pink_Diamond Pink_Diamond ";
-        string blue = "Blue_Diamond null ";
-        string yellow = "Yellow_Diamond null ";
+        string blue = "Blue_Diamond Blue_Diamond ";
+        string yellow = "Yellow_Diamond Yellow_Diamond ";
         return new string[]
         {
+            "$image sea-spire",
+            "$sound peaceful-music start",
+            "$sound peaceful-music loop",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_HAPPY,
             rose + "Now that the spire is in Crystal Gem hands, all we have to do is wait.",
             "$if alive Ruby",
-            "$putString ruby",
+            "$right Ruby " + AssetDictionary.PORTRAIT_HAPPY,
             ruby + "That was really fun! I never get to fight real opponents with Turquoise!",
             ruby + "Do you mind if I come along with you guys?",
             rose + "You can absolutely come with us! We'll need Gems like you.",
             "$if alive Turquoise",
+            "$left Turquoise " + AssetDictionary.PORTRAIT_ANGRY,
             turq + "Ahem...",
-            ruby + "Turquoise! I can explain! There was a tsunami! And if I hadn't--",
+            "$right Ruby " + AssetDictionary.PORTRAIT_SAD,
+            ruby + "Turquoise! I can explain! These rebels tricked me! They--",
+            "$left Turquoise " + AssetDictionary.PORTRAIT_NEUTRAL,
             turq + "Save it. I can see you're quite taken with this rabble, so I have no choice.",
-            turq + "I'm seeing this war through to the end! You clearly need the help anyway.",
+            "$left Turquoise " + AssetDictionary.PORTRAIT_DARING,
+            "$right Ruby " + AssetDictionary.PORTRAIT_NERVOUS,
+            turq + "I'm seeing this war through to the end! You all clearly need the help anyway.",
             "$endif",
             "$endif",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_HAPPY,
+            "$right Pearl " + AssetDictionary.PORTRAIT_NEUTRAL,
             pearl + "Rose, are you sure this will be enough?",
             rose + "It has to be. Or we have a long road ahead of us.",
 
+            "$sound peaceful-music stop",
+            "$solidColor 0 0 0 1",
+            "$pause 1",
+
+            "$image moonbase",
+            "$sound diamond-music start",
+            "$sound diamond-music loop",
+            "$left Pink_Diamond " + AssetDictionary.PORTRAIT_NERVOUS,
+            "$right Blue_Diamond " + AssetDictionary.PORTRAIT_SAD,
             blue + "*sigh*",
             blue + "I have to admit, I am disappointed in you, Pink.",
             blue + "All of these resources spent, all of this time scouting the landscape and examining the planet's conditions...",
-            blue + "We did it because we truly believed in you, Pink.We believed that you could run your own colony.",
+            blue + "We did it because we truly believed in you, Pink. We believed that you could run your own colony.",
             pink + "I'm sorry I let you down. I really did want this, but...",
+            "$left Pink_Diamond " + AssetDictionary.PORTRAIT_SAD,
             blue + "No \"but\"s. You may have lost faith in yourself, but I haven't lost faith in you.",
             blue + "We're Diamonds. When we start something, we finish it, and we don't give up.",
+            "$right Yellow_Diamond " + AssetDictionary.PORTRAIT_ANGRY,
             yellow + "Especially when a lower Gem challenges our authority.",
             yellow + "For the record, when this mess is cleaned up, I won't be trusting you with a new colony for at least another million years.",
+            "$right Blue_Diamond " + AssetDictionary.PORTRAIT_SAD,
             blue + "You can do this, Pink.You just need some assistance.",
+            "$left Pink_Diamond " + AssetDictionary.PORTRAIT_NERVOUS,
             pink + "What are you saying?",
             blue + "I will bring my court to Earth and we will help you deal with these rebels.",
+            "$right Yellow_Diamond " + AssetDictionary.PORTRAIT_NEUTRAL,
             yellow + "It will take some time for me to catch a free moment, but I intend to do the same.",
+            "$right Yellow_Diamond " + AssetDictionary.PORTRAIT_ANGRY,
             yellow + "And when I get there, you'd better have all of the Rose Quartzes you can locate bubbled.",
             pink + "Blue, Yellow, I really don't think that's necessary.",
+            "$right Yellow_Diamond " + AssetDictionary.PORTRAIT_DARING,
             yellow + "Oh, what's this? You don't want us to embarrass you by showing you how simple a matter this is?",
+            "$right Yellow_Diamond " + AssetDictionary.PORTRAIT_ANGRY,
             yellow + "It's too late. You've had your chance to handle this. Now it's ours."
         };
     }
@@ -701,6 +763,7 @@ public class Chapter2Sequence : Chapter
             new SeizeObjective(), CHAPTER_TITLE, teamNames, TURNPAR,
             new string[] { "map-music-1", "enemyphase-music-1" },
             new string[] { "player-battle-music-1", "enemy-battle-music-1" });
+        gridmap.combatBackground = surroundings[1];
 
         setUnits(map, player, Unit.UnitTeam.PLAYER, Quaternion.Euler(0, 180, 0));
         setUnits(map, enemy, Unit.UnitTeam.ENEMY, Quaternion.identity);

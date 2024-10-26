@@ -10,7 +10,7 @@ public class Chapter : MonoBehaviour
     [SerializeField] private Tile tile;
 
     [SerializeField] private Background background;
-    [SerializeField] private Material[] surroundings;
+    public Material[] surroundings;
 
     public string[] tileMap;
     public string[] deployMap;
@@ -166,12 +166,8 @@ public class Chapter : MonoBehaviour
             }
         }
 
-        for (int q = 0; q < 5; q++)
-        {
-            Background part = Instantiate(background, mapTransform);
-            part.draw(ret.GetLength(0), ret.GetLength(1), q, surroundings[q % surroundings.Length]);
-        }
-
+        Background part = Instantiate(background, mapTransform);
+        part.draw(ret.GetLength(0) + 100, ret.GetLength(1) + 100, 0, surroundings[0]);
 
         return ret;
     }

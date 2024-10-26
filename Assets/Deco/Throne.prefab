@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8614838770501744283}
   - component: {fileID: 7226119047861657226}
   - component: {fileID: 1081451068056705361}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 1694465792517219644}
   - component: {fileID: 8872286243102251442}
   - component: {fileID: 2425023021351344987}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Seat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7028326421334043429}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Throne
   m_TagString: Untagged
   m_Icon: {fileID: 0}

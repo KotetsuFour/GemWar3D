@@ -277,7 +277,7 @@ public class Cutscene : SequenceMember
             }
             else if (comm == "solidColor")
             {
-                Color solid = new Color(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3]));
+                Color solid = new Color(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3]), float.Parse(parts[4]));
                 Image display = StaticData.findDeepChild(transform, "DisplayImage").GetComponent<Image>();
                 display.sprite = null;
                 display.color = solid;

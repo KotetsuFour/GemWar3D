@@ -72,6 +72,9 @@ MonoBehaviour:
   - sky-arena-entrance
   - sky-arena
   - sunflowers
+  - sea-spire-entrance
+  - sea-spire
+  - moonbase
   imageValues:
   - {fileID: 21300000, guid: 5d21a8ff6d9c67d4da065d3015918b21, type: 3}
   - {fileID: 21300000, guid: 8e6ebfd1dbb4e7749ba78303ffeeba02, type: 3}
@@ -100,6 +103,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 22f9b4e5a035d7f4e94e0d1dcf3d3aa0, type: 3}
   - {fileID: 21300000, guid: 38104161e784e9f4aa474fb3dbd6112d, type: 3}
   - {fileID: 21300000, guid: f490f28daef224e42b06028dbc2e713e, type: 3}
+  - {fileID: 21300000, guid: 977697248523c8e4184af6f13cbb43eb, type: 3}
+  - {fileID: 21300000, guid: e9d1a2b99452ae44583ecf0d945b887a, type: 3}
+  - {fileID: 21300000, guid: 6c15216e6540798438b3bd589c906cf8, type: 3}
   modelValues:
   - {fileID: 6422181147470550412, guid: 4cce61fe84857a34a8b554853885abf4, type: 3}
   - {fileID: 8860643157110146660, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}
@@ -154,6 +160,7 @@ MonoBehaviour:
   - equip
   - prep-music
   - switch
+  - diamond-music
   audioValues:
   - {fileID: 8300000, guid: e41f665d7207b364ca554e1978697170, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
@@ -195,6 +202,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 527e18e72ea9ddd40a7cee8238b0e157, type: 3}
   - {fileID: 8300000, guid: a817137e3b677d54aa46fa57e45f0feb, type: 3}
   - {fileID: 8300000, guid: 0a7ff7766bc4e20458e264f228ad8511, type: 3}
+  - {fileID: 8300000, guid: f04185088160b5d4bbee88235edf2e45, type: 3}
   copyrightAudioKeys:
   - main-theme
   - map-music-1
@@ -202,6 +210,7 @@ MonoBehaviour:
   - enemy-battle-music-1
   - enemyphase-music-1
   - map-music-2
+  - diamond-music
   copyrightAudioValues:
   - {fileID: 8300000, guid: 874af7b454432694186c2052fddc9e78, type: 3}
   - {fileID: 8300000, guid: ad3e15494a22853429026cd6dd1ba65a, type: 3}
@@ -209,6 +218,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f9af7a244ae40e640ab0e60d988d9b55, type: 3}
   - {fileID: 8300000, guid: f1d048e2d05e9ce49b17305cba53f8df, type: 3}
   - {fileID: 8300000, guid: 3ab02bb2777e6a746a59533ebe48d1fb, type: 3}
+  - {fileID: 8300000, guid: 342f28b3fdce3fb4ca839cc59a170ac5, type: 3}
   wepKeys:
   - Rose Quartz Shield
   - Pearl Spear
@@ -339,3 +349,17 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 85248f83271a30d46a470d18b56fcb35, type: 3}
   - {fileID: 21300000, guid: 21440e18fd0ffa24f82168840f3c9e13, type: 3}
   - {fileID: 21300000, guid: a4f0c56da8f4b814090bd39388d242a2, type: 3}
+  - {fileID: 21300000, guid: 03e72a2bdd4683f4cb3c94ba7c02e0eb, type: 3}
+  - {fileID: 21300000, guid: 6fc6bb8cce264c044b208a3f630ff80a, type: 3}
+  - {fileID: 21300000, guid: d1503c8798f60f94982871169c044049, type: 3}
+  - {fileID: 21300000, guid: 3dc82636ea20f72458d7111859682235, type: 3}
+  - {fileID: 21300000, guid: 349eb0bb6190d504a9183a6d6fdf7f24, type: 3}
+  - {fileID: 21300000, guid: 4b4c4494ea80f474983268cdf41366d9, type: 3}
+  - {fileID: 21300000, guid: a2ba01b69a51f704fbc1068466b0c75d, type: 3}
+  - {fileID: 21300000, guid: 07eb25d162639d84480be69ec38e17d7, type: 3}
+  - {fileID: 21300000, guid: 0285696727f064347b633c3b8201dcc2, type: 3}
+  - {fileID: 21300000, guid: 32590c63f1fa72240a78bba9ba238461, type: 3}
+  - {fileID: 21300000, guid: 077ae0bf7315b5640ae23346490f6923, type: 3}
+  - {fileID: 21300000, guid: 37497a1816244054d8477ce453d83341, type: 3}
+  - {fileID: 21300000, guid: 7ac158e2ab2bd144e9c39a6b02ae5253, type: 3}
+  - {fileID: 21300000, guid: 847d8326c557e8e4b9194bb457f2188e, type: 3}

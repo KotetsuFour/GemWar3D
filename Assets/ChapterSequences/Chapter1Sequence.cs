@@ -227,7 +227,7 @@ public class Chapter1Sequence : Chapter
         string noOne = "_ null ";
         return new string[]
         {
-            "$solidColor 0 0 0",
+            "$solidColor 0 0 0 1",
             "$sound storytelling-music start",
             "$sound storytelling-music loop",
             noOne + "For hundreds of millions of years, the Great Diamond Authority spread their perfection throughout the cosmos.",
@@ -658,6 +658,7 @@ public class Chapter1Sequence : Chapter
             new EscapeObjective(), CHAPTER_TITLE, teamNames, 10,
             new string[] { "map-music-1", "enemyphase-music-1" },
             new string[] { "player-battle-music-1", "enemy-battle-music-1" });
+        gridmap.combatBackground = surroundings[1];
         playerList = gridmap.player;
 
         setUnits(mapArray, enemy, Unit.UnitTeam.ENEMY, Quaternion.Euler(0, 180, 0));

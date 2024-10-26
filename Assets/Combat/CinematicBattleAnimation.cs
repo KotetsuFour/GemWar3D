@@ -146,11 +146,11 @@ public class CinematicBattleAnimation : AbstractBattleAnimation
         }
 
         StaticData.findDeepChild(transform, "Background").GetComponent<MeshRenderer>()
-            .material = StaticData.findDeepChild(gridmap.transform, "west").GetComponent<MeshRenderer>().material;
+            .material = gridmap.combatBackground;
         StaticData.findDeepChild(transform, "PlayerBack").GetComponent<MeshRenderer>()
-            .material = StaticData.findDeepChild(gridmap.transform, "south").GetComponent<MeshRenderer>().material;
+            .material = gridmap.combatBackground;
         StaticData.findDeepChild(transform, "EnemyBack").GetComponent<MeshRenderer>()
-            .material = StaticData.findDeepChild(gridmap.transform, "north").GetComponent<MeshRenderer>().material;
+            .material = gridmap.combatBackground;
 
 
         StaticData.findDeepChild(transform, "PlayerPlatform").GetComponent<MeshRenderer>()
