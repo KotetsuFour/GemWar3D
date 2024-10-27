@@ -7,12 +7,11 @@ using UnityEngine.AI;
 public class CutsceneModel : MonoBehaviour
 {
     private GameObject model;
-    private Animator anim;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -21,6 +20,7 @@ public class CutsceneModel : MonoBehaviour
         
     }
 
+    /*
     public void setUnit(Unit unit)
     {
         model = Instantiate(AssetDictionary.getModel(unit.unitClass.id), transform);
@@ -28,10 +28,10 @@ public class CutsceneModel : MonoBehaviour
 
         setPalette(unit.palette);
     }
+    */
     public void setClass(int classId, float[] palette)
     {
         model = Instantiate(AssetDictionary.getModel(classId), transform);
-        anim = model.GetComponent<Animator>();
 
         List<Color> colors = new List<Color>();
         for (int q = 0; q * 3 < palette.Length; q++)
@@ -43,6 +43,37 @@ public class CutsceneModel : MonoBehaviour
         }
         setPalette(colors);
     }
+    public void equip(string itemName)
+    {
+        Transform hand = StaticData.findDeepChild(transform, "Hand");
+        Transform leftHand = StaticData.findDeepChild(transform, "LeftHand");
+        for (int q = 0; q < hand.childCount; q++)
+        {
+            Destroy(hand.GetChild(q).gameObject);
+        }
+        hand.DetachChildren();
+        for (int q = 0; q < leftHand.childCount; q++)
+        {
+            Destroy(leftHand.GetChild(q).gameObject);
+        }
+        leftHand.DetachChildren();
+
+        for (int q = 0; q < Item.itemIndex.Length; q++)
+        {
+            if (Item.itemIndex[q].itemName == itemName)
+            {
+                Item item = Item.itemIndex[q];
+                GameObject wepModel = Instantiate(AssetDictionary.getWeapon(itemName));
+                Transform parent = item is Bow ? leftHand : hand;
+                wepModel.transform.SetParent(parent);
+                wepModel.transform.localPosition = parent.localPosition;
+                Vector3 euler = parent.eulerAngles;
+                wepModel.transform.rotation = Quaternion.Euler(euler.x, euler.y, euler.z);
+                return;
+            }
+        }
+    }
+
     private void setPalette(List<Color> palette)
     {
         for (int q = 0; q < palette.Count; q++)
@@ -53,7 +84,7 @@ public class CutsceneModel : MonoBehaviour
     }
     public Animator getAnimator()
     {
-        return anim;
+        return StaticData.findDeepChild(transform, "animHolder").GetComponent<Animator>();
     }
 
     public NavMeshAgent getAgent()

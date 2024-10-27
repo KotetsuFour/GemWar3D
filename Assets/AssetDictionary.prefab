@@ -210,7 +210,6 @@ MonoBehaviour:
   - enemy-battle-music-1
   - enemyphase-music-1
   - map-music-2
-  - diamond-music
   copyrightAudioValues:
   - {fileID: 8300000, guid: 874af7b454432694186c2052fddc9e78, type: 3}
   - {fileID: 8300000, guid: ad3e15494a22853429026cd6dd1ba65a, type: 3}
@@ -218,7 +217,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f9af7a244ae40e640ab0e60d988d9b55, type: 3}
   - {fileID: 8300000, guid: f1d048e2d05e9ce49b17305cba53f8df, type: 3}
   - {fileID: 8300000, guid: 3ab02bb2777e6a746a59533ebe48d1fb, type: 3}
-  - {fileID: 8300000, guid: 342f28b3fdce3fb4ca839cc59a170ac5, type: 3}
   wepKeys:
   - Rose Quartz Shield
   - Pearl Spear
@@ -234,6 +232,7 @@ MonoBehaviour:
   - Ruby Pike
   - Silver Bow
   - Steel Bow
+  - Iron Blade
   wepValues:
   - {fileID: 4190665577435114927, guid: 17c81c96ce94fa348b0015c0f13edb0c, type: 3}
   - {fileID: 2963021186469151553, guid: d77a6f03bd9a6154e9cc83e3f0824605, type: 3}
@@ -249,6 +248,7 @@ MonoBehaviour:
   - {fileID: 828313632494450540, guid: 6fdf730fb21b3a24a9a472939aa6d94c, type: 3}
   - {fileID: 6914053601370227630, guid: bf6b6727a5feb1d4dac775a0595540de, type: 3}
   - {fileID: 4798497495897850758, guid: 6dd96b64ea38f8447ad2f563e4233613, type: 3}
+  - {fileID: 5310112066958955402, guid: a3015c18f8ee9d64cb204b0b2239d0f9, type: 3}
   portraits:
   - {fileID: 21300000, guid: 8754f2b262a0a9a4a8594c3a3ac453b3, type: 3}
   - {fileID: 21300000, guid: 4eca08b7f9fc28c459fbadc494dcf7d6, type: 3}

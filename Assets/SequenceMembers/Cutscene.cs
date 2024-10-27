@@ -9,7 +9,7 @@ public class Cutscene : SequenceMember
     private string[] dialogue;
     private bool storyComplete;
     private int idx;
-    private float timer;
+    private float timer = float.MinValue;
 
     private Stack<string> ifStack;
     private List<string> stringStorage;
@@ -196,18 +196,6 @@ public class Cutscene : SequenceMember
 
                 string animationName = parts[2].Replace('_', ' ');
                 anim.Play(animationName);
-                if (parts.Length > 3 && parts[3] == "wait")
-                {
-                    AnimationClip[] clips = anim.runtimeAnimatorController.animationClips;
-                    foreach (AnimationClip clip in clips)
-                    {
-                        if (clip.name == animationName)
-                        {
-                            timer = clip.length;
-                            break;
-                        }
-                    }
-                }
             }
             else if (comm == "moveCharacter")
             {
@@ -261,6 +249,18 @@ public class Cutscene : SequenceMember
                 else
                 {
                     cameraLookAtPoint = positions[int.Parse(parts[1])];
+                }
+            }
+            else if (comm == "equip")
+            {
+                int modelIdx = int.Parse(parts[1]);
+                if (parts[2] == "none")
+                {
+                    models[modelIdx].equip(null);
+                }
+                else
+                {
+                    models[modelIdx].equip(parts[2].Replace('_', ' '));
                 }
             }
             else if (comm == "teleportCam")
@@ -343,6 +343,11 @@ public class Cutscene : SequenceMember
         if (timer > 0)
         {
             timer -= Time.deltaTime;
+        }
+        else if (timer != float.MinValue)
+        {
+            timer = float.MinValue;
+            Z();
         }
         if (cameraDestination != null && (cameraDestination.position - getCamera().transform.position).magnitude > ACCEPTABLE_DISTANCE_FROM_DESTINATION)
         {

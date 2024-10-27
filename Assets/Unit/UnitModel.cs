@@ -210,9 +210,10 @@ public class UnitModel : MonoBehaviour
         if (wep != null)
         {
             GameObject wepModel = Instantiate(AssetDictionary.getWeapon(wep.itemName));
-            wepModel.transform.SetParent(wep is Bow ? leftHand : hand);
-            wepModel.transform.localPosition = hand.localPosition;
-            Vector3 euler = hand.eulerAngles;
+            Transform parent = wep is Bow ? leftHand : hand;
+            wepModel.transform.SetParent(parent);
+            wepModel.transform.localPosition = parent.localPosition;
+            Vector3 euler = parent.eulerAngles;
             wepModel.transform.rotation = Quaternion.Euler(euler.x, euler.y, euler.z);
         }
         playIdle();

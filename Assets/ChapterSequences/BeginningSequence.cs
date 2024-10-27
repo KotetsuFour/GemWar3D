@@ -42,7 +42,7 @@ public class BeginningSequence : Chapter
         string pearl = "Pearl Pearl ";
         return new string[]
         {
-            "$solidColor 0 0 0",
+            "$solidColor 0 0 0 1",
             "$sound rose-and-pearl-music start",
             "$sound rose-and-pearl-music loop",
             rose + "Pearl...",
