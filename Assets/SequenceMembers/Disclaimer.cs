@@ -5,7 +5,9 @@ using TMPro;
 
 public class Disclaimer : SequenceMember
 {
-
+    //Art citations
+    //KJD (Artifiziell) for Moonstone and Turquoise
+    //GemCrust for Citrine
     public float timer;
     public void constructor()
     {

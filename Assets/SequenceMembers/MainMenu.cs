@@ -114,6 +114,19 @@ public class MainMenu : SequenceMember
         loadFiles();
         switchToPage("FilesPage");
     }
+    public void changeMusicVolume(float vol)
+    {
+        StaticData.musicVolume = vol;
+        if (music != null)
+        {
+            music.volume = StaticData.musicVolume;
+        }
+    }
+    public void changeSFXVolume(float vol)
+    {
+        StaticData.sfxVolume = vol;
+    }
+
     public override void LEFT_MOUSE()
     {
         if (currentPage == "TitleScreen")

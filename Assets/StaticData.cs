@@ -211,6 +211,17 @@ public static class StaticData
 
         return ret;
     }
+    public static Unit getUnitByName(string name)
+    {
+        foreach (Unit unit in members)
+        {
+            if (unit.unitName == name)
+            {
+                return unit;
+            }
+        }
+        return null;
+    }
     public static Transform findDeepChild(Transform parent, string childName)
     {
         LinkedList<Transform> kids = new LinkedList<Transform>();

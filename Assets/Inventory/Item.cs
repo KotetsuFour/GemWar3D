@@ -37,7 +37,7 @@ public abstract class Item
     public static Weapon elite_sword = new Sword("Elite Quartz Sword", -1, 15, 55, 0, 16, 1, 1, -1, false, null, 29);
     public static Weapon citrine_sword = new Sword("Citrine Sword", -1, 14, 60, 10, 15, 1, 1, -1, false, null, 30);
     public static Weapon aventurine_axe = new Sword("Aventurine Axe", -1, 13, 60, 10, 14, 1, 1, -1, false, null, 31);
-    public static Weapon pacifist_gauntlet = new Fist("Pacifist Gauntlet", -1, 0, 100, 0, 0, 1, 1, -1, false, null, 32);
+    public static Weapon pacifist_gauntlet = new Fist("Pacifist Knuckles", -1, 0, 0, 0, 0, 1, 1, -1, false, null, 32);
     public static Weapon topaz_lance = new Lance("Topaz Fusion Lance", -1, 18, 60, 0, 18, 1, 1, -1, false, null, 33);
     public static Weapon guard_shield = new Armor("Guard Shield", -1, 7, 80, 0, 7, 1, 1, -1, 3, false, null, 34);
     public static Weapon iron_blade = new Sword("Iron Blade", 10, 12, 55, 0, 15, 1, 1, 30, false, new UnitClass.UnitType[] { UnitClass.UnitType.QUARTZ }, 35);

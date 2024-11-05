@@ -68,6 +68,7 @@ public class Cutscene : SequenceMember
             }
             StaticData.findDeepChild(transform, "Dialogue").GetComponent<TextMeshProUGUI>().text
                 = dialogue[idx].Substring(speakerAndText[0].Length + speakerAndText[1].Length + 2);
+            playOneTimeSound("next-dialogue");
             idx++;
         }
         return true;
@@ -290,6 +291,8 @@ public class Cutscene : SequenceMember
             else if (comm == "silence")
             {
                 StaticData.findDeepChild(transform, "DialogueBox").gameObject.SetActive(false);
+                StaticData.findDeepChild(transform, "LeftSpeaker").gameObject.SetActive(false);
+                StaticData.findDeepChild(transform, "RightSpeaker").gameObject.SetActive(false);
             }
             else if (comm == "right")
             {
@@ -386,10 +389,6 @@ public class Cutscene : SequenceMember
         if (!nextSaying())
         {
             finish();
-        }
-        else
-        {
-            playOneTimeSound("next-dialogue");
         }
     }
     public override void ENTER()

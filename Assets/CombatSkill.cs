@@ -80,4 +80,20 @@ public abstract class CombatSkill : FusionSkillExecutioner
 			return null;
 		}
 	}
+	public class Absorption : CombatSkill
+	{
+		public Absorption() : base("Absorption", "Skill% chance of doubling your defense for an attack.") { }
+		public override int[] tryActivate(Unit user, Unit dfd, bool myAttack)
+		{
+			if (myAttack)
+			{
+				return null;
+			}
+			if (Random.Range(0, 100) < user.skill)
+			{
+				return new int[] { 0, user.defense, 0, 0, 0, 0 };
+			}
+			return null;
+		}
+	}
 }

@@ -43,6 +43,7 @@ public class Tile : MonoBehaviour
     public static TileType CAVE = new TileType("CAVE", 1, 1, 10, 0);
     public static TileType HOUSE = new TileType("HOUSE", 1, 1, 10, 0);
     public static TileType CLIFF = new TileType("CLIFF", int.MaxValue, 1, 0, 0);
+    public static TileType VILLAGE = new TileType("VILLAGE", 1, 1, 10, 0);
 
     public void draw(int x, int y, int height, TileType type)
     {
@@ -289,9 +290,9 @@ public class Tile : MonoBehaviour
         this.deco = deco;
         deco.transform.position = getStage().position;
         deco.transform.SetParent(transform);
-        RaycastHit hit;
-        Physics.Raycast(getStage().position + new Vector3(0, MAX_DECORATION_HEIGHT, 0), Vector3.down, out hit, int.MaxValue);
-        setUtilityPositions(hit.point.y);
+//        RaycastHit hit;
+//        Physics.Raycast(getStage().position + new Vector3(0, MAX_DECORATION_HEIGHT, 0), Vector3.down, out hit, int.MaxValue);
+//        setUtilityPositions(hit.point.y);
     }
 
     public GameObject getDeco()

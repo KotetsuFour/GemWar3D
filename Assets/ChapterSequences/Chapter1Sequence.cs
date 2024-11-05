@@ -275,6 +275,7 @@ public class Chapter1Sequence : Chapter
             "$sound before-chapter-music1 stop",
             "$sound rally-music start",
             "$sound rally-music loop",
+            "$image sky-arena",
             "$right null",
             "$left Rose_Quartz " + AssetDictionary.PORTRAIT_ANGRY,
             rose + "Gems of Earth! Listen to me!",

@@ -12,7 +12,7 @@ public class MapEventExecutor : MonoBehaviour
     private Unit listener;
 
     private int idx;
-    private float timer;
+    private float timer = float.MinValue;
     private Stack<string> ifStack;
     private bool skipping;
 
@@ -34,6 +34,10 @@ public class MapEventExecutor : MonoBehaviour
         if (timer > 0)
         {
             timer -= Time.deltaTime;
+        } else if (timer != float.MinValue)
+        {
+            timer = float.MinValue;
+            Z();
         }
     }
 
@@ -72,6 +76,7 @@ public class MapEventExecutor : MonoBehaviour
             StaticData.findDeepChild(gridmap.transform, "Dialogue").GetComponent<TextMeshProUGUI>().text
                 = script[idx].Substring(speakerAndText[0].Length + speakerAndText[1].Length + 2);
             idx++;
+            gridmap.playOneTimeSound("next-dialogue");
         }
     }
     private void backToGridMap()
@@ -89,7 +94,6 @@ public class MapEventExecutor : MonoBehaviour
     public void Z()
     {
         nextAction();
-        gridmap.playOneTimeSound("next-dialogue");
     }
     public void skip()
     {
@@ -242,6 +246,8 @@ public class MapEventExecutor : MonoBehaviour
             else if (comm == "silence")
             {
                 StaticData.findDeepChild(gridmap.transform, "DialogueBox").gameObject.SetActive(false);
+                StaticData.findDeepChild(transform, "LeftSpeaker").gameObject.SetActive(false);
+                StaticData.findDeepChild(transform, "RightSpeaker").gameObject.SetActive(false);
             }
             else if (comm == "removeConvo" && !skipping)
             {

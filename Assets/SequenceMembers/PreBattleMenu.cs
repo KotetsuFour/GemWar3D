@@ -149,14 +149,19 @@ public class PreBattleMenu : SequenceMember
         else if (menuIdx == 3)
         {
             StaticData.findDeepChild(transform, "Tooltip").GetComponent<TextMeshProUGUI>().text
-                = "Save your progress along with your units' inventories and battle positions";
+                = "Manage animation and sound settings";
         }
         else if (menuIdx == 4)
         {
             StaticData.findDeepChild(transform, "Tooltip").GetComponent<TextMeshProUGUI>().text
-                = "Begin the battle! REMEMBER TO SAVE FIRST!";
+                = "Save your progress along with your units' inventories and battle positions";
         }
         else if (menuIdx == 5)
+        {
+            StaticData.findDeepChild(transform, "Tooltip").GetComponent<TextMeshProUGUI>().text
+                = "Begin the battle! REMEMBER TO SAVE FIRST!";
+        }
+        else if (menuIdx == 6)
         {
             StaticData.findDeepChild(transform, "Tooltip").GetComponent<TextMeshProUGUI>().text
                 = "Exit the chapter. REMEMBER TO SAVE FIRST!";
@@ -1326,6 +1331,80 @@ public class PreBattleMenu : SequenceMember
         playOneTimeSound("tile");
     }
 
+    public void changePlayerAnimations()
+    {
+        StaticData.playerAnimations = (StaticData.AnimationSetting)(((int)StaticData.playerAnimations + 1) % 3);
+        StaticData.findDeepChild(transform, "PlayerAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.playerAnimations;
+        StaticData.findDeepChild(transform, "TogglePersonal").gameObject.SetActive(StaticData.playerAnimations == StaticData.AnimationSetting.PERSONAL);
+    }
+    public void changeAllyAnimations()
+    {
+        StaticData.allyAnimations = (StaticData.AnimationSetting)(((int)StaticData.allyAnimations + 1) % 2);
+        StaticData.findDeepChild(transform, "AllyAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.allyAnimations;
+    }
+    public void changeOtherAnimations()
+    {
+        StaticData.otherAnimations = (StaticData.AnimationSetting)(((int)StaticData.otherAnimations + 1) % 2);
+        StaticData.findDeepChild(transform, "OtherAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.otherAnimations;
+    }
+    public void changeMusicVolume(float vol)
+    {
+        StaticData.musicVolume = vol;
+        if (music != null)
+        {
+            music.volume = StaticData.musicVolume;
+        }
+    }
+    public void changeSFXVolume(float vol)
+    {
+        StaticData.sfxVolume = vol;
+    }
+    public void switchToPersonalAnimationOptions()
+    {
+        Transform list = StaticData.findDeepChild(transform, "AnimOptions");
+        for (int q = 0; q < list.childCount; q++)
+        {
+            Destroy(list.GetChild(q).gameObject);
+        }
+        list.DetachChildren();
+
+        Transform prefab = StaticData.findDeepChild(transform, "AnimUnit");
+        for (int q = 0; q < StaticData.members.Count; q++)
+        {
+            Transform opt = Instantiate(prefab, list);
+            opt.gameObject.SetActive(true);
+            Unit unit = StaticData.members[q];
+            StaticData.findDeepChild(opt, "AnimUnitPortrait").GetComponent<Image>()
+                .sprite = AssetDictionary.getPortrait(unit.unitName);
+            StaticData.findDeepChild(opt, "AnimUnitName").GetComponent<TextMeshProUGUI>()
+                .text = unit.unitName;
+            StaticData.findDeepChild(opt, "AnimUnitMode").GetComponent<TextMeshProUGUI>()
+                .text = unit.animationOn ? "" + StaticData.AnimationSetting.CINEMATIC
+                : "" + StaticData.AnimationSetting.MAP;
+
+            Button.ButtonClickedEvent toggle = new Button.ButtonClickedEvent();
+            toggle.AddListener(delegate { toggleUnitAnimations(unit, StaticData.findDeepChild(opt, "ToggleAnim")); });
+            StaticData.findDeepChild(opt, "ToggleAnim").GetComponent<Button>()
+                .onClick = toggle;
+        }
+
+        enableChild("OptionsMenu", false);
+        enableChild("PersonalAnims", true);
+
+        selectionMode = SelectionMode.ANIM_OPTS;
+    }
+    public void toggleUnitAnimations(Unit unit, Transform toggleButton)
+    {
+        unit.animationOn = !unit.animationOn;
+        StaticData.findDeepChild(toggleButton, "AnimUnitMode").GetComponent<TextMeshProUGUI>()
+            .text = unit.animationOn ? "" + StaticData.AnimationSetting.CINEMATIC
+            : "" + StaticData.AnimationSetting.MAP;
+    }
+
+
     // Update is called once per frame
     void Update()
     {
@@ -1370,6 +1449,7 @@ public class PreBattleMenu : SequenceMember
     public enum SelectionMode
     {
         MAIN_MENU, ROAM, SWITCH, MOVE,
+        ANIM_OPTS,
         STATS_PAGE, STATS_PAGE_PICK_UNITS, STATS_PAGE_ITEMS,
         ITEM_MENU_PICK_UNIT, ITEM_MENU_INVENTORY, ITEM_MENU_CONVOY, PICK_UNITS,
         STANDBY

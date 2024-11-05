@@ -389,6 +389,7 @@ public class Chapter2Sequence : Chapter
             "$animate " + yellowModel + " Idle",
             "$animate " + pinkModel + " Talking_2",
             pink + "I don't understand why you won't just let me leave the Earth alone!",
+            "$rotateCharacter " + pinkModel + " " + blueLeave,
             "$animate " + pinkModel + " Idle",
             "$animate " + blueModel + " Talking",
             blue + "\"Leave the Earth alone\" ? Is that what you're asking of us?",
@@ -466,6 +467,8 @@ public class Chapter2Sequence : Chapter
         return new string[]
         {
             "$image sea-spire-entrance",
+            "$sound before-chapter-music2 start",
+            "$sound before-chapter-music2 loop",
             "$left Rose_Quartz " + AssetDictionary.PORTRAIT_HAPPY,
             "$right Bismuth " + AssetDictionary.PORTRAIT_HAPPY,
             rose + "This is perfect! Once we capture the Lunar Sea Spire, Blue and Yellow will have to leave the Earth alone.",
@@ -592,6 +595,7 @@ public class Chapter2Sequence : Chapter
             pearl + "Rose, are you sure this will be enough?",
             rose + "It has to be. Or we have a long road ahead of us.",
 
+            "@silence",
             "$sound peaceful-music stop",
             "$solidColor 0 0 0 1",
             "$pause 1",

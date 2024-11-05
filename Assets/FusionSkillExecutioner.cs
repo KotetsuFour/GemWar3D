@@ -20,6 +20,8 @@ public class FusionSkillExecutioner
         new AfterAttackSkill.Sol(),
         new CombatSkill.Luna(),
         new CombatSkill.Astra(),
+        new MapSkill.Healing(),
+        new CombatSkill.Absorption(),
     };
 
     public FusionSkillExecutioner(string skillName, string description)

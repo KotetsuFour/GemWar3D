@@ -61,6 +61,7 @@ public class GridMap : SequenceMember
 
     private Dictionary<Tile, object> traversableTiles;
     private Dictionary<Tile, object> attackableTiles;
+    private Vector3[] shortestPathToAttackEnemy;
     private Tile selectedTile;
     private Unit selectedUnit;
     private Tile moveDest;
@@ -1777,7 +1778,6 @@ public class GridMap : SequenceMember
 
     private Vector3[] getPath()
     {
-        Debug.Log(moveDest.name);
         List<Tile> open = new List<Tile>();
         List<Tile> closed = new List<Tile>();
         Dictionary<Tile, int> f = new Dictionary<Tile, int>();
@@ -1866,6 +1866,195 @@ public class GridMap : SequenceMember
         }
         return ret;
     }
+    private Vector3[] getAIPursuePath()
+    {
+        List<Tile> open = new List<Tile>();
+        List<Tile> closed = new List<Tile>();
+        Dictionary<Tile, int> f = new Dictionary<Tile, int>();
+        Dictionary<Tile, int> g = new Dictionary<Tile, int>();
+        Dictionary<Tile, int> pos = new Dictionary<Tile, int>();
+        Dictionary<Tile, Tile> parent = new Dictionary<Tile, Tile>();
+
+        open.Add(selectedTile);
+        f.Add(selectedTile, 0);
+        g.Add(selectedTile, 0);
+        pos.Add(selectedTile, 0);
+        while (open.Count > 0)
+        {
+            Tile check = open[0];
+            for (int idx = 1; idx < open.Count; idx++)
+            {
+                if (f[check] > f[open[idx]])
+                {
+                    check = open[idx];
+                }
+            }
+            open.Remove(check);
+            List<Tile> successor = new List<Tile>();
+            if (check.x > 0)
+            {
+                Tile child = map[check.x - 1, check.y];
+                successor.Add(child);
+            }
+            if (check.x < width - 1)
+            {
+                Tile child = map[check.x + 1, check.y];
+                successor.Add(child);
+            }
+            if (check.y > 0)
+            {
+                Tile child = map[check.x, check.y - 1];
+                successor.Add(child);
+            }
+            if (check.y < height - 1)
+            {
+                Tile child = map[check.x, check.y + 1];
+                successor.Add(child);
+            }
+            foreach (Tile child in successor)
+            {
+                if (child.getOccupant() == null)
+                {
+                    List<Tile> attackable = getAttackableTilesWithEnemies(getAttackableBattlegroundTilesFromDestination(selectedUnit, child), selectedUnit);
+                    if (attackable.Count > 0)
+                    {
+                        targetTile = check;
+                        parent.Add(child, check);
+                        return interpretAILongPath(parent);
+                    }
+                }
+                if (closed.Contains(child)
+                    || (child.getOccupant() != null && (child.getOccupant().getUnit().team == Unit.UnitTeam.ENEMY) != (selectedUnit.team == Unit.UnitTeam.ENEMY))
+                    || child.getCost(selectedUnit.isFlying()) == int.MaxValue)
+                {
+                    continue;
+                }
+                addToDictionary(child, pos[check] + 1, pos);
+                addToDictionary(child, g[check] + child.getCost(selectedUnit.isFlying()), g);
+                int h = Mathf.Abs(child.x - check.x) + Mathf.Abs(child.y - check.y);
+                int calculateF = g[child] + h;
+                if (!f.ContainsKey(child) || f[child] > calculateF)
+                {
+                    open.Add(child);
+                    addToDictionary(child, check, parent);
+                    addToDictionary(child, calculateF, f);
+                }
+            }
+            closed.Add(check);
+        }
+        parent[selectedTile] = null;
+        return interpretAILongPath(parent);
+    }
+    private Vector3[] getAIBurnPath()
+    {
+        List<Tile> open = new List<Tile>();
+        List<Tile> closed = new List<Tile>();
+        Dictionary<Tile, int> f = new Dictionary<Tile, int>();
+        Dictionary<Tile, int> g = new Dictionary<Tile, int>();
+        Dictionary<Tile, int> pos = new Dictionary<Tile, int>();
+        Dictionary<Tile, Tile> parent = new Dictionary<Tile, Tile>();
+
+        open.Add(selectedTile);
+        f.Add(selectedTile, 0);
+        g.Add(selectedTile, 0);
+        pos.Add(selectedTile, 0);
+        while (open.Count > 0)
+        {
+            Tile check = open[0];
+            for (int idx = 1; idx < open.Count; idx++)
+            {
+                if (f[check] > f[open[idx]])
+                {
+                    check = open[idx];
+                }
+            }
+            open.Remove(check);
+            List<Tile> successor = new List<Tile>();
+            if (check.x > 0)
+            {
+                Tile child = map[check.x - 1, check.y];
+                successor.Add(child);
+            }
+            if (check.x < width - 1)
+            {
+                Tile child = map[check.x + 1, check.y];
+                successor.Add(child);
+            }
+            if (check.y > 0)
+            {
+                Tile child = map[check.x, check.y - 1];
+                successor.Add(child);
+            }
+            if (check.y < height - 1)
+            {
+                Tile child = map[check.x, check.y + 1];
+                successor.Add(child);
+            }
+            foreach (Tile child in successor)
+            {
+                if (child.getOccupant() == null && child.getType() == Tile.VILLAGE)
+                {
+                    targetTile = check;
+                    parent.Add(child, check);
+                    return interpretAILongPath(parent);
+                }
+                if (closed.Contains(child)
+                    || (child.getOccupant() != null && (child.getOccupant().getUnit().team == Unit.UnitTeam.ENEMY) != (selectedUnit.team == Unit.UnitTeam.ENEMY))
+                    || child.getCost(selectedUnit.isFlying()) == int.MaxValue)
+                {
+                    continue;
+                }
+                addToDictionary(child, pos[check] + 1, pos);
+                addToDictionary(child, g[check] + child.getCost(selectedUnit.isFlying()), g);
+                int h = Mathf.Abs(child.x - check.x) + Mathf.Abs(child.y - check.y);
+                int calculateF = g[child] + h;
+                if (!f.ContainsKey(child) || f[child] > calculateF)
+                {
+                    open.Add(child);
+                    addToDictionary(child, check, parent);
+                    addToDictionary(child, calculateF, f);
+                }
+            }
+            closed.Add(check);
+        }
+        parent[selectedTile] = null;
+        return interpretAILongPath(parent);
+    }
+    private Vector3[] interpretAILongPath(Dictionary<Tile, Tile> pathData)
+    {
+        if (pathData.ContainsKey(selectedTile))
+        {
+            return null;
+        }
+        Tile current = targetTile;
+        List<Tile> backwards = new List<Tile>();
+        while (current != selectedTile)
+        {
+            backwards.Add(current);
+            current = pathData[current];
+        }
+        List<Tile> shortPath = new List<Tile>();
+        int move = selectedUnit.movement;
+        for (int q = backwards.Count - 1;
+            q >= 0 && move - backwards[q].getCost(selectedUnit.isFlying()) >= 0;
+            q--)
+        {
+            shortPath.Add(backwards[q]);
+        }
+        while (shortPath[shortPath.Count - 1] != selectedTile && shortPath[shortPath.Count - 1].getOccupant() != null)
+        {
+            shortPath.RemoveAt(shortPath.Count - 1);
+        }
+        moveDest = shortPath[shortPath.Count - 1];
+        Vector3[] ret = new Vector3[shortPath.Count + 1];
+        ret[0] = selectedTile.getStage().position;
+        for (int q = 0; q < shortPath.Count; q++)
+        {
+            ret[q + 1] = shortPath[q].getStage().position;
+        }
+        return ret;
+    }
+
     private void addToDictionary(Tile key, Tile value, Dictionary<Tile, Tile> dictionary)
     {
         if (dictionary.ContainsKey(key))
@@ -2486,7 +2675,11 @@ public class GridMap : SequenceMember
         }
         else if (ai == Unit.AIType.BURN)
         {
-            //TODO if there is a path to a house, add that house's tile
+            shortestPathToAttackEnemy = getAIBurnPath();
+            if (shortestPathToAttackEnemy != null)
+            {
+                ret.Add(targetTile);
+            }
         }
         else if (ai == Unit.AIType.GUARD)
         {
@@ -2499,7 +2692,11 @@ public class GridMap : SequenceMember
         }
         else if (ai == Unit.AIType.PURSUE)
         {
-            //TODO if there is a path to an enemy, add that enemy's tile
+            shortestPathToAttackEnemy = getAIPursuePath();
+            if (shortestPathToAttackEnemy != null)
+            {
+                ret.Add(targetTile);
+            }
         }
 
         return ret;
@@ -2625,7 +2822,9 @@ public class GridMap : SequenceMember
         }
         else if (ai == Unit.AIType.BURN)
         {
-            //TODO move closer to the house or burn it if possible
+            report[1] = startTile;
+            report[2] = moveDest;
+            report[3] = moveDest.getType() == Tile.VILLAGE ? moveDest :  null;
         }
         else if (ai == Unit.AIType.GUARD)
         {
@@ -2667,18 +2866,18 @@ public class GridMap : SequenceMember
                 }
                 else
                 {
-                    int bonus = Mathf.RoundToInt((w2Forecast[Battle.ATKMT] - w2Forecast[Battle.ATKDEF]) * w2Forecast[Battle.ATKHIT] / 100.0f);
+                    int bonus = Mathf.RoundToInt((w2Forecast[Battle.ATKMT] - w2Forecast[Battle.DFDDEF]) * w2Forecast[Battle.ATKHIT] / 100.0f);
                     heldHeur += Mathf.Min(40, bonus);
                 }
                 specialHeur += Mathf.Max(0, 20 - w1Forecast[Battle.DFDHP]);
                 heldHeur += Mathf.Max(0, 20 - w2Forecast[Battle.DFDHP]);
-                if (w1Forecast[10] == 0)
+                if (w1Forecast[Battle.DFDCOUNT] == 0)
                 {
                     specialHeur += 10;
                 }
                 else
                 {
-                    int penalty = Mathf.RoundToInt((w1Forecast[Battle.DFDMT] - w1Forecast[Battle.ATKDEF]) * w1Forecast[Battle.ATKHIT] / 100.0f);
+                    int penalty = Mathf.RoundToInt((w1Forecast[Battle.DFDMT] - w1Forecast[Battle.ATKDEF]) * w1Forecast[Battle.DFDHIT] / 100.0f);
                     specialHeur -= Mathf.Min(40, penalty);
                 }
                 if (w2Forecast[Battle.DFDCOUNT] == 0)
@@ -2687,7 +2886,7 @@ public class GridMap : SequenceMember
                 }
                 else
                 {
-                    int penalty = (int)Mathf.RoundToInt((w2Forecast[Battle.DFDMT] - w2Forecast[Battle.ATKDEF]) * w2Forecast[Battle.ATKHIT] / 100.0f);
+                    int penalty = (int)Mathf.RoundToInt((w2Forecast[Battle.DFDMT] - w2Forecast[Battle.ATKDEF]) * w2Forecast[Battle.DFDHIT] / 100.0f);
                     heldHeur -= Mathf.Min(40, penalty);
                 }
                 specialHeur -= Mathf.Max(0, 20 - (w1Forecast[Battle.ATKHP] - (w1Forecast[Battle.DFDMT] - w1Forecast[Battle.ATKDEF])));
@@ -2700,13 +2899,14 @@ public class GridMap : SequenceMember
                     if (specialWep != null)
                     {
                         selectedUnit.equipSpecial();
-                        selectedUnit.model.equip();
                     }
+                    /*
                     else
                     {
                         selectedUnit.equipNone();
-                        selectedUnit.model.equip();
                     }
+                    */
+                    selectedUnit.model.equip();
                 }
                 if (heldHeur > heur)
                 {
@@ -2716,10 +2916,13 @@ public class GridMap : SequenceMember
                     {
                         selectedUnit.equipHeld();
                     }
+                    /*
                     else
                     {
                         selectedUnit.equipNone();
                     }
+                    */
+                    selectedUnit.model.equip();
                 }
             }
             Tile enemyTile = target[best];
@@ -2729,7 +2932,17 @@ public class GridMap : SequenceMember
         }
         else if (ai == Unit.AIType.PURSUE)
         {
-            //TODO move closer to the enemy or attack if possible
+            report[1] = startTile;
+            report[2] = moveDest;
+            report[3] = null;
+            if (targetTile.getOccupant() != null)
+            {
+                Unit.UnitTeam enemTeam = targetTile.getOccupant().getUnit().team;
+                if ((selectedUnit.team == Unit.UnitTeam.ENEMY) != (enemTeam == Unit.UnitTeam.ENEMY))
+                {
+                    report[3] = targetTile;
+                }
+            }
         }
     }
 
@@ -2943,9 +3156,13 @@ public class GridMap : SequenceMember
 
                 selectionMode = SelectionMode.ENEMYPHASE_COMBAT_PAUSE;
             }
-            else if ((Unit.AIType)npcAction[0] == Unit.AIType.BURN)
+            else if ((Unit.AIType)npcAction[0] == Unit.AIType.BURN && npcAction[3] != null)
             {
-                //TODO
+                timer = 2;
+                targetTile = (Tile)npcAction[3];
+                setCursor(targetTile);
+
+                selectionMode = SelectionMode.ENEMYPHASE_BURN;
             }
             else
             {
@@ -2957,16 +3174,58 @@ public class GridMap : SequenceMember
         else if (selectionMode == SelectionMode.ALLYPHASE_MOVE && selectedUnit.model.reachedDestination())
         {
             finalizeMove();
-            setCursor(moveDest);
             setCameraPosition();
-            //TODO
+            if ((Unit.AIType)npcAction[0] == Unit.AIType.GUARD || (Unit.AIType)npcAction[0] == Unit.AIType.ATTACK
+                || ((Unit.AIType)npcAction[0] == Unit.AIType.PURSUE && (Tile)npcAction[3] != null))
+            {
+                timer = 1;
+                targetTile = (Tile)npcAction[3];
+                setCursor(targetTile);
+
+                selectionMode = SelectionMode.ALLYPHASE_COMBAT_PAUSE;
+            }
+            else if ((Unit.AIType)npcAction[0] == Unit.AIType.BURN && npcAction[3] != null)
+            {
+                timer = 2;
+                targetTile = (Tile)npcAction[3];
+                setCursor(targetTile);
+
+                selectionMode = SelectionMode.ALLYPHASE_BURN;
+            }
+            else
+            {
+                npcIdx++;
+
+                selectionMode = SelectionMode.ALLYPHASE_SELECT_UNIT;
+            }
         }
         else if (selectionMode == SelectionMode.OTHERPHASE_MOVE && selectedUnit.model.reachedDestination())
         {
             finalizeMove();
-            setCursor(moveDest);
             setCameraPosition();
-            //TODO
+            if ((Unit.AIType)npcAction[0] == Unit.AIType.GUARD || (Unit.AIType)npcAction[0] == Unit.AIType.ATTACK
+                || ((Unit.AIType)npcAction[0] == Unit.AIType.PURSUE && (Tile)npcAction[3] != null))
+            {
+                timer = 1;
+                targetTile = (Tile)npcAction[3];
+                setCursor(targetTile);
+
+                selectionMode = SelectionMode.OTHERPHASE_COMBAT_PAUSE;
+            }
+            else if ((Unit.AIType)npcAction[0] == Unit.AIType.BURN && npcAction[3] != null)
+            {
+                timer = 2;
+                targetTile = (Tile)npcAction[3];
+                setCursor(targetTile);
+
+                selectionMode = SelectionMode.OTHERPHASE_BURN;
+            }
+            else
+            {
+                npcIdx++;
+
+                selectionMode = SelectionMode.OTHERPHASE_SELECT_UNIT;
+            }
         }
         else if (selectionMode == SelectionMode.PHASE)
         {
@@ -3025,6 +3284,78 @@ public class GridMap : SequenceMember
             setCursor(selectedTile);
             setCameraPosition();
             selectionMode = SelectionMode.ENEMYPHASE_MOVE_PAUSE;
+        }
+        else if (selectionMode == SelectionMode.ALLYPHASE_SELECT_UNIT)
+        {
+            if (npcIdx >= ally.Count)
+            {
+                nextTeamPhase();
+                return;
+            }
+            selectedUnit = ally[npcIdx];
+            selectedTile = selectedUnit.model.getTile();
+            setCameraPosition();
+            npcAction = new object[4];
+            List<Tile> targets = testAISuccess(selectedUnit.ai1);
+            if (targets.Count > 0)
+            {
+                actOnUnitAI(selectedUnit.ai1, targets, npcAction, ally);
+            }
+            else
+            {
+                targets = testAISuccess(selectedUnit.ai2);
+                if (targets.Count > 0)
+                {
+                    actOnUnitAI(selectedUnit.ai2, targets, npcAction, ally);
+                }
+                else
+                {
+                    npcIdx++;
+                    return;
+                }
+            }
+            moveDest = (Tile)npcAction[2];
+
+            timer = 1;
+            setCursor(selectedTile);
+            setCameraPosition();
+            selectionMode = SelectionMode.ALLYPHASE_MOVE_PAUSE;
+        }
+        else if (selectionMode == SelectionMode.OTHERPHASE_SELECT_UNIT)
+        {
+            if (npcIdx >= other.Count)
+            {
+                nextTeamPhase();
+                return;
+            }
+            selectedUnit = other[npcIdx];
+            selectedTile = selectedUnit.model.getTile();
+            setCameraPosition();
+            npcAction = new object[4];
+            List<Tile> targets = testAISuccess(selectedUnit.ai1);
+            if (targets.Count > 0)
+            {
+                actOnUnitAI(selectedUnit.ai1, targets, npcAction, other);
+            }
+            else
+            {
+                targets = testAISuccess(selectedUnit.ai2);
+                if (targets.Count > 0)
+                {
+                    actOnUnitAI(selectedUnit.ai2, targets, npcAction, other);
+                }
+                else
+                {
+                    npcIdx++;
+                    return;
+                }
+            }
+            moveDest = (Tile)npcAction[2];
+
+            timer = 1;
+            setCursor(selectedTile);
+            setCameraPosition();
+            selectionMode = SelectionMode.OTHERPHASE_MOVE_PAUSE;
         }
     }
 

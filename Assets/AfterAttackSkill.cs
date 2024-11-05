@@ -12,7 +12,7 @@ public abstract class AfterAttackSkill : FusionSkillExecutioner
 
     public class Sol : AfterAttackSkill
     {
-        public Sol() : base("Sol", "After you damage your opponent, Skill% chance of healing that amount of damage to yourself.") { }
+        public Sol() : base("Sol", "After you damage your opponent, SKL% chance of healing that amount of damage to yourself.") { }
 
         public override int[] skillEffect(Unit user, Unit other, bool hit, int damage, bool myAttack)
         {
