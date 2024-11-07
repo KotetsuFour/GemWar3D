@@ -6,9 +6,6 @@ using UnityEngine.UI;
 
 public abstract class AbstractBattleAnimation : MonoBehaviour
 {
-    public ParticleAnimation poofEffect;
-    public ParticleAnimation criticalEffect;
-
     public UnitModel playerUnit;
     public UnitModel enemyUnit;
     public Weapon playerWep;
@@ -100,7 +97,8 @@ public abstract class AbstractBattleAnimation : MonoBehaviour
         if (!skipping)
         {
             gridmap.playOneTimeSound(AssetDictionary.getAudio("poof"));
-            Instantiate(poofEffect, unit.transform.position, Quaternion.identity);
+            ParticleAnimation poof = AssetDictionary.getParticles("poof");
+            Instantiate(poof, unit.transform.position, poof.transform.rotation);
         }
         if (!unit.getUnit().isEssential
             && (unit.getUnit().team == Unit.UnitTeam.PLAYER || unit.getUnit().team == Unit.UnitTeam.ENEMY))

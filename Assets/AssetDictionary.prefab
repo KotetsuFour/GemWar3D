@@ -479,3 +479,13 @@ MonoBehaviour:
   - {fileID: 21300000, guid: fe7cd75c53fc03a4c9cfaddc59010e92, type: 3}
   - {fileID: 21300000, guid: a4c4fdcacdbe5204ebd5b2134c6f1ba7, type: 3}
   - {fileID: 21300000, guid: d2e8da0a22e54234a8bf0e4a9bfa409e, type: 3}
+  particleKeys:
+  - crit
+  - heal
+  - poof
+  - warp
+  particleValues:
+  - {fileID: 6253713485259512342, guid: 3f1e16c8e8b50de438fed8742ceeecff, type: 3}
+  - {fileID: 2843279060849242998, guid: bde2e5a0648f63440b2cbfb91fea64de, type: 3}
+  - {fileID: -4682109959442920250, guid: 11bbf0ae6fb42ec48a858679df793310, type: 3}
+  - {fileID: 2039320880806230488, guid: bdd8c1353e54e8e4dbbc86d300bae43f, type: 3}

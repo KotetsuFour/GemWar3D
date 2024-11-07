@@ -256,11 +256,12 @@ public class CinematicBattleAnimation : AbstractBattleAnimation
                 timer = 1;
                 currentActor.playIdle();
                 gridmap.playOneTimeSound(AssetDictionary.getAudio("crit-activate"));
-                Instantiate(criticalEffect, new Vector3(
+                ParticleAnimation crit = AssetDictionary.getParticles("crit");
+                Instantiate(crit, new Vector3(
                     currentActor.transform.position.x,
                     currentActor.transform.position.y + 1,
                     currentActor.transform.position.z
-                    ), criticalEffect.transform.rotation);
+                    ), crit.transform.rotation);
                 phase = Phase.ACTIVATE_CRITICAL;
             }
             else

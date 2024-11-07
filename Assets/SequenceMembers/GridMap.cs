@@ -57,7 +57,6 @@ public class GridMap : SequenceMember
     private AbstractBattleAnimation instantiatedBattleAnimation;
     [SerializeField] private MapEventExecutor mapEvent;
     private MapEventExecutor instantiatedMapEvent;
-    [SerializeField] private ParticleAnimation warpAnimation;
 
     private Dictionary<Tile, object> traversableTiles;
     private Dictionary<Tile, object> attackableTiles;
@@ -70,6 +69,9 @@ public class GridMap : SequenceMember
     private Tile targetTile;
     private Unit targetEnemy;
     private Unit statsUnit;
+    private int skillFulfillmentIdx;
+    private MapSkill skillToFulfill;
+    private object[] skillParams;
 
     private int npcIdx;
     private object[] npcAction;
@@ -79,8 +81,6 @@ public class GridMap : SequenceMember
     private AudioSource music;
     private string[] teamMusic;
     private string[] battleMusic;
-
-    [SerializeField] private ParticleAnimation healingEffect;
 
     public static int NUM_CAMERA_POSITIONS = 5;
 
@@ -392,6 +392,66 @@ public class GridMap : SequenceMember
                 mainMenu();
             }
         }
+        else if (selectionMode == SelectionMode.SKILL_ADJACENT_ALLY)
+        {
+            skillParams[skillFulfillmentIdx] = map[cursorX, cursorY].getOccupant().getUnit();
+            unfillAttackableTiles();
+
+            skillFulfillmentIdx++;
+            setupFillSkillParam();
+        }
+        else if (selectionMode == SelectionMode.SKILL_TRAVERSABLE_TILE)
+        {
+            if (map[cursorX, cursorY].getMoveCost(selectedUnit) != int.MaxValue)
+            {
+                skillParams[skillFulfillmentIdx] = map[cursorX, cursorY];
+
+                skillFulfillmentIdx++;
+                setupFillSkillParam();
+            }
+        }
+        else if (selectionMode == SelectionMode.SKILL_ANY_ALLY)
+        {
+            skillParams[skillFulfillmentIdx] = map[cursorX, cursorY].getOccupant().getUnit();
+            unfillAttackableTiles();
+
+            skillFulfillmentIdx++;
+            setupFillSkillParam();
+        }
+        else if (selectionMode == SelectionMode.SKILL_ADJACENT_TRAVERSABLE_TILE)
+        {
+            skillParams[skillFulfillmentIdx] = map[cursorX, cursorY];
+            unfillAttackableTiles();
+
+            skillFulfillmentIdx++;
+            setupFillSkillParam();
+        }
+        else if (selectionMode == SelectionMode.SKILL_HELD_ALLY_GEM)
+        {
+            //nothing
+        }
+        else if (selectionMode == SelectionMode.SKILL_CONFIRM)
+        {
+            //TODO
+        }
+        else if (selectionMode == SelectionMode.SKILL_ADJACENT_DOOR)
+        {
+            skillParams[skillFulfillmentIdx] = map[cursorX, cursorY];
+            unfillAttackableTiles();
+
+            skillFulfillmentIdx++;
+            setupFillSkillParam();
+        }
+        else if (selectionMode == SelectionMode.SKILL_ANY_CHEST)
+        {
+            if (map[cursorX, cursorY].getType() == Tile.CHEST)
+            {
+                skillParams[skillFulfillmentIdx] = map[cursorX, cursorY];
+
+                skillFulfillmentIdx++;
+                setupFillSkillParam();
+            }
+        }
     }
 
     public override void X()
@@ -418,7 +478,7 @@ public class GridMap : SequenceMember
             cancelOtherUnitSelection();
         }
         else if (selectionMode == SelectionMode.SELECT_WEAPON || selectionMode == SelectionMode.SELECT_GEM
-            || selectionMode == SelectionMode.ITEM_MENU)
+            || selectionMode == SelectionMode.ITEM_MENU || selectionMode == SelectionMode.SKILL_CONFIRM)
         {
             initiateMenu();
         }
@@ -469,6 +529,24 @@ public class GridMap : SequenceMember
         {
             enableChild("EscapeMenu", false);
             selectionMode = SelectionMode.ROAM;
+        }
+        else if (selectionMode == SelectionMode.SKILL_ADJACENT_ALLY || selectionMode == SelectionMode.SKILL_ANY_ALLY
+            || selectionMode == SelectionMode.SKILL_ADJACENT_TRAVERSABLE_TILE || selectionMode == SelectionMode.SKILL_ADJACENT_DOOR
+            )
+        {
+            unfillAttackableTiles();
+
+            skillFulfillmentIdx--;
+            setupFillSkillParam();
+        }
+        else if (selectionMode == SelectionMode.SKILL_TRAVERSABLE_TILE || selectionMode == SelectionMode.SKILL_ANY_CHEST)
+        {
+            skillFulfillmentIdx--;
+            setupFillSkillParam();
+        }
+        else if (selectionMode == SelectionMode.SKILL_HELD_ALLY_GEM)
+        {
+            //nothing
         }
     }
     public override void A()
@@ -537,13 +615,16 @@ public class GridMap : SequenceMember
     }
     public override void UP()
     {
-        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.MOVE)
+        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.MOVE
+            || selectionMode == SelectionMode.SKILL_TRAVERSABLE_TILE
+            || selectionMode == SelectionMode.SKILL_ANY_CHEST
+            )
         {
             moveCursor(0, 1);
         }
         else if (selectionMode == SelectionMode.MENU || selectionMode == SelectionMode.SELECT_WEAPON
           || selectionMode == SelectionMode.MAP_MENU || selectionMode == SelectionMode.SELECT_GEM
-          || selectionMode == SelectionMode.ITEM_MENU)
+          || selectionMode == SelectionMode.ITEM_MENU || selectionMode == SelectionMode.SKILL_CONFIRM)
         {
             StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text")
                 .GetComponent<TextMeshProUGUI>().color = Color.black;
@@ -556,7 +637,10 @@ public class GridMap : SequenceMember
                 .GetComponent<TextMeshProUGUI>().color = Color.cyan;
         }
         else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
-            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
+            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER
+            || selectionMode == SelectionMode.SKILL_ADJACENT_ALLY || selectionMode == SelectionMode.SKILL_ANY_ALLY
+            || selectionMode == SelectionMode.SKILL_ADJACENT_TRAVERSABLE_TILE || selectionMode == SelectionMode.SKILL_ADJACENT_DOOR
+            )
         {
             interactIdx = (interactIdx + 1) % interactableUnits.Count;
             setCursor(interactableUnits[interactIdx].x, cursorY = interactableUnits[interactIdx].y);
@@ -582,13 +666,17 @@ public class GridMap : SequenceMember
     }
     public override void DOWN()
     {
-        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.MOVE)
+        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.MOVE
+            || selectionMode == SelectionMode.SKILL_TRAVERSABLE_TILE
+            || selectionMode == SelectionMode.SKILL_ANY_CHEST
+            )
         {
             moveCursor(0, -1);
         }
         else if (selectionMode == SelectionMode.MENU || selectionMode == SelectionMode.SELECT_WEAPON
             || selectionMode == SelectionMode.MAP_MENU || selectionMode == SelectionMode.SELECT_GEM
-            || selectionMode == SelectionMode.ITEM_MENU)
+            || selectionMode == SelectionMode.ITEM_MENU || selectionMode == SelectionMode.SKILL_CONFIRM
+        )
         {
             StaticData.findDeepChild(menuOptions[menuIdx].transform, "Text")
                  .GetComponent<TextMeshProUGUI>().color = Color.black;
@@ -597,7 +685,10 @@ public class GridMap : SequenceMember
                 .GetComponent<TextMeshProUGUI>().color = Color.cyan;
         }
         else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
-            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
+            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER
+            || selectionMode == SelectionMode.SKILL_ADJACENT_ALLY || selectionMode == SelectionMode.SKILL_ANY_ALLY
+            || selectionMode == SelectionMode.SKILL_ADJACENT_TRAVERSABLE_TILE || selectionMode == SelectionMode.SKILL_ADJACENT_DOOR
+            )
         {
             interactIdx--;
             if (interactIdx < 0)
@@ -621,12 +712,18 @@ public class GridMap : SequenceMember
     }
     public override void LEFT()
     {
-        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.MOVE)
+        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.MOVE
+            || selectionMode == SelectionMode.SKILL_TRAVERSABLE_TILE
+            || selectionMode == SelectionMode.SKILL_ANY_CHEST
+            )
         {
             moveCursor(-1, 0);
         }
         else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
-            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
+            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER
+            || selectionMode == SelectionMode.SKILL_ADJACENT_ALLY || selectionMode == SelectionMode.SKILL_ANY_ALLY
+            || selectionMode == SelectionMode.SKILL_ADJACENT_TRAVERSABLE_TILE || selectionMode == SelectionMode.SKILL_ADJACENT_DOOR
+            )
         {
             interactIdx--;
             if (interactIdx < 0)
@@ -645,12 +742,18 @@ public class GridMap : SequenceMember
     }
     public override void RIGHT()
     {
-        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.MOVE)
+        if (selectionMode == SelectionMode.ROAM || selectionMode == SelectionMode.MOVE
+            || selectionMode == SelectionMode.SKILL_TRAVERSABLE_TILE
+            || selectionMode == SelectionMode.SKILL_ANY_CHEST
+            )
         {
             moveCursor(1, 0);
         }
         else if (selectionMode == SelectionMode.SELECT_ENEMY || selectionMode == SelectionMode.SELECT_TALKER
-            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER)
+            || selectionMode == SelectionMode.SELECT_TRADER || selectionMode == SelectionMode.SELECT_WEAPON_TRADER
+            || selectionMode == SelectionMode.SKILL_ADJACENT_ALLY || selectionMode == SelectionMode.SKILL_ANY_ALLY
+            || selectionMode == SelectionMode.SKILL_ADJACENT_TRAVERSABLE_TILE || selectionMode == SelectionMode.SKILL_ADJACENT_DOOR
+            )
         {
             interactIdx = (interactIdx + 1) % interactableUnits.Count;
             setCursor(interactableUnits[interactIdx].x, interactableUnits[interactIdx].y);
@@ -859,6 +962,33 @@ public class GridMap : SequenceMember
             menuOptions.Add(chest);
             menuElements.Add(MenuChoice.CHEST);
         }
+        if (FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill1] is MapSkill)
+        {
+            MapSkill skill = (MapSkill) FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill1];
+            if (qualifySkillOption(skill))
+            {
+                makeSkillOption(skill, mi);
+                menuElements.Add(MenuChoice.SKILL1);
+            }
+        }
+        if (FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill2] is MapSkill)
+        {
+            MapSkill skill = (MapSkill)FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill2];
+            if (qualifySkillOption(skill))
+            {
+                makeSkillOption(skill, mi);
+                menuElements.Add(MenuChoice.SKILL2);
+            }
+        }
+        if (FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkillBonus] is MapSkill)
+        {
+            MapSkill skill = (MapSkill)FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkillBonus];
+            if (qualifySkillOption(skill))
+            {
+                makeSkillOption(skill, mi);
+                menuElements.Add(MenuChoice.SKILLBONUS);
+            }
+        }
         if (selectedUnit.heldItem != null || selectedUnit.personalItem is UsableItem)
         {
             Button item = Instantiate(menuOption, mi);
@@ -893,6 +1023,107 @@ public class GridMap : SequenceMember
 
         menuIdx = 0;
         prepareMenu();
+    }
+    private bool qualifySkillOption(MapSkill skill)
+    {
+        if (skill.getQualification() == MapSkill.MapSkillInputType.ADJACENT_ALLY)
+        {
+            if (getAdjacentTilesWithAllies(moveDest, selectedUnit).Count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (skill.getQualification() == MapSkill.MapSkillInputType.TRAVERSABLE_TILE)
+        {
+            return true;
+        }
+        else if (skill.getQualification() == MapSkill.MapSkillInputType.ANY_ALLY)
+        {
+            foreach (Unit unit in player)
+            {
+                if (unit != selectedUnit)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else if (skill.getQualification() == MapSkill.MapSkillInputType.ADJACENT_TRAVERSABLE_TILE)
+        {
+            if (moveDest.x > 0 && map[moveDest.x - 1, moveDest.y].isTraversable())
+            {
+                return true;
+            }
+            if (moveDest.x < width && map[moveDest.x + 1, moveDest.y].isTraversable())
+            {
+                return true;
+            }
+            if (moveDest.y > 0 && map[moveDest.x, moveDest.y - 1].isTraversable())
+            {
+                return true;
+            }
+            if (moveDest.x < height && map[moveDest.x, moveDest.y + 1].isTraversable())
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (skill.getQualification() == MapSkill.MapSkillInputType.HELD_ALLY_GEM)
+        {
+            if (selectedUnit.heldItem != null && selectedUnit.heldItem is Gemstone)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (skill.getQualification() == MapSkill.MapSkillInputType.CONFIRM)
+        {
+            return true;
+        }
+        else if (skill.getQualification() == MapSkill.MapSkillInputType.ADJACENT_DOOR)
+        {
+            if (moveDest.x > 0 && map[moveDest.x - 1, moveDest.y].getType() == Tile.DOOR)
+            {
+                return true;
+            }
+            if (moveDest.x < width && map[moveDest.x + 1, moveDest.y].getType() == Tile.DOOR)
+            {
+                return true;
+            }
+            if (moveDest.y > 0 && map[moveDest.x, moveDest.y - 1].getType() == Tile.DOOR)
+            {
+                return true;
+            }
+            if (moveDest.x < height && map[moveDest.x, moveDest.y + 1].getType() == Tile.DOOR)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (skill.getQualification() == MapSkill.MapSkillInputType.ANY_CHEST)
+        {
+            foreach (Tile tile in map)
+            {
+                if (tile.getType() == Tile.CHEST)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else if (skill.getQualification() == MapSkill.MapSkillInputType.WHENEVER)
+        {
+            return true;
+        }
+        return false;
+    }
+    private void makeSkillOption(MapSkill skill, Transform mi)
+    {
+        Button skillButton = Instantiate(menuOption, mi);
+        StaticData.findDeepChild(skillButton.transform, "Text").GetComponent<TextMeshProUGUI>().text
+            = skill.skillName;
+        menuOptions.Add(skillButton);
     }
 
     private void getMapMenuOptions()
@@ -1116,7 +1347,8 @@ public class GridMap : SequenceMember
             player.Remove(selectedUnit);
             StaticData.registerSupportUponEscape(selectedUnit, player, turn);
             selectedTile.setOccupant(null);
-            Instantiate(warpAnimation, selectedUnit.model.transform.position, warpAnimation.transform.rotation);
+            ParticleAnimation warp = AssetDictionary.getParticles("warp");
+            Instantiate(warp, selectedUnit.model.transform.position, warp.transform.rotation);
             playOneTimeSound(AssetDictionary.getAudio("warp"));
             Destroy(selectedUnit.model.gameObject);
 
@@ -1344,6 +1576,36 @@ public class GridMap : SequenceMember
             selectionMode = SelectionMode.ROAM;
 
         }
+        else if (choice == MenuChoice.SKILL1)
+        {
+            unfillAttackableTiles();
+
+            skillToFulfill = (MapSkill) FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill1];
+            skillFulfillmentIdx = 0;
+            skillParams = new object[skillToFulfill.getInputTypes().Length];
+
+            setupFillSkillParam();
+        }
+        else if (choice == MenuChoice.SKILL2)
+        {
+            unfillAttackableTiles();
+
+            skillToFulfill = (MapSkill)FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill2];
+            skillFulfillmentIdx = 0;
+            skillParams = new object[skillToFulfill.getInputTypes().Length];
+
+            setupFillSkillParam();
+        }
+        else if (choice == MenuChoice.SKILLBONUS)
+        {
+            unfillAttackableTiles();
+
+            skillToFulfill = (MapSkill)FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkillBonus];
+            skillFulfillmentIdx = 0;
+            skillParams = new object[skillToFulfill.getInputTypes().Length];
+
+            setupFillSkillParam();
+        }
         else if (choice == MenuChoice.WAIT)
         {
             unfillAttackableTiles();
@@ -1428,6 +1690,153 @@ public class GridMap : SequenceMember
         }
 
     }
+    private void setupFillSkillParam()
+    {
+        if (skillFulfillmentIdx >= skillParams.Length
+            || skillToFulfill.getInputTypes()[skillFulfillmentIdx] == MapSkill.MapSkillInputType.WHENEVER)
+        {
+            enableChild("Menu", false);
+            finalizeMove();
+            skillToFulfill.activateEffect(selectedUnit, skillParams);
+            tryTakeLoot(selectedUnit, moveDest);
+
+            selectionMode = SelectionMode.ROAM;
+        }
+        MapSkill.MapSkillInputType input = skillToFulfill.getInputTypes()[skillFulfillmentIdx];
+        if (input == MapSkill.MapSkillInputType.ADJACENT_ALLY)
+        {
+            interactableUnits = getAdjacentTilesWithAllies(moveDest, selectedUnit);
+            foreach (Tile t in interactableUnits)
+            {
+                t.highlightInteract();
+            }
+            interactIdx = 0;
+            setCursor(interactableUnits[interactIdx].x, interactableUnits[interactIdx].y);
+
+            selectionMode = SelectionMode.SKILL_ADJACENT_ALLY;
+        }
+        else if (input == MapSkill.MapSkillInputType.TRAVERSABLE_TILE)
+        {
+            //TODO update cursor design
+            selectionMode = SelectionMode.SKILL_TRAVERSABLE_TILE;
+        }
+        else if (input == MapSkill.MapSkillInputType.ANY_ALLY)
+        {
+            interactableUnits = new List<Tile>();
+            foreach (Unit unit in player)
+            {
+                if (unit != selectedUnit)
+                {
+                    Tile tile = unit.model.getTile();
+                    tile.highlightInteract();
+                    interactableUnits.Add(tile);
+                }
+            }
+            interactIdx = 0;
+            setCursor(interactableUnits[interactIdx].x, interactableUnits[interactIdx].y);
+
+            selectionMode = SelectionMode.SKILL_ANY_ALLY;
+        }
+        else if (input == MapSkill.MapSkillInputType.ADJACENT_TRAVERSABLE_TILE)
+        {
+            interactableUnits = new List<Tile>();
+            if (selectedTile.x > 0)
+            {
+                Tile check = map[moveDest.x - 1, moveDest.y];
+                if (check.getOccupant() == null && check.getMoveCost(selectedUnit) != int.MaxValue)
+                {
+                    interactableUnits.Add(check);
+                }
+            }
+            if (selectedTile.x < width)
+            {
+                Tile check = map[moveDest.x + 1, moveDest.y];
+                if (check.getOccupant() == null && check.getMoveCost(selectedUnit) != int.MaxValue)
+                {
+                    interactableUnits.Add(check);
+                }
+            }
+            if (selectedTile.y > 0)
+            {
+                Tile check = map[moveDest.x, moveDest.y - 1];
+                if (check.getOccupant() == null && check.getMoveCost(selectedUnit) != int.MaxValue)
+                {
+                    interactableUnits.Add(check);
+                }
+            }
+            if (selectedTile.y < height)
+            {
+                Tile check = map[moveDest.x, moveDest.y + 1];
+                if (check.getOccupant() == null && check.getMoveCost(selectedUnit) != int.MaxValue)
+                {
+                    interactableUnits.Add(check);
+                }
+            }
+
+            interactIdx = 0;
+            setCursor(interactableUnits[interactIdx].x, interactableUnits[interactIdx].y);
+
+            selectionMode = SelectionMode.SKILL_ADJACENT_TRAVERSABLE_TILE;
+        }
+        else if (input == MapSkill.MapSkillInputType.HELD_ALLY_GEM)
+        {
+            //nothing
+            skillParams[skillFulfillmentIdx] = selectedUnit.heldItem;
+            setupFillSkillParam();
+        }
+        else if (input == MapSkill.MapSkillInputType.CONFIRM)
+        {
+            //TODO
+            selectionMode = SelectionMode.SKILL_CONFIRM;
+        }
+        else if (input == MapSkill.MapSkillInputType.ADJACENT_DOOR)
+        {
+            interactableUnits = new List<Tile>();
+            if (selectedTile.x > 0)
+            {
+                Tile check = map[moveDest.x - 1, moveDest.y];
+                if (check.getType() == Tile.DOOR)
+                {
+                    interactableUnits.Add(check);
+                }
+            }
+            if (selectedTile.x < width)
+            {
+                Tile check = map[moveDest.x + 1, moveDest.y];
+                if (check.getType() == Tile.DOOR)
+                {
+                    interactableUnits.Add(check);
+                }
+            }
+            if (selectedTile.y > 0)
+            {
+                Tile check = map[moveDest.x, moveDest.y - 1];
+                if (check.getType() == Tile.DOOR)
+                {
+                    interactableUnits.Add(check);
+                }
+            }
+            if (selectedTile.y < height)
+            {
+                Tile check = map[moveDest.x, moveDest.y + 1];
+                if (check.getType() == Tile.DOOR)
+                {
+                    interactableUnits.Add(check);
+                }
+            }
+
+            interactIdx = 0;
+            setCursor(interactableUnits[interactIdx].x, interactableUnits[interactIdx].y);
+
+            selectionMode = SelectionMode.SKILL_ADJACENT_DOOR;
+        }
+        else if (input == MapSkill.MapSkillInputType.ANY_CHEST)
+        {
+            //TODO update cursor design
+            selectionMode = SelectionMode.SKILL_ANY_CHEST;
+        }
+    }
+
 
     private void fillTraversableTiles(Unit u, int x, int y)
     {
@@ -2041,6 +2450,7 @@ public class GridMap : SequenceMember
         {
             shortPath.Add(backwards[q]);
         }
+        shortPath.Insert(0, selectedTile);
         while (shortPath[shortPath.Count - 1] != selectedTile && shortPath[shortPath.Count - 1].getOccupant() != null)
         {
             shortPath.RemoveAt(shortPath.Count - 1);
@@ -2635,7 +3045,8 @@ public class GridMap : SequenceMember
             if (u.model != null && u.model.getTile().getType().healing > 0)
             {
                 u.heal(u.model.getTile().getType().healing);
-                Instantiate(healingEffect, u.model.transform.position, healingEffect.transform.rotation);
+                ParticleAnimation heal = AssetDictionary.getParticles("heal");
+                Instantiate(heal, u.model.transform.position, heal.transform.rotation);
             }
         }
         if (teams[teamPhase] == player)
@@ -3364,6 +3775,8 @@ public class GridMap : SequenceMember
     {
         ROAM, MOVE, TRAVEL, MENU, SELECT_ENEMY, SELECT_TALKER, SELECT_WEAPON, FORECAST, BATTLE, MAP_MENU, IN_CONVO,
         SELECT_GEM, STATUS, STATS_PAGE, CONTROLS, ITEM_NOTE, ITEM_MENU, SELECT_TRADER, SELECT_WEAPON_TRADER, USE_ITEM,
+        SKILL_ADJACENT_ALLY, SKILL_TRAVERSABLE_TILE, SKILL_ANY_ALLY, SKILL_ADJACENT_TRAVERSABLE_TILE,
+        SKILL_HELD_ALLY_GEM, SKILL_CONFIRM, SKILL_ADJACENT_DOOR, SKILL_ANY_CHEST,
         ENEMYPHASE_SELECT_UNIT, ENEMYPHASE_MOVE_PAUSE, ENEMYPHASE_MOVE, ENEMYPHASE_ATTACK, ENEMYPHASE_BURN, ENEMYPHASE_COMBAT_PAUSE,
         ALLYPHASE_SELECT_UNIT, ALLYPHASE_MOVE_PAUSE, ALLYPHASE_MOVE, ALLYPHASE_ATTACK, ALLYPHASE_BURN, ALLYPHASE_COMBAT_PAUSE,
         OTHERPHASE_SELECT_UNIT, OTHERPHASE_MOVE_PAUSE, OTHERPHASE_MOVE, OTHERPHASE_ATTACK, OTHERPHASE_BURN, OTHERPHASE_COMBAT_PAUSE,
@@ -3374,7 +3787,7 @@ public class GridMap : SequenceMember
     {
         TALK, ATTACK, ESCAPE, SEIZE, ITEM, WEAPON, GEM, PICKED_GEM, CHEST, WAIT, STATUS, OPTIONS, END,
         USE_PERSONAL, USE_HELD, TRADE, DROP, EQUIP_PERSONAL, EQUIP_HELD, EQUIP_NONE, TRADE_WEAPON,
-        DROP_WEAPON
+        DROP_WEAPON, SKILL1, SKILL2, SKILLBONUS
     }
 
 

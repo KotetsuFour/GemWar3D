@@ -44,6 +44,7 @@ public class Tile : MonoBehaviour
     public static TileType HOUSE = new TileType("HOUSE", 1, 1, 10, 0);
     public static TileType CLIFF = new TileType("CLIFF", int.MaxValue, 1, 0, 0);
     public static TileType VILLAGE = new TileType("VILLAGE", 1, 1, 10, 0);
+    public static TileType DOOR = new TileType("DOOR", int.MaxValue, int.MaxValue, 0, 0);
 
     public void draw(int x, int y, int height, TileType type)
     {
@@ -205,6 +206,10 @@ public class Tile : MonoBehaviour
             return type.inAirCost;
         }
         return type.onFootCost;
+    }
+    public bool isTraversable()
+    {
+        return type.onFootCost != int.MaxValue && type.inAirCost != int.MaxValue;
     }
     public int getAvoidBonus()
     {

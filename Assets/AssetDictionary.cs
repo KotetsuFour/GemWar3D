@@ -16,6 +16,8 @@ public class AssetDictionary : MonoBehaviour
     [SerializeField] private List<string> wepKeys;
     [SerializeField] private List<GameObject> wepValues;
     [SerializeField] private List<Sprite> portraits;
+    [SerializeField] private List<string> particleKeys;
+    [SerializeField] private List<ParticleAnimation> particleValues;
 
     private static Dictionary<string, Sprite> imageDictionary;
     private static List<GameObject> modelDictionary;
@@ -24,6 +26,7 @@ public class AssetDictionary : MonoBehaviour
     private static Dictionary<string, AudioClip> copyrightAudioDictionary;
     private static Dictionary<string, GameObject> weaponDictionary;
     private static Dictionary<string, Sprite> portraitDictionary;
+    private static Dictionary<string, ParticleAnimation> particleDictionary;
 
     public static string PORTRAIT_NEUTRAL = "_neutral";
     public static string PORTRAIT_HAPPY = "_happy";
@@ -68,6 +71,11 @@ public class AssetDictionary : MonoBehaviour
         {
             portraitDictionary.Add(sprite.name.Replace(".png", ""), sprite);
         }
+        particleDictionary = new Dictionary<string, ParticleAnimation>();
+        for (int q = 0; q < particleKeys.Count; q++)
+        {
+            particleDictionary.Add(particleKeys[q], particleValues[q]);
+        }
     }
 
     public static Sprite getImage(string key)
@@ -102,5 +110,9 @@ public class AssetDictionary : MonoBehaviour
     public static Sprite getPortrait(string unitName, string expression)
     {
         return portraitDictionary[unitName.ToLower().Replace(' ', '_') + expression];
+    }
+    public static ParticleAnimation getParticles(string particlesName)
+    {
+        return particleDictionary[particlesName];
     }
 }
