@@ -334,6 +334,7 @@ MonoBehaviour:
   heal: {fileID: 2100000, guid: 7539e97b8d85efd459d21064bba2cf3e, type: 2}
   tree: {fileID: 5171027520029830433, guid: 0088a1180248f1344be4f25c607e3f5b, type: 3}
   house: {fileID: 2066477468101863141, guid: 59abc16729f9fd34ebe29dfbe1b7e4de, type: 3}
+  village: {fileID: 5719946148279524558, guid: 166c4a2446309024ab53e0b34d5c537e, type: 3}
   quartzHair: {r: 1, g: 0.9647059, b: 0.99215686, a: 1}
   quartzSkin: {r: 0.8862745, g: 0.45882353, b: 1, a: 1}
   quartzEyes: {r: 0, g: 0, b: 0, a: 1}

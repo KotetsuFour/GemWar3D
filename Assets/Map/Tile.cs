@@ -299,6 +299,12 @@ public class Tile : MonoBehaviour
 //        Physics.Raycast(getStage().position + new Vector3(0, MAX_DECORATION_HEIGHT, 0), Vector3.down, out hit, int.MaxValue);
 //        setUtilityPositions(hit.point.y);
     }
+    public void destroy()
+    {
+        Destroy(deco.gameObject);
+        deco = null;
+        type = RUBBLE;
+    }
 
     public GameObject getDeco()
     {

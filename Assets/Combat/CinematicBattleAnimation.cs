@@ -216,7 +216,10 @@ public class CinematicBattleAnimation : AbstractBattleAnimation
         }
         gridmap.getCursor().gameObject.SetActive(true);
 
-        Destroy(music.gameObject);
+        if (music != null)
+        {
+            Destroy(music.gameObject);
+        }
 
         gridmap.endBattleAnimation();
     }

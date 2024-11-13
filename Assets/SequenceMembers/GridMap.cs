@@ -115,6 +115,14 @@ public class GridMap : SequenceMember
         this.teamMusic = teamMusic;
         this.battleMusic = battleMusic;
 
+        StaticData.findDeepChild(transform, "PlayerAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.playerAnimations;
+        StaticData.findDeepChild(transform, "TogglePersonal").gameObject.SetActive(StaticData.playerAnimations == StaticData.AnimationSetting.PERSONAL);
+        StaticData.findDeepChild(transform, "AllyAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.allyAnimations;
+        StaticData.findDeepChild(transform, "OtherAnimState").GetComponent<TextMeshProUGUI>()
+            .text = "" + StaticData.otherAnimations;
+
         teamPhase = -1;
         nextTeamPhase();
     }
@@ -936,6 +944,15 @@ public class GridMap : SequenceMember
             menuOptions.Add(talk);
             menuElements.Add(MenuChoice.TALK);
         }
+        if (moveDest.getDeco().GetComponent<DecoDialogue>() != null
+            && moveDest.getDeco().GetComponent<DecoDialogue>().canVisit())
+        {
+            Button visit = Instantiate(menuOption, mi);
+            StaticData.findDeepChild(visit.transform, "Text").GetComponent<TextMeshProUGUI>().text
+                = "Visit";
+            menuOptions.Add(visit);
+            menuElements.Add(MenuChoice.VISIT);
+        }
         Dictionary<Tile, object> attackable = getAttackableBattlegroundTilesFromDestination(selectedUnit, moveDest);
         List<Tile> reallyAttackable = getAttackableTilesWithEnemies(attackable, selectedUnit);
         if (reallyAttackable.Count != 0)
@@ -965,7 +982,7 @@ public class GridMap : SequenceMember
         if (FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill1] is MapSkill)
         {
             MapSkill skill = (MapSkill) FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill1];
-            if (qualifySkillOption(skill))
+            if (qualifySkillOption(skill, selectedUnit.timesUsedMapSkill1))
             {
                 makeSkillOption(skill, mi);
                 menuElements.Add(MenuChoice.SKILL1);
@@ -974,7 +991,7 @@ public class GridMap : SequenceMember
         if (FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill2] is MapSkill)
         {
             MapSkill skill = (MapSkill)FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkill2];
-            if (qualifySkillOption(skill))
+            if (qualifySkillOption(skill, selectedUnit.timesUsedMapSkill2))
             {
                 makeSkillOption(skill, mi);
                 menuElements.Add(MenuChoice.SKILL2);
@@ -983,7 +1000,7 @@ public class GridMap : SequenceMember
         if (FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkillBonus] is MapSkill)
         {
             MapSkill skill = (MapSkill)FusionSkillExecutioner.SKILL_LIST[(int)selectedUnit.fusionSkillBonus];
-            if (qualifySkillOption(skill))
+            if (qualifySkillOption(skill, selectedUnit.timesUsedMapSkillBonus))
             {
                 makeSkillOption(skill, mi);
                 menuElements.Add(MenuChoice.SKILLBONUS);
@@ -1024,8 +1041,12 @@ public class GridMap : SequenceMember
         menuIdx = 0;
         prepareMenu();
     }
-    private bool qualifySkillOption(MapSkill skill)
+    private bool qualifySkillOption(MapSkill skill, int timesUsed)
     {
+        if (skill.maxUsesPerMap != int.MaxValue && skill.maxUsesPerMap <= timesUsed)
+        {
+            return false;
+        }
         if (skill.getQualification() == MapSkill.MapSkillInputType.ADJACENT_ALLY)
         {
             if (getAdjacentTilesWithAllies(moveDest, selectedUnit).Count > 0)
@@ -1248,6 +1269,21 @@ public class GridMap : SequenceMember
 
             selectionMode = SelectionMode.SELECT_TALKER;
 
+        }
+        else if (choice == MenuChoice.VISIT)
+        {
+            unfillAttackableTiles();
+
+            enableChild("Menu", false);
+
+            finalizeMove();
+
+            instantiatedMapEvent = Instantiate(mapEvent);
+            instantiatedMapEvent.constructor(moveDest.getDeco().GetComponent<DecoDialogue>().visit(),
+                null, selectedUnit, this);
+            music.Pause();
+
+            selectionMode = SelectionMode.IN_CONVO;
         }
         else if (choice == MenuChoice.ATTACK)
         {
@@ -1701,6 +1737,7 @@ public class GridMap : SequenceMember
             tryTakeLoot(selectedUnit, moveDest);
 
             selectionMode = SelectionMode.ROAM;
+            return;
         }
         MapSkill.MapSkillInputType input = skillToFulfill.getInputTypes()[skillFulfillmentIdx];
         if (input == MapSkill.MapSkillInputType.ADJACENT_ALLY)
@@ -1782,6 +1819,7 @@ public class GridMap : SequenceMember
         {
             //nothing
             skillParams[skillFulfillmentIdx] = selectedUnit.heldItem;
+            skillFulfillmentIdx++;
             setupFillSkillParam();
         }
         else if (input == MapSkill.MapSkillInputType.CONFIRM)
@@ -2351,8 +2389,7 @@ public class GridMap : SequenceMember
             }
             closed.Add(check);
         }
-        parent[selectedTile] = null;
-        return interpretAILongPath(parent);
+        return null;
     }
     private Vector3[] getAIBurnPath()
     {
@@ -2401,7 +2438,8 @@ public class GridMap : SequenceMember
             }
             foreach (Tile child in successor)
             {
-                if (child.getOccupant() == null && child.getType() == Tile.VILLAGE)
+                if (child.getOccupant() == null && child.getType() == Tile.VILLAGE
+                    && child.getDeco().GetComponent<DecoDialogue>().canVisit())
                 {
                     targetTile = check;
                     parent.Add(child, check);
@@ -2426,15 +2464,10 @@ public class GridMap : SequenceMember
             }
             closed.Add(check);
         }
-        parent[selectedTile] = null;
-        return interpretAILongPath(parent);
+        return null;
     }
     private Vector3[] interpretAILongPath(Dictionary<Tile, Tile> pathData)
     {
-        if (pathData.ContainsKey(selectedTile))
-        {
-            return null;
-        }
         Tile current = targetTile;
         List<Tile> backwards = new List<Tile>();
         while (current != selectedTile)
@@ -2445,10 +2478,12 @@ public class GridMap : SequenceMember
         List<Tile> shortPath = new List<Tile>();
         int move = selectedUnit.movement;
         for (int q = backwards.Count - 1;
-            q >= 0 && move - backwards[q].getCost(selectedUnit.isFlying()) >= 0;
+            q >= 0 && move - backwards[q].getMoveCost(selectedUnit) >= 0;
             q--)
         {
-            shortPath.Add(backwards[q]);
+            Tile toAdd = backwards[q];
+            shortPath.Add(toAdd);
+            move -= toAdd.getMoveCost(selectedUnit);
         }
         shortPath.Insert(0, selectedTile);
         while (shortPath[shortPath.Count - 1] != selectedTile && shortPath[shortPath.Count - 1].getOccupant() != null)
@@ -3376,6 +3411,7 @@ public class GridMap : SequenceMember
         StaticData.findDeepChild(transform, "OtherAnimState").GetComponent<TextMeshProUGUI>()
             .text = "" + StaticData.otherAnimations;
     }
+
     public void changeMusicVolume(float vol)
     {
         StaticData.musicVolume = vol;
@@ -3768,6 +3804,17 @@ public class GridMap : SequenceMember
             setCameraPosition();
             selectionMode = SelectionMode.OTHERPHASE_MOVE_PAUSE;
         }
+        else if (selectionMode == SelectionMode.ENEMYPHASE_BURN || selectionMode == SelectionMode.ALLYPHASE_BURN
+            || selectionMode == SelectionMode.OTHERPHASE_BURN)
+        {
+            if (timer <= 0)
+            {
+                targetTile.destroy();
+                selectionMode = selectionMode == SelectionMode.ENEMYPHASE_BURN ? SelectionMode.ENEMYPHASE_SELECT_UNIT
+                    : selectionMode == SelectionMode.ALLYPHASE_BURN ? SelectionMode.ALLYPHASE_SELECT_UNIT
+                    : selectionMode == SelectionMode.OTHERPHASE_BURN ? SelectionMode.OTHERPHASE_SELECT_UNIT;
+            }
+        }
     }
 
 
@@ -3787,7 +3834,7 @@ public class GridMap : SequenceMember
     {
         TALK, ATTACK, ESCAPE, SEIZE, ITEM, WEAPON, GEM, PICKED_GEM, CHEST, WAIT, STATUS, OPTIONS, END,
         USE_PERSONAL, USE_HELD, TRADE, DROP, EQUIP_PERSONAL, EQUIP_HELD, EQUIP_NONE, TRADE_WEAPON,
-        DROP_WEAPON, SKILL1, SKILL2, SKILLBONUS
+        DROP_WEAPON, SKILL1, SKILL2, SKILLBONUS, VISIT
     }
 
 

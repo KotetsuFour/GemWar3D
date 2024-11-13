@@ -32,6 +32,12 @@ public class UnitModel : MonoBehaviour
         if (model != null)
         {
             model.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            if (StaticData.findDeepChild(model.transform, "animHolder") != null)
+            {
+                Transform seat = StaticData.findDeepChild(model.transform, "Seat");
+                StaticData.findDeepChild(model.transform, "animHolder")
+                    .SetPositionAndRotation(seat.position, seat.rotation);
+            }
         }
 
         RaycastHit hit;

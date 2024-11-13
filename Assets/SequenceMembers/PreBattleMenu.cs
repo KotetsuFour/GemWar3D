@@ -797,6 +797,10 @@ public class PreBattleMenu : SequenceMember
     }
     public override bool completed()
     {
+        if (done)
+        {
+            Debug.Log("done is true for some reason");
+        }
         return done;
     }
     private void fillTraversableTiles(Unit u, int x, int y)

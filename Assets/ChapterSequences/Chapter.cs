@@ -18,13 +18,14 @@ public class Chapter : MonoBehaviour
     public string[] heightMap;
     public string[] decoMap;
     public int[] loot;
+    public string[][] dialogueEvents;
 
     public Dictionary<char, GameObject> decoDictionary;
     public Dictionary<char, Material> materialDictionary;
 
     public int turnsTaken;
 
-    public static int nextTODOChapter = 3;
+    public static int nextTODOChapter = 4;
     public void handleInput(SequenceMember seqMem)
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -82,6 +83,7 @@ public class Chapter : MonoBehaviour
         Tile[,] ret = new Tile[tileMap[0].Length, tileMap.Length];
 
         int lootIdx = 0;
+        int dialogueEventIdx = 0;
         for (int y = 0; y < tileMap.Length; y++)
         {
             for (int x = 0; x < tileMap[y].Length; x++)
@@ -148,6 +150,38 @@ public class Chapter : MonoBehaviour
                 {
                     toPut.draw(x, y, height, Tile.HEAL_TILE);
                 }
+                else if (tileId == '-')
+                {
+                    toPut.draw(x, y, height, Tile.PLAIN);
+                }
+                else if (tileId == 'A')
+                {
+                    toPut.draw(x, y, height, Tile.TREE);
+                }
+                else if (tileId == 'P')
+                {
+                    toPut.draw(x, y, height, Tile.PEAK);
+                }
+                else if (tileId == '^')
+                {
+                    toPut.draw(x, y, height, Tile.MOUNTAIN);
+                }
+                else if (tileId == 'C')
+                {
+                    toPut.draw(x, y, height, Tile.CAVE);
+                }
+                else if (tileId == 'H')
+                {
+                    toPut.draw(x, y, height, Tile.HOUSE);
+                }
+                else if (tileId == 'c')
+                {
+                    toPut.draw(x, y, height, Tile.CLIFF);
+                }
+                else if (tileId == 'V')
+                {
+                    toPut.draw(x, y, height, Tile.VILLAGE);
+                }
                 else
                 {
                     Debug.Log($"Found unidentified tile: '{tileId}'");
@@ -157,7 +191,13 @@ public class Chapter : MonoBehaviour
 
                 if (decoDictionary.ContainsKey(decoMap[y][x]))
                 {
-                    toPut.decorate(Instantiate(decoDictionary[decoMap[y][x]]));
+                    GameObject deco = Instantiate(decoDictionary[decoMap[y][x]]);
+                    toPut.decorate(deco);
+                    if (deco.GetComponent<DecoDialogue>() != null && dialogueEventIdx < dialogueEvents.Length)
+                    {
+                        deco.GetComponent<DecoDialogue>().setDialogue(dialogueEvents[dialogueEventIdx]);
+                        dialogueEventIdx++;
+                    }
                 }
 
                 toPut.transform.SetParent(mapTransform);

@@ -34,6 +34,7 @@ public class Chapter3Sequence : Chapter
 
     [SerializeField] private GameObject tree;
     [SerializeField] private GameObject house;
+    [SerializeField] private GameObject village;
 
     [SerializeField] private Color quartzHair;
     [SerializeField] private Color quartzSkin;
@@ -135,13 +136,14 @@ public class Chapter3Sequence : Chapter
         materialDictionary.Add('H', grass);
         materialDictionary.Add('c', cliff);
         materialDictionary.Add('+', heal);
+        materialDictionary.Add('V', grass);
 
         decoDictionary = new Dictionary<char, GameObject>();
         decoDictionary.Add('A', tree);
         decoDictionary.Add('H', house);
+        decoDictionary.Add('V', village);
 
-        loot = new int[] {0, 2, 0, -1,/*2 Steel*/0, 0, 0, 11,/*Iron Lance*/
-            0, 0, 0, 24,/*Moon Goddess Icon*/0, 0, 0, 15,/*Iron Whip*/4, 0, 0, -1/*4 Iron*/};
+        dialogueEvents = new string[][] { house1(), village1(), house2() };
 
         tileMap = new string[]
         {
@@ -152,7 +154,7 @@ public class Chapter3Sequence : Chapter
             "H-PCP----PPPPPP-----",
             "c-----PPPPPPPPPcc---",
             "A---ccPPPPPPPPPA-c--",
-            "-----HHAPPPPPPP^A---",
+            "-----VHAPPPPPPP^A---",
             "-------A^PPPPPP^A---",
             "--------APPPPPPA----",
             "---------PPPPPP-----",
@@ -175,7 +177,7 @@ public class Chapter3Sequence : Chapter
             "H!PCP!!!!PPPPPP!!!!x",
             "c!!!!!PPPPPPPPPcc!!!",
             "A!!!ccPPPPPPPPPAxc!x",
-            "!!!!!HHAPPPPPPP^Axx!",
+            "!!!!!VHAPPPPPPP^Axx!",
             "!!*!!!!A^PPPPPP^A!!x",
             "!***!!!!APPPPPPA!!xx",
             "*!*!*!!!!PPPPPP!!xxx",
@@ -198,7 +200,7 @@ public class Chapter3Sequence : Chapter
             "H-PCP----PPPPPP-----",
             "c-----PPPPPPPPPcc---",
             "A---ccPPPPPPPPPA-c--",
-            "-----HHAPPPPPPP^A---",
+            "-----VHAPPPPPPP^A---",
             "-------A^PPPPPP^A---",
             "--------APPPPPPA----",
             "---------PPPPPP-----",
@@ -244,7 +246,7 @@ public class Chapter3Sequence : Chapter
             "H-PCP----PPPPPP-----",
             "c-----PPPPPPPPPcc---",
             "A---ccPPPPPPPPPA-c--",
-            "-----HHAPPPPPPP^A---",
+            "-----VHAPPPPPPP^A---",
             "-------A^PPPPPP^A---",
             "--------APPPPPPA----",
             "---------PPPPPP-----",
@@ -276,7 +278,9 @@ public class Chapter3Sequence : Chapter
             else if (sequenceNum == 2)
             {
                 seqMem.gameObject.SetActive(false);
+                Debug.Log("before prebattle");
                 PreBattleMenu pbm = makePrepMenu();
+                Debug.Log("after prebattle");
                 seqMem = pbm;
             }
             else if (sequenceNum == 3)
@@ -284,7 +288,6 @@ public class Chapter3Sequence : Chapter
                 seqMem.gameObject.SetActive(false);
                 seqMem = makeChapter();
                 gridmap.gameObject.SetActive(true);
-                seqMem = gridmap;
             }
             else if (sequenceNum == 4)
             {
@@ -399,76 +402,116 @@ public class Chapter3Sequence : Chapter
 
     public string[] getEnding()
     {
+        string rose = "Rose_Quartz Rose_Quartz ";
+        string pearl = "Pearl Pearl ";
+        string bismuth = "Bismuth Bismuth ";
+        string neph = "Nephrite Nephrite ";
+        string guard = "Guard Guard ";
+        string garnet = "Fusion Garnet_E ";
+        string garnet_named = "Garnet Garnet_E ";
+
         return new string[]
         {
-            "0 the_answer_intro.jpg",
-            "2 rose_quartz.jpg",
-            "4 pearl.jpg",
-            "3 bismuth.png",
-            "8 Nephrite",
-            "1 bismuth.png",
-            "3 nephrite.jpg",
-            "7 Done",
-            "Bismuth",
-            "The way is clear. It's all you two now. We'll stay down here and prevent them from gathering reinforcements.",
-            "8 Nephrite",
-            "Nephrite",
-            "Don't worry about us. We'll follow you whole or in pieces!",
-            "Rose Quartz",
-            "Well, try not to end up in pieces....7 Done",
-            "                                     Rose Quartz",
-            "                                     Thank you all. Pearl, come on. Let's finish this.",
-            "1 clear",
-            "2 clear",
-            "3 clear",
-            "4 clear",
-            "0 cloud_arena.jpg",
-            "-",
-            "-",
-            "Rose Quartz",
-            "Blue Diamond, leave this planet! This colony will not be completed!",
+            "$image the-answer-back",
+            "$left Bismuth " + AssetDictionary.PORTRAIT_DARING,
+            "$right Rose_Quartz " + AssetDictionary.PORTRAIT_NEUTRAL,
+            bismuth + "The way is clear. It's all you and Pearl from here. We'll stay down here and keep them from gathering reinforcements.",
+            "$if alive Nephrite",
+            "$left Nephrite " + AssetDictionary.PORTRAIT_DARING,
+            neph + "Don't worry about us. We'll follow you whole or in pieces!",
+            "$right Rose_Quartz " + AssetDictionary.PORTRAIT_NERVOUS,
+            rose + "Er-- right....",
+            "$endif",
+            "$right Rose_Quartz " + AssetDictionary.PORTRAIT_NEUTRAL,
+            rose + "Thank you all for your help. Let's go, Pearl.",
+
+            "$solidColor 0 0 0 1",
+            "$pause 1",
+            "$image cloud-arena",
+            "$sound map-music-1 play",
+            "$sound map-music-1 loop",
+
+            rose + "Blue Diamond, leave this planet! This colony will not be completed!",
             "Guard",
-            "It's the rebels!",
-            "Guard",
-            "Who are you?!Show yourselves!",
-            "0 we_are_the_crystal_gems.png",
-            "Rose + Pearl",
-            "We are the Crystal Gems!",
-            "0 blackscreen.png",
-            "Rose Quartz",
-            "But what did that really mean? I wasn't sure...",
-            "0 first_fusion.jpg",
-            "Rose Quartz...until I saw her.",
-            "-",
-            "-",
-            "Rose Quartz",
-            "How have I never heard of this ? I've only ever heard that it's unheard of.",
-            "Pearl",
-            "I imagined that I ran away and met you here on Earth...",
-            "8 Moonstone",
-            "Rose Quartz",
-            "Is that how Homeworld has made you feel? Invisible?",
-            "Moonstone",
-            "I--",
-            "7 Done",
-            "Bismuth",
-            "The Diamonds don’t have use for a Bismuth who makes weapons.",
-            "0 meeting_garnet.jpg",
-            "Fusion",
-            "C - Can you tell me ? How was Ruby able to alter fate ?",
-            "Fusion",
-            "Why was Sapphire willing to give up everything ?",
-            "Fusion",
-            "W - What am I ? !",
-            "Rose Quartz",
-            "No more questions.Don't ever question this. You already are the answer.",
-            "0 blackscreen.png",
-            "Rose Quartz",
-            "And she was my answer too.I knew why I was fighting.Why the Earth was worth fighting for.",
-            "Rose Quartz",
-            "It was the only place where Gems could be free to do and be extraordinary things.",
-            "Rose Quartz",
-            "And I was prepared to risk everything for it."
+            guard + "It's the rebels!",
+            guard + "Who are you?! Show yourselves!",
+            "null Rose_+_Pearl " + "We are the Crystal Gems!",
+
+            "$solidColor 0 0 0 1",
+            "$sound damage play",
+            "$pause 1",
+            "$sound damage play",
+            "$pause 1",
+            "$sound poof play",
+            "$pause 2",
+
+            "$image garnet-first-fusion",
+            "$pause 2",
+            rose + "This is...",
+            "$silence",
+            "$pause 4",
+
+            "$image null",
+
+            garnet + "Ah! Don't hurt her!",
+            garnet + "Don't hurt me?",
+            pearl + "It's you! The fusion.",
+            garnet + "We didn't mean to fuse!",
+            garnet + "Well, we did this time...",
+            garnet + "We'll unfuse! We'll--",
+            rose + "No, no, please. I'm glad to see you again.",
+            garnet + "I don't upset you?",
+            rose + "Who cares about how I feel? How you feel is bound to be much more interesting.",
+            garnet + "How I feel? I feel... lost... and scared... a-and happy.",
+            garnet + "Why am I so sure that I'd rather be this than everything I was supposed to be?",
+            garnet + "And that I'd rather do this than everything I was supposed to do?",
+            rose + "*chuckles* Welcome to Earth.",
+            garnet + "Can you tell me? How was Ruby able to alter fate?",
+            garnet + "Why was Sapphire willing to give up everything?",
+            garnet + "W-What am I?!",
+            rose + "No more questions. Don't ever question this. You already are the answer.",
+            rose + "Do you have a name?",
+            garnet + "No. I mean... I feel like maybe... Garnet?",
+            rose + "A Ruby and a Sapphire make a Garnet? How fascinating.",
+            rose + "Would you like to come with us, Garnet?",
+            garnet_named + "You want me to join you?",
+            rose + "Yes. I think it's because of Gems like you that we're fighting.",
+            rose + "Here on Earth, Gems can be extraordinary, like you. It won't be easy, but no matter what it takes...",
+            rose + "I think the love that forms you is worth fighting for. What do you say?",
+            garnet_named + "I will.",
+            rose + "Welcome, Garnet to the Crystal Gems!",
+        };
+    }
+
+    private string[] house1()
+    {
+        string human = "Human null ";
+        return new string[]
+        {
+            human + "Hey, whenever you're done littering stones everywhere, could you try and pick up after yourselves?",
+            human + "Those rocks are no good just scattered over the ground. Maybe you can use them for something."
+        };
+    }
+    private string[] village1()
+    {
+        string human = "Human null ";
+        return new string[]
+        {
+            human + "This ancient robe has the power to prolong life. May it bless you for visiting our humble village.",
+            "$reward 19",
+            "_ null Received Snerson Robe"
+        };
+    }
+    private string[] house2()
+    {
+        string human = "Human null ";
+        return new string[]
+        {
+            human + "Know the Weapon Triangle!",
+            human + "Swords and Fists beat Axes and Whips",
+            human + "Axes and Whips beat Lances and Armor",
+            human + "Lances and Armor beat Swords and Fists",
+            human + "\"Hard to remember,\" you say? Well don't look at me. I didn't make this game!",
         };
     }
 
@@ -643,14 +686,14 @@ public class Chapter3Sequence : Chapter
     }
     private Unit genericElite()
     {
-        //Based on FE3 Oguma and Hardin (best parts of both)
+        //Based on FE3 Oguma and Hardin (best parts of both, but worst of Luck, and only 6 Speed)
         //1 point MOV buff
         string elite_desc = "A specialized officer in the Diamonds' armies";
         Weapon wep = Item.elite_sword;
         Unit elite = new Unit();
         UnitClass eliteClass = UnitClass.elite_quartz;
-        elite.constructor("Elite Quartz", eliteClass, elite_desc,
-                22, 6, 0, 11, 12, 8, 6, 0, 9, 7,
+        elite.constructor("Elite", eliteClass, elite_desc,
+                22, 6, 0, 11, 6, 3, 6, 0, 9, 7,
                 90, 50, 3, 40, 50, 60, 30, 3,
                 wep, Weapon.WeaponType.AXE, 30, Unit.UnitTeam.ENEMY, -1, -1,
                 Unit.Affinity.EARTH,
@@ -699,7 +742,7 @@ public class Chapter3Sequence : Chapter
         Weapon wep = Item.guard_shield;
         Unit ruby = new Unit();
         UnitClass guard = UnitClass.guard;
-        ruby.constructor("Ruby Guard", guard, ruby_desc,
+        ruby.constructor("Guard", guard, ruby_desc,
                 17, 4, 0, 6, 7, 7, 4, 0, 5, 5,
                 50, 40, 45, 55, 50, 70, 15, 45,
                 wep, Weapon.WeaponType.CLUB, 10, Unit.UnitTeam.ENEMY, -1, -1,
@@ -747,9 +790,10 @@ public class Chapter3Sequence : Chapter
         List<Tile> playerTiles = getPlayerDeploymentTiles(map);
         ret.constructor(map, playerTiles,
             enemy, ally, other, Quaternion.identity,
-            new SeizeObjective(), CHAPTER_TITLE, teamNames, TURNPAR, "prep-music");
+            new RoutObjective(), CHAPTER_TITLE, teamNames, TURNPAR, "prep-music");
 
         setUnits(map, enemy, Unit.UnitTeam.ENEMY, Quaternion.Euler(0, 180, 0));
+        setUnits(map, ally, Unit.UnitTeam.ALLY, Quaternion.identity);
 
         ret.initializeCursorPosition();
 
@@ -772,11 +816,11 @@ public class Chapter3Sequence : Chapter
                 playerList.Add(player[q]);
             }
         }
-        enemy = new Unit[]{genericTopazFusion(), genericPriestess(), genericQuartz(), genericGuard(),
+        enemy = new Unit[]{ genericTopazFusion(), genericPriestess(), genericQuartz(), genericGuard(),
                     genericPriestess(), genericElite(), genericGuard(), genericGuard(), genericQuartz(),
                     genericQuartz(), genericQuartz(), genericQuartz(), genericGuard(), genericGuard(),
                     genericGuard(), genericGuard(), genericGuard(), genericQuartz(), genericQuartz(),
-                    genericQuartz()};
+                    genericQuartz() };
         ally = new Unit[] { citrine(), flint(), aventurine(), chert() };
         other = new Unit[] { };
         string[] teamNames = { "Crystal Gems", "Homeworld", "Refraction Stones", "" };
@@ -785,13 +829,14 @@ public class Chapter3Sequence : Chapter
         Tile[,] map = createMap(StaticData.findDeepChild(gridmap.transform, "MapTransform"));
         gridmap.constructor(map,
             playerList.ToArray(), enemy, ally, other,
-            new SeizeObjective(), CHAPTER_TITLE, teamNames, TURNPAR,
+            new RoutObjective(), CHAPTER_TITLE, teamNames, TURNPAR,
             new string[] { "map-music-1", "enemyphase-music-1" },
             new string[] { "player-battle-music-1", "enemy-battle-music-1" });
         gridmap.combatBackground = surroundings[1];
 
         setUnits(map, player, Unit.UnitTeam.PLAYER, Quaternion.identity);
         setUnits(map, enemy, Unit.UnitTeam.ENEMY, Quaternion.Euler(0, 180, 0));
+        setUnits(map, ally, Unit.UnitTeam.ALLY, Quaternion.identity);
 
         gridmap.initializeCursorPosition();
 

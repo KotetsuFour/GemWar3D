@@ -271,7 +271,7 @@ public class Cutscene : SequenceMember
             else if (comm == "image")
             {
                 string imageName = parts[1];
-                Sprite image = AssetDictionary.getImage(imageName);
+                Sprite image = imageName == "null" ? null : AssetDictionary.getImage(imageName);
                 Image display = StaticData.findDeepChild(transform, "DisplayImage").GetComponent<Image>();
                 display.sprite = image;
                 display.gameObject.SetActive(true);

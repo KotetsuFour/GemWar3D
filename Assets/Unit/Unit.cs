@@ -59,6 +59,10 @@ public class Unit
 	public FusionSkill fusionSkillBonus;
 	public Affinity affinity;
 
+	public int timesUsedMapSkill1;
+	public int timesUsedMapSkill2;
+	public int timesUsedMapSkillBonus;
+
 	public AIType ai1;
 	public AIType ai2;
 	public UnitTeam team;

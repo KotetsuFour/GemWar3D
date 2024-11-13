@@ -272,6 +272,24 @@ public class MapEventExecutor : MonoBehaviour
                     StaticData.addToConvoy(speaker.talkReward.clone());
                 }
             }
+            else if (comm == "reward")
+            {
+                Item reward = Item.itemIndex[int.Parse(parts[1])].clone();
+                if (reward is Weapon && listener.heldWeapon == null)
+                {
+                    listener.heldWeapon = (Weapon)reward;
+                    Debug.Log("Weapon " + listener.heldWeapon.might + "," + listener.heldWeapon.hit);
+                }
+                else if (!(reward is Weapon) && listener.heldItem == null)
+                {
+                    listener.heldItem = reward;
+                    Debug.Log("Item");
+                }
+                else
+                {
+                    StaticData.addToConvoy(reward);
+                }
+            }
             else if (comm == "giveall")
             {
                 foreach (Unit u in gridmap.player)

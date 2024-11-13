@@ -4,14 +4,32 @@ using UnityEngine;
 
 public abstract class MapSkill : FusionSkillExecutioner
 {
-    public MapSkill(string skillName, string description) : base(skillName, description) { }
+    public MapSkill(string skillName, string description, int maxUsesPerMap) : base(skillName, description)
+    {
+        this.maxUsesPerMap = maxUsesPerMap;
+    }
     public abstract MapSkillInputType getQualification();
     public abstract MapSkillInputType[] getInputTypes();
     public abstract void activateEffect(Unit user, object[] input);
-
+    public int maxUsesPerMap;
+    public void incrementUses(Unit user)
+    {
+        if (SKILL_LIST[(int)user.fusionSkill1] == this)
+        {
+            user.timesUsedMapSkill1++;
+        }
+        else if (SKILL_LIST[(int)user.fusionSkill2] == this)
+        {
+            user.timesUsedMapSkill2++;
+        }
+        else if (SKILL_LIST[(int)user.fusionSkillBonus] == this)
+        {
+            user.timesUsedMapSkillBonus++;
+        }
+    }
     public class Healing : MapSkill
     {
-        public Healing() : base("Healing Tears", "Use to restore HP to an adjacent ally equal to your MAG + 10.") { }
+        public Healing() : base("Healing Tears", "Use to restore HP to an adjacent ally equal to your MAG + 10.", int.MaxValue) { }
         public override MapSkillInputType getQualification()
         {
             return MapSkillInputType.ADJACENT_ALLY;
@@ -30,7 +48,7 @@ public abstract class MapSkill : FusionSkillExecutioner
     }
     public class Warp : MapSkill
     {
-        public Warp() : base("Warp", "Use to teleport an adjacent ally to another traversable tile.") { }
+        public Warp() : base("Warp", "Use to teleport an adjacent ally to another traversable tile.", 3) { }
         public override MapSkillInputType getQualification()
         {
             return MapSkillInputType.ADJACENT_ALLY;
@@ -42,11 +60,12 @@ public abstract class MapSkill : FusionSkillExecutioner
         public override void activateEffect(Unit user, object[] input)
         {
             //TODO
+            incrementUses(user);
         }
     }
     public class Rescue : MapSkill
     {
-        public Rescue() : base("Rescue", "Use on an ally to teleport them to an adjacent tile.") { }
+        public Rescue() : base("Rescue", "Use on an ally to teleport them to an adjacent tile.", 3) { }
         public override MapSkillInputType getQualification()
         {
             return MapSkillInputType.ANY_ALLY;
@@ -58,11 +77,12 @@ public abstract class MapSkill : FusionSkillExecutioner
         public override void activateEffect(Unit user, object[] input)
         {
             //TODO
+            incrementUses(user);
         }
     }
     public class Revive : MapSkill
     {
-        public Revive() : base("Revive", "Use to extract an ally from their gemstone to an adjacent tile.") { }
+        public Revive() : base("Revive", "Use to extract an ally from their gemstone to an adjacent tile.", 1) { }
         public override MapSkillInputType getQualification()
         {
             return MapSkillInputType.HELD_ALLY_GEM;
@@ -74,11 +94,12 @@ public abstract class MapSkill : FusionSkillExecutioner
         public override void activateEffect(Unit user, object[] input)
         {
             //TODO
+            incrementUses(user);
         }
     }
     public class Unlock : MapSkill
     {
-        public Unlock() : base("Unlock", "Use to open an adjacent door.") { }
+        public Unlock() : base("Unlock", "Use to open an adjacent door.", int.MaxValue) { }
         public override MapSkillInputType getQualification()
         {
             return MapSkillInputType.ADJACENT_DOOR;
@@ -94,7 +115,7 @@ public abstract class MapSkill : FusionSkillExecutioner
     }
     public class Thief : MapSkill
     {
-        public Thief() : base("Thief", "Use to steal from a chest on the map.") { }
+        public Thief() : base("Thief", "Use to steal from a chest on the map.", 3) { }
         public override MapSkillInputType getQualification()
         {
             return MapSkillInputType.ANY_CHEST;
@@ -106,11 +127,12 @@ public abstract class MapSkill : FusionSkillExecutioner
         public override void activateEffect(Unit user, object[] input)
         {
             //TODO
+            incrementUses(user);
         }
     }
     public class Song : MapSkill
     {
-        public Song() : base("Song", "Use to invigorate an adjacent ally to move again.") { }
+        public Song() : base("Song", "Use to invigorate an adjacent ally to move again.", int.MaxValue) { }
         public override MapSkillInputType getQualification()
         {
             return MapSkillInputType.ADJACENT_ALLY;
@@ -126,7 +148,7 @@ public abstract class MapSkill : FusionSkillExecutioner
     }
     public class Rewarp : MapSkill
     {
-        public Rewarp() : base("Rewarp", "Use to teleport to another traversable tile.") { }
+        public Rewarp() : base("Rewarp", "Use to teleport to another traversable tile.", 3) { }
         public override MapSkillInputType getQualification()
         {
             return MapSkillInputType.WHENEVER;
@@ -138,6 +160,7 @@ public abstract class MapSkill : FusionSkillExecutioner
         public override void activateEffect(Unit user, object[] input)
         {
             //TODO
+            incrementUses(user);
         }
     }
 
