@@ -3812,7 +3812,7 @@ public class GridMap : SequenceMember
                 targetTile.destroy();
                 selectionMode = selectionMode == SelectionMode.ENEMYPHASE_BURN ? SelectionMode.ENEMYPHASE_SELECT_UNIT
                     : selectionMode == SelectionMode.ALLYPHASE_BURN ? SelectionMode.ALLYPHASE_SELECT_UNIT
-                    : selectionMode == SelectionMode.OTHERPHASE_BURN ? SelectionMode.OTHERPHASE_SELECT_UNIT;
+                    : SelectionMode.OTHERPHASE_SELECT_UNIT;
             }
         }
     }

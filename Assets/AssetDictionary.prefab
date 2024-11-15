@@ -166,6 +166,10 @@ MonoBehaviour:
   - switch
   - diamond-music
   - before-chapter-music3
+  - allyphase-music-1
+  - otherphase-music-1
+  - ally-battle-music-1
+  - other-battle-music-1
   audioValues:
   - {fileID: 8300000, guid: e41f665d7207b364ca554e1978697170, type: 3}
   - {fileID: 8300000, guid: 006e349202443af4bb58f4c9e7ab2082, type: 3}
@@ -174,9 +178,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a752e97b80fe8d943a8abdd8f147959b, type: 3}
   - {fileID: 8300000, guid: 6cc76747eaba9eb4f9aa1008cc4a4ff4, type: 3}
   - {fileID: 8300000, guid: 88fe3f78272f2064abbebf1fddebfd6a, type: 3}
-  - {fileID: 8300000, guid: 82e5853cad5ea244192ff4e8a63e55d3, type: 3}
+  - {fileID: 8300000, guid: 3f3dd443ae9151e468c06a3d82cc232b, type: 3}
   - {fileID: 8300000, guid: b0dff7f32d9b06d41aabee75bcd56afe, type: 3}
-  - {fileID: 8300000, guid: abd786f91f1395f48951dd2fdfa48ce0, type: 3}
+  - {fileID: 8300000, guid: fd864d93b1a803f4b8befaef5581f95e, type: 3}
   - {fileID: 8300000, guid: fd188f9cae04ead4599161cb7ee8c05b, type: 3}
   - {fileID: 8300000, guid: 065fb552ae8fdd9409f4a898f2aa6d2e, type: 3}
   - {fileID: 8300000, guid: 6d91ea8eea6457943ae9209ad32355a5, type: 3}
@@ -195,20 +199,24 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 46a6b43eea65b284da82e98a9dd78f49, type: 3}
   - {fileID: 8300000, guid: f57a2e99f304ab34ab5826c15cbdc7b0, type: 3}
   - {fileID: 8300000, guid: ef82414e12624a8449cb2bba42bd59ab, type: 3}
-  - {fileID: 8300000, guid: 086bf5d6fe29d36408b5ce916de2edd7, type: 3}
-  - {fileID: 8300000, guid: 190ca04acc6ffe449af2cf827c08d20b, type: 3}
-  - {fileID: 8300000, guid: 7c79b74e86fff024b9b284a353b8151d, type: 3}
+  - {fileID: 8300000, guid: 258659410e1f8bf428e45080b358ae66, type: 3}
+  - {fileID: 8300000, guid: 935d98bba350c034896c383a9c5c3f13, type: 3}
+  - {fileID: 8300000, guid: 74df2d9496128a24eac652c60ae1a572, type: 3}
   - {fileID: 8300000, guid: d742d024e0a235b49ae30fac8501b0cc, type: 3}
   - {fileID: 8300000, guid: acff377e44c876b41ada7f6f5511ff90, type: 3}
-  - {fileID: 8300000, guid: e02cca695255d7a4d8b7702256eb147c, type: 3}
+  - {fileID: 8300000, guid: e9c3b91920239f848ac2c94fa7f1b974, type: 3}
   - {fileID: 8300000, guid: 4b7f2c0cde80ad242aa599e1122e5dd1, type: 3}
   - {fileID: 8300000, guid: b9e3297fe81249f4582c5dab5b356b01, type: 3}
-  - {fileID: 8300000, guid: 5ea2c0d9c31b6e24090e213c4ed0fca8, type: 3}
+  - {fileID: 8300000, guid: f2b63b1d62ec6014193e9e91c91930a5, type: 3}
   - {fileID: 8300000, guid: 527e18e72ea9ddd40a7cee8238b0e157, type: 3}
   - {fileID: 8300000, guid: a817137e3b677d54aa46fa57e45f0feb, type: 3}
   - {fileID: 8300000, guid: 0a7ff7766bc4e20458e264f228ad8511, type: 3}
   - {fileID: 8300000, guid: f04185088160b5d4bbee88235edf2e45, type: 3}
   - {fileID: 8300000, guid: 23f01655fb4af4b4082e94b047a675f8, type: 3}
+  - {fileID: 8300000, guid: bc9763f6af06c9d428ca05585cbf1126, type: 3}
+  - {fileID: 8300000, guid: a2bb9fb144fd28f41a5c043a9440e303, type: 3}
+  - {fileID: 8300000, guid: f384fd8559312d548a9c1ea53d3b61f0, type: 3}
+  - {fileID: 8300000, guid: 40f21baa7c7d2484f98a5e409fbcd8e5, type: 3}
   copyrightAudioKeys:
   - main-theme
   - map-music-1

@@ -536,6 +536,11 @@ public class Chapter3Sequence : Chapter
                     quartzPalette7.r, quartzPalette7.g, quartzPalette7.b,
                 });
         quartz.ai1 = Unit.AIType.ATTACK; quartz.ai2 = Unit.AIType.GUARD;
+        quartz.recruitability = 10;
+        quartz.recruitQuote = new string[]
+        {
+            "Alright, I'm convinced. Need any more help?"
+        };
         return quartz;
     }
     private Unit genericPriestess()
@@ -560,6 +565,11 @@ public class Chapter3Sequence : Chapter
                     priestPalette7.r, priestPalette7.g, priestPalette7.b,
                 });
         priest.ai1 = Unit.AIType.ATTACK; priest.ai2 = Unit.AIType.PURSUE;
+        priest.recruitability = 10;
+        priest.recruitQuote = new string[]
+        {
+            "May the Moon Goddess bring you victory."
+        };
         return priest;
     }
     private Unit nephrite()
@@ -707,6 +717,11 @@ public class Chapter3Sequence : Chapter
                     elitePalette7.r, elitePalette7.g, elitePalette7.b,
                 });
         elite.ai1 = Unit.AIType.ATTACK; elite.ai2 = Unit.AIType.GUARD;
+        elite.recruitability = 20;
+        elite.recruitQuote = new string[]
+        {
+            "I think I actually agree with you. Heh, didn't see that coming."
+        };
         return elite;
     }
     private Unit genericTopazFusion()
@@ -733,6 +748,11 @@ public class Chapter3Sequence : Chapter
         topaz.ai1 = Unit.AIType.GUARD; topaz.ai2 = Unit.AIType.GUARD;
         topaz.movement = 0;
         topaz.fusionSkillBonus = Unit.FusionSkill.ABSORPTION;
+        topaz.recruitability = 50;
+        topaz.recruitQuote = new string[]
+        {
+            "I want to help you guys. What do you need?"
+        };
         return topaz;
     }
     private Unit genericGuard()
@@ -756,7 +776,12 @@ public class Chapter3Sequence : Chapter
                     guardPalette6.r, guardPalette6.g, guardPalette6.b,
                     guardPalette7.r, guardPalette7.g, guardPalette7.b,
                 });
-        ruby.ai1 = Unit.AIType.ATTACK; ruby.ai2 = Unit.AIType.PURSUE;
+        ruby.ai1 = Unit.AIType.BURN; ruby.ai2 = Unit.AIType.ATTACK;
+        ruby.recruitability = 10;
+        ruby.recruitQuote = new string[]
+        {
+            "I like your luster!"
+        };
         return ruby;
     }
 
@@ -830,8 +855,8 @@ public class Chapter3Sequence : Chapter
         gridmap.constructor(map,
             playerList.ToArray(), enemy, ally, other,
             new RoutObjective(), CHAPTER_TITLE, teamNames, TURNPAR,
-            new string[] { "map-music-1", "enemyphase-music-1" },
-            new string[] { "player-battle-music-1", "enemy-battle-music-1" });
+            new string[] { "map-music-1", "enemyphase-music-1", "allyphase-music-1", "otherphase-music-1" },
+            new string[] { "player-battle-music-1", "enemy-battle-music-1", "ally-battle-music-1", "other-battle-music-1" });
         gridmap.combatBackground = surroundings[1];
 
         setUnits(map, player, Unit.UnitTeam.PLAYER, Quaternion.identity);
