@@ -1191,7 +1191,7 @@ public class PreBattleMenu : SequenceMember
             else
             {
                 StaticData.findDeepChild(transform, "PersonalItemIcon").GetComponent<Image>()
-                    .sprite = AssetDictionary.getImage("item");
+                    .sprite = AssetDictionary.getImage("Item");
             }
             StaticData.findDeepChild(transform, "PersonalItemName").GetComponent<TextMeshProUGUI>()
                 .text = unit.personalItem.itemName;
@@ -1221,7 +1221,7 @@ public class PreBattleMenu : SequenceMember
         {
             enableChild("HeldItem", true);
             StaticData.findDeepChild(transform, "HeldItemIcon").GetComponent<Image>()
-                .sprite = AssetDictionary.getImage("item");
+                .sprite = AssetDictionary.getImage("Item");
             StaticData.findDeepChild(transform, "HeldItemName").GetComponent<TextMeshProUGUI>()
                 .text = unit.heldItem.itemName;
             StaticData.findDeepChild(transform, "HeldItemUses").GetComponent<TextMeshProUGUI>()

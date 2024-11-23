@@ -50,7 +50,7 @@ public class GridMap : SequenceMember
     [SerializeField] private float cameraDistance;
     private int camOrientation;
 
-    private SelectionMode selectionMode;
+    public SelectionMode selectionMode;
 
     [SerializeField] private CinematicBattleAnimation battleAnimation;
     [SerializeField] private MapBattleAnimation mapBattleAnimation;
@@ -122,6 +122,10 @@ public class GridMap : SequenceMember
             .text = "" + StaticData.allyAnimations;
         StaticData.findDeepChild(transform, "OtherAnimState").GetComponent<TextMeshProUGUI>()
             .text = "" + StaticData.otherAnimations;
+        StaticData.findDeepChild(transform, "MusicVolume").GetComponent<Slider>()
+            .value = StaticData.musicVolume;
+        StaticData.findDeepChild(transform, "SFXVolume").GetComponent<Slider>()
+            .value = StaticData.sfxVolume;
 
         teamPhase = -1;
         nextTeamPhase();
@@ -944,7 +948,7 @@ public class GridMap : SequenceMember
             menuOptions.Add(talk);
             menuElements.Add(MenuChoice.TALK);
         }
-        if (moveDest.getDeco().GetComponent<DecoDialogue>() != null
+        if (moveDest.getDeco() != null && moveDest.getDeco().GetComponent<DecoDialogue>() != null
             && moveDest.getDeco().GetComponent<DecoDialogue>().canVisit())
         {
             Button visit = Instantiate(menuOption, mi);
@@ -2365,7 +2369,7 @@ public class GridMap : SequenceMember
                     List<Tile> attackable = getAttackableTilesWithEnemies(getAttackableBattlegroundTilesFromDestination(selectedUnit, child), selectedUnit);
                     if (attackable.Count > 0)
                     {
-                        targetTile = check;
+                        targetTile = child;
                         parent.Add(child, check);
                         return interpretAILongPath(parent);
                     }
@@ -2441,7 +2445,7 @@ public class GridMap : SequenceMember
                 if (child.getOccupant() == null && child.getType() == Tile.VILLAGE
                     && child.getDeco().GetComponent<DecoDialogue>().canVisit())
                 {
-                    targetTile = check;
+                    targetTile = child;
                     parent.Add(child, check);
                     return interpretAILongPath(parent);
                 }
@@ -2491,11 +2495,10 @@ public class GridMap : SequenceMember
             shortPath.RemoveAt(shortPath.Count - 1);
         }
         moveDest = shortPath[shortPath.Count - 1];
-        Vector3[] ret = new Vector3[shortPath.Count + 1];
-        ret[0] = selectedTile.getStage().position;
+        Vector3[] ret = new Vector3[shortPath.Count];
         for (int q = 0; q < shortPath.Count; q++)
         {
-            ret[q + 1] = shortPath[q].getStage().position;
+            ret[q] = shortPath[q].getStage().position;
         }
         return ret;
     }
@@ -2636,7 +2639,7 @@ public class GridMap : SequenceMember
             else
             {
                 StaticData.findDeepChild(transform, "PersonalItemIcon").GetComponent<Image>()
-                    .sprite = AssetDictionary.getImage("item");
+                    .sprite = AssetDictionary.getImage("Item");
             }
             StaticData.findDeepChild(transform, "PersonalItemName").GetComponent<TextMeshProUGUI>()
                 .text = unit.personalItem.itemName;
@@ -2666,7 +2669,7 @@ public class GridMap : SequenceMember
         {
             enableChild("HeldItem", true);
             StaticData.findDeepChild(transform, "HeldItemIcon").GetComponent<Image>()
-                .sprite = AssetDictionary.getImage("item");
+                .sprite = AssetDictionary.getImage("Item");
             StaticData.findDeepChild(transform, "HeldItemName").GetComponent<TextMeshProUGUI>()
                 .text = unit.heldItem.itemName;
             StaticData.findDeepChild(transform, "HeldItemUses").GetComponent<TextMeshProUGUI>()
@@ -3592,6 +3595,7 @@ public class GridMap : SequenceMember
         }
         else if (selectionMode == SelectionMode.ENEMYPHASE_MOVE && selectedUnit.model.reachedDestination())
         {
+            Debug.Log($"{selectedUnit.unitName} got to {moveDest.getName()}. Her target is {targetTile.getName()}");
             finalizeMove();
             setCameraPosition();
             if ((Unit.AIType)npcAction[0] == Unit.AIType.GUARD || (Unit.AIType)npcAction[0] == Unit.AIType.ATTACK
@@ -3608,6 +3612,7 @@ public class GridMap : SequenceMember
                 timer = 2;
                 targetTile = (Tile)npcAction[3];
                 setCursor(targetTile);
+                playOneTimeSound("broken");
 
                 selectionMode = SelectionMode.ENEMYPHASE_BURN;
             }
@@ -3636,6 +3641,7 @@ public class GridMap : SequenceMember
                 timer = 2;
                 targetTile = (Tile)npcAction[3];
                 setCursor(targetTile);
+                playOneTimeSound("broken");
 
                 selectionMode = SelectionMode.ALLYPHASE_BURN;
             }
@@ -3664,6 +3670,7 @@ public class GridMap : SequenceMember
                 timer = 2;
                 targetTile = (Tile)npcAction[3];
                 setCursor(targetTile);
+                playOneTimeSound("broken");
 
                 selectionMode = SelectionMode.OTHERPHASE_BURN;
             }
@@ -3810,6 +3817,7 @@ public class GridMap : SequenceMember
             if (timer <= 0)
             {
                 targetTile.destroy();
+                npcIdx++;
                 selectionMode = selectionMode == SelectionMode.ENEMYPHASE_BURN ? SelectionMode.ENEMYPHASE_SELECT_UNIT
                     : selectionMode == SelectionMode.ALLYPHASE_BURN ? SelectionMode.ALLYPHASE_SELECT_UNIT
                     : SelectionMode.OTHERPHASE_SELECT_UNIT;

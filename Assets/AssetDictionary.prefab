@@ -65,7 +65,7 @@ MonoBehaviour:
   - Special
   - Sword
   - Whip
-  - item
+  - Item
   - Star
   - Talk
   - green-check
@@ -77,6 +77,7 @@ MonoBehaviour:
   - moonbase
   - the-answer-back
   - cloud-arena
+  - garnet-first-fusion
   imageValues:
   - {fileID: 21300000, guid: 5d21a8ff6d9c67d4da065d3015918b21, type: 3}
   - {fileID: 21300000, guid: 8e6ebfd1dbb4e7749ba78303ffeeba02, type: 3}
@@ -110,6 +111,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6c15216e6540798438b3bd589c906cf8, type: 3}
   - {fileID: 21300000, guid: ca7c58f971cac0f4e9b90f7892195df8, type: 3}
   - {fileID: 21300000, guid: d84f34986d4f5a94fb8b591d21e47bcc, type: 3}
+  - {fileID: 21300000, guid: d8c443c0b35d7b74b898f156a537759f, type: 3}
   modelValues:
   - {fileID: 6422181147470550412, guid: 4cce61fe84857a34a8b554853885abf4, type: 3}
   - {fileID: 8860643157110146660, guid: 6ed1cc38ce24699458618f2a79a8c0f6, type: 3}

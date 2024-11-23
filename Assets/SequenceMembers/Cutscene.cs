@@ -274,6 +274,7 @@ public class Cutscene : SequenceMember
                 Sprite image = imageName == "null" ? null : AssetDictionary.getImage(imageName);
                 Image display = StaticData.findDeepChild(transform, "DisplayImage").GetComponent<Image>();
                 display.sprite = image;
+                display.color = image == null ? Color.clear : Color.white;
                 display.gameObject.SetActive(true);
             }
             else if (comm == "solidColor")

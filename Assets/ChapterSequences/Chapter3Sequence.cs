@@ -339,6 +339,8 @@ public class Chapter3Sequence : Chapter
             "$left Pearl " + AssetDictionary.PORTRAIT_SAD,
             rose + "...Is Earth even really worth saving?",
             pearl + "...",
+            "$sound before-chapter-music3 start",
+            "$sound before-chapter-music3 loop",
             "$right Bismuth " + AssetDictionary.PORTRAIT_HAPPY,
             bismuth + "Hey, Rose! Look who I just found!",
             "$right Bismuth " + AssetDictionary.PORTRAIT_NEUTRAL,
@@ -410,6 +412,13 @@ public class Chapter3Sequence : Chapter
         string garnet = "Fusion Garnet_E ";
         string garnet_named = "Garnet Garnet_E ";
 
+        int garnetModel = 0;
+        int roseModel = 1;
+        int pearlModel = 2;
+
+        int rosePos = 0;
+        int garnetPos = 1;
+
         return new string[]
         {
             "$image the-answer-back",
@@ -425,32 +434,40 @@ public class Chapter3Sequence : Chapter
             "$right Rose_Quartz " + AssetDictionary.PORTRAIT_NEUTRAL,
             rose + "Thank you all for your help. Let's go, Pearl.",
 
+            "$silence",
             "$solidColor 0 0 0 1",
             "$pause 1",
             "$image cloud-arena",
-            "$sound map-music-1 play",
+            "$sound map-music-1 start",
             "$sound map-music-1 loop",
 
             rose + "Blue Diamond, leave this planet! This colony will not be completed!",
-            "Guard",
             guard + "It's the rebels!",
             guard + "Who are you?! Show yourselves!",
-            "null Rose_+_Pearl " + "We are the Crystal Gems!",
+            "$left Rose_Quartz " + AssetDictionary.PORTRAIT_DARING,
+            "$right Pearl " + AssetDictionary.PORTRAIT_DARING,
+            "Rose_+_Pearl null " + "We are the Crystal Gems!",
 
+            "$silence",
             "$solidColor 0 0 0 1",
-            "$sound damage play",
+            "$sound damage start",
             "$pause 1",
-            "$sound damage play",
+            "$sound damage start",
             "$pause 1",
-            "$sound poof play",
+            "$sound poof start",
             "$pause 2",
 
+            "$sound map-music-1 stop",
             "$image garnet-first-fusion",
-            "$pause 2",
+            "$pause 3",
             rose + "This is...",
             "$silence",
-            "$pause 4",
+            "$pause 3",
 
+            "$sound peaceful-music start",
+            "$equip " + pearlModel + " Iron_Sword",
+            "$animate " + pearlModel + " Sword_Idle",
+            "$animate " + garnetModel + " Old_Man_Idle",
             "$image null",
 
             garnet + "Ah! Don't hurt her!",
@@ -459,26 +476,58 @@ public class Chapter3Sequence : Chapter
             garnet + "We didn't mean to fuse!",
             garnet + "Well, we did this time...",
             garnet + "We'll unfuse! We'll--",
+            "$animate " + roseModel + " Standard_Walk",
+            "$moveCharacter " + roseModel + " " + rosePos + " 5",
+            "$pause 2.5",
+            "$animate " + roseModel + " Idle",
+            "$animate " + garnetModel + " Idle",
+            "$rotateCharacter " + roseModel + " " + garnetPos,
+            "$rotateCharacter " + garnetModel + " " + rosePos,
             rose + "No, no, please. I'm glad to see you again.",
+            "$animate " + pearlModel + " Idle",
+            "$animate " + garnetModel + " Talking",
             garnet + "I don't upset you?",
+            "$animate " + garnetModel + " Idle",
+            "$animate " + roseModel + " Talking",
             rose + "Who cares about how I feel? How you feel is bound to be much more interesting.",
+            "$animate " + roseModel + " Idle",
+            "$animate " + garnetModel + " Talking",
             garnet + "How I feel? I feel... lost... and scared... a-and happy.",
             garnet + "Why am I so sure that I'd rather be this than everything I was supposed to be?",
             garnet + "And that I'd rather do this than everything I was supposed to do?",
+            "$animate " + garnetModel + " Idle",
+            "$animate " + roseModel + " Laughing",
             rose + "*chuckles* Welcome to Earth.",
+            "$animate " + roseModel + " Idle",
+            "$animate " + garnetModel + " Talking_2",
             garnet + "Can you tell me? How was Ruby able to alter fate?",
             garnet + "Why was Sapphire willing to give up everything?",
             garnet + "W-What am I?!",
+            "$animate " + garnetModel + " Idle",
+            "$animate " + roseModel + " Talking",
             rose + "No more questions. Don't ever question this. You already are the answer.",
             rose + "Do you have a name?",
+            "$animate " + roseModel + " Idle",
+            "$animate " + garnetModel + " Talking",
             garnet + "No. I mean... I feel like maybe... Garnet?",
+            "$animate " + garnetModel + " Idle",
+            "$animate " + roseModel + " Talking",
             rose + "A Ruby and a Sapphire make a Garnet? How fascinating.",
             rose + "Would you like to come with us, Garnet?",
+            "$animate " + roseModel + " Idle",
+            "$animate " + garnetModel + " Talking",
+            "$rotateCharacter " + pearlModel + " " + rosePos,
             garnet_named + "You want me to join you?",
+            "$animate " + garnetModel + " Idle",
+            "$animate " + roseModel + " Talking",
             rose + "Yes. I think it's because of Gems like you that we're fighting.",
             rose + "Here on Earth, Gems can be extraordinary, like you. It won't be easy, but no matter what it takes...",
             rose + "I think the love that forms you is worth fighting for. What do you say?",
+            "$animate " + roseModel + " Idle",
+            "$animate " + garnetModel + " Talking",
             garnet_named + "I will.",
+            "$animate " + garnetModel + " Idle",
+            "$animate " + roseModel + " Talking",
             rose + "Welcome, Garnet to the Crystal Gems!",
         };
     }
@@ -488,6 +537,8 @@ public class Chapter3Sequence : Chapter
         string human = "Human null ";
         return new string[]
         {
+            "$sound convo-music start",
+            "$sound convo-music loop",
             human + "Hey, whenever you're done littering stones everywhere, could you try and pick up after yourselves?",
             human + "Those rocks are no good just scattered over the ground. Maybe you can use them for something."
         };
@@ -497,8 +548,11 @@ public class Chapter3Sequence : Chapter
         string human = "Human null ";
         return new string[]
         {
+            "$sound convo-music start",
+            "$sound convo-music loop",
             human + "This ancient robe has the power to prolong life. May it bless you for visiting our humble village.",
             "$reward 19",
+            "$sound itemget start",
             "_ null Received Snerson Robe"
         };
     }
@@ -507,6 +561,8 @@ public class Chapter3Sequence : Chapter
         string human = "Human null ";
         return new string[]
         {
+            "$sound convo-music start",
+            "$sound convo-music loop",
             human + "Know the Weapon Triangle!",
             human + "Swords and Fists beat Axes and Whips",
             human + "Axes and Whips beat Lances and Armor",
@@ -575,12 +631,13 @@ public class Chapter3Sequence : Chapter
     private Unit nephrite()
     {
         //Based on FE5 Karin
+        //1 point SPD buff so she doubles in this chapter
         string neph_desc = "A rebellious pilot from Yellow Diamond's navy";
         Weapon wep = Item.ship_laser;
         Unit neph = new Unit();
         UnitClass pilot = UnitClass.pilot;
         neph.constructor("Nephrite", pilot, neph_desc,
-                18, 4, 7, 4, 14, 12, 4, 7, 4, 8,
+                18, 4, 7, 4, 15, 12, 4, 7, 4, 8,
                 55, 30, 15, 35, 70, 70, 15, 15,
                 wep, Weapon.WeaponType.LANCE, 10, Unit.UnitTeam.PLAYER, -1, -1,
                 Unit.Affinity.HEAVEN,
@@ -758,12 +815,13 @@ public class Chapter3Sequence : Chapter
     private Unit genericGuard()
     {
         //Based on FE3 Julian
+        //4 point SPD nerf
         string ruby_desc = "A common guard in the service of the Diamonds";
         Weapon wep = Item.guard_shield;
         Unit ruby = new Unit();
         UnitClass guard = UnitClass.guard;
         ruby.constructor("Guard", guard, ruby_desc,
-                17, 4, 0, 6, 7, 7, 4, 0, 5, 5,
+                17, 4, 0, 6, 3, 7, 4, 0, 5, 5,
                 50, 40, 45, 55, 50, 70, 15, 45,
                 wep, Weapon.WeaponType.CLUB, 10, Unit.UnitTeam.ENEMY, -1, -1,
                 Unit.Affinity.FIRE,
