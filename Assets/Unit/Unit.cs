@@ -433,6 +433,11 @@ public class Unit
 		return fusionSkillBonus != FusionSkill.LOCKED;
 	}
 
+	public bool hasSkill(FusionSkill skillToCheck)
+    {
+		return fusionSkillBonus == skillToCheck || fusionSkill1 == skillToCheck || fusionSkill2 == skillToCheck;
+    }
+
 	public enum AIType
 	{
 		IDLE, GUARD, ATTACK, PURSUE, BURN

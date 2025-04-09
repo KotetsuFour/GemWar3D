@@ -121,7 +121,65 @@ public class Battle
 
 		return ret;
     }
-    public Battle(UnitModel atk, UnitModel dfd,
+	public static int[] getSparringForecast(UnitModel atk, UnitModel dfd,
+		Weapon atkWep, Weapon dfdWep)
+    {
+		Unit atkUnit = atk.getUnit();
+		Unit dfdUnit = dfd.getUnit();
+
+		int[] ret = new int[12];
+
+		//atkHP
+		ret[ATKHP] = atkUnit.currentHP;
+
+		//atkMt
+		ret[ATKMT] = atkWep != null ? (atkWep.magic ? atkUnit.magic + (atkWep.might * (atkWep.isEffectiveAgainst(dfdUnit) ? 3 : 1))
+			: atkUnit.strength + (atkWep.might * (atkWep.isEffectiveAgainst(dfdUnit) ? 3 : 1)))
+			: atkUnit.strength;
+
+		//atkDef
+		ret[ATKDEF] = dfdWep != null && dfdWep.magic ? atkUnit.resistance + (atkWep is Armor && atkWep.magic ? ((Armor)atkWep).protection : 0)
+			: atkUnit.defense + (atkWep != null && atkWep is Armor && !atkWep.magic ? ((Armor)atkWep).protection : 0);
+
+		//atkHit
+		ret[ATKHIT] = atkUnit.getBaseAccuracy() + (atkWep == null ? 0 : atkWep.hit)
+			+ (atkWep != null && dfdWep != null && atkWep.isAdvantageousAgainst(dfdWep) ? 10 : 0)
+			- ((atkWep != null && dfdWep != null && dfdWep.isAdvantageousAgainst(atkWep) ? 10 : 0) + dfdUnit.getBaseAvoidance());
+
+		//atkCrit
+		ret[ATKCRIT] = atkUnit.getBaseCrit() + (atkWep == null ? 0 : atkWep.crit) - dfdUnit.luck;
+
+		//atkStandardAttackCount
+		int atkSpeed = atkUnit.speed - (atkWep == null ? 0 : Mathf.Max(0, atkWep.weight - atkUnit.constitution));
+		int dfdSpeed = dfdUnit.speed - (dfdWep == null ? 0 : Mathf.Max(0, dfdWep.weight - dfdUnit.constitution));
+		ret[ATKCOUNT] = (atkSpeed - dfdSpeed >= DOUBLE_ATTACK_THRESHOLD ? 2 : 1) * (atkWep != null && atkWep.brave ? 2 : 1);
+
+		//dfdHP
+		ret[DFDHP] = dfdUnit.currentHP;
+
+		//dfdDef
+		ret[DFDDEF] = atkWep != null && atkWep.magic ? dfdUnit.resistance + (dfdWep is Armor && dfdWep.magic ? ((Armor)dfdWep).protection : 0)
+			: dfdUnit.defense + (dfdWep != null && dfdWep is Armor && !dfdWep.magic ? ((Armor)dfdWep).protection : 0);
+
+		//dfdMt
+		ret[DFDMT] = dfdWep != null ? (dfdWep.magic ? dfdUnit.magic + (dfdWep.might * (dfdWep.isEffectiveAgainst(atkUnit) ? 3 : 1))
+			: dfdUnit.strength + (dfdWep.might * (dfdWep.isEffectiveAgainst(atkUnit) ? 3 : 1)))
+			: dfdUnit.strength;
+
+		//dfdHit
+		ret[DFDHIT] = dfdUnit.getBaseAccuracy() + (dfdWep == null ? 0 : dfdWep.hit)
+		+ (atkWep != null && dfdWep != null && dfdWep.isAdvantageousAgainst(atkWep) ? 10 : 0)
+		- ((atkWep != null && dfdWep != null && atkWep.isAdvantageousAgainst(dfdWep) ? 10 : 0) + atkUnit.getBaseAvoidance());
+
+		//dfdCrit
+		ret[DFDCRIT] = dfdUnit.getBaseCrit() + (dfdWep == null ? 0 : dfdWep.crit) - atkUnit.luck;
+
+		//dfdStandardAttackCount
+		ret[DFDCOUNT] = (dfdSpeed - atkSpeed >= DOUBLE_ATTACK_THRESHOLD ? 2 : 1) * (dfdWep != null && dfdWep.brave ? 2 : 1);
+
+		return ret;
+	}
+	public Battle(UnitModel atk, UnitModel dfd,
         List<Unit> atkAllies, List<Unit> dfdAllies,
         Weapon atkWep, Weapon dfdWep, Tile atkTile, Tile dfdTile)
     {
@@ -228,6 +286,108 @@ public class Battle
 			Debug.Log($"ATK: {part.atkFinalHP}, DFD: {part.dfdFinalHP}");
         }
 		*/
+	}
+	public Battle()
+    {
+
+    }
+	public class SparBattle : Battle
+    {
+		public SparBattle(UnitModel atk, UnitModel dfd, Weapon atkWep, Weapon dfdWep)
+        {
+			forecast = getSparringForecast(atk, dfd, atkWep, dfdWep);
+			currentRandom0To99 = 0;
+
+			Unit atkUnit = atk.getUnit();
+			Unit dfdUnit = dfd.getUnit();
+
+			int atkCount = forecast[ATKCOUNT];
+			int dfdCount = forecast[DFDCOUNT];
+
+			attacks = new LinkedList<BattleEvent>();
+			attacks.AddFirst(new InitialStep(forecast, atkWep, dfdWep));
+			for (int round = 0;
+				round < 10 && attacks.Last.Value.atkFinalHP > 0 && attacks.Last.Value.dfdFinalHP > 0;
+				round++)
+            {
+				if (forecast[DFDCOUNT] > 0
+					&& FusionSkillExecutioner.activateVantage(dfdUnit)
+					&& !FusionSkillExecutioner.activateVantage(atkUnit))
+				{
+					int initial = Mathf.Max(1, dfdCount / 2);
+					for (int q = 0; q < initial; q++)
+					{
+						if (attacks.Last.Value.dfdFinalWepDurability > 0)
+						{
+							ActivationStep act = new ActivationStep(attacks.Last.Value);
+							attacks.AddLast(act);
+							act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
+						}
+					}
+					for (int q = 0; q < atkCount; q++)
+					{
+						if (attacks.Last.Value.atkFinalWepDurability > 0)
+						{
+							ActivationStep act = new ActivationStep(attacks.Last.Value);
+							attacks.AddLast(act);
+							act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+						}
+					}
+					for (int q = 0; q < dfdCount / 2; q++)
+					{
+						if (attacks.Last.Value.dfdFinalWepDurability > 0)
+						{
+							ActivationStep act = new ActivationStep(attacks.Last.Value);
+							attacks.AddLast(act);
+							act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
+						}
+					}
+				}
+				else
+				{
+					int initial = Mathf.Max(1, atkCount / 2);
+					for (int q = 0; q < initial; q++)
+					{
+						if (attacks.Last.Value.atkFinalWepDurability > 0)
+						{
+							ActivationStep act = new ActivationStep(attacks.Last.Value);
+							attacks.AddLast(act);
+							act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+						}
+					}
+					for (int q = 0; q < dfdCount; q++)
+					{
+						if (attacks.Last.Value.dfdFinalWepDurability > 0)
+						{
+							ActivationStep act = new ActivationStep(attacks.Last.Value);
+							attacks.AddLast(act);
+							act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, false);
+						}
+					}
+					for (int q = 0; q < atkCount / 2; q++)
+					{
+						if (attacks.Last.Value.atkFinalWepDurability > 0)
+						{
+							ActivationStep act = new ActivationStep(attacks.Last.Value);
+							attacks.AddLast(act);
+							act.execute(attacks, forecast, atkUnit, dfdUnit, true, true, true);
+						}
+					}
+				}
+			}
+			finalState = (AfterEffect)attacks.Last.Value;
+
+			LinkedListNode<BattleEvent> current = attacks.First;
+			while (current != null)
+			{
+				if (current.Value is AfterEffect && (current.Value.atkFinalHP <= 0 || current.Value.dfdFinalHP <= 0))
+				{
+					finalState = (AfterEffect)current.Value;
+					break;
+				}
+				current = current.Next;
+			}
+		}
 	}
 	public int getATKInitialHP()
     {

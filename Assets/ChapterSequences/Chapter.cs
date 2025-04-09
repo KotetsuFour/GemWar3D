@@ -276,7 +276,7 @@ public class Chapter : MonoBehaviour
     public static void goToChapter(int chapter)
     {
         StaticData.scene = chapter;
-        if (Mathf.Abs(StaticData.scene) == Chapter.nextTODOChapter)
+        if (Mathf.Abs(StaticData.scene) == nextTODOChapter)
         {
             SceneManager.LoadScene("MainMenu");
         }

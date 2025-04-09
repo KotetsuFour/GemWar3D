@@ -197,6 +197,11 @@ public class UnitModel : MonoBehaviour
         anim.Play(gothit);
         return 1;
     }
+    public float playDefeat()
+    {
+        anim.Play("Injured");
+        return 3;
+    }
     public void equip()
     {
         Transform hand = StaticData.findDeepChild(model.transform, "Hand");

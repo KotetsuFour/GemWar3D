@@ -307,7 +307,7 @@ public class Chapter3Sequence : Chapter
             }
             else if (sequenceNum == 6)
             {
-                goToChapter(4);
+                goToChapter(-4);
             }
         }
     }
@@ -509,26 +509,21 @@ public class Chapter3Sequence : Chapter
             rose + "Do you have a name?",
             "$animate " + roseModel + " Idle",
             "$animate " + garnetModel + " Talking",
-            garnet + "No. I mean... I feel like maybe... Garnet?",
+            garnet + "No. I mean... I feel like maybe... Garnet.",
             "$animate " + garnetModel + " Idle",
             "$animate " + roseModel + " Talking",
             rose + "A Ruby and a Sapphire make a Garnet? How fascinating.",
             rose + "Would you like to come with us, Garnet?",
-            "$animate " + roseModel + " Idle",
-            "$animate " + garnetModel + " Talking",
-            "$rotateCharacter " + pearlModel + " " + rosePos,
-            garnet_named + "You want me to join you?",
-            "$animate " + garnetModel + " Idle",
-            "$animate " + roseModel + " Talking",
-            rose + "Yes. I think it's because of Gems like you that we're fighting.",
+            rose + "I think it's because of Gems like you that we're fighting.",
             rose + "Here on Earth, Gems can be extraordinary, like you. It won't be easy, but no matter what it takes...",
             rose + "I think the love that forms you is worth fighting for. What do you say?",
             "$animate " + roseModel + " Idle",
             "$animate " + garnetModel + " Talking",
+            garnet_named + "...",
             garnet_named + "I will.",
             "$animate " + garnetModel + " Idle",
             "$animate " + roseModel + " Talking",
-            rose + "Welcome, Garnet to the Crystal Gems!",
+            rose + "Then welcome, Garnet to the Crystal Gems!",
         };
     }
 
@@ -537,8 +532,7 @@ public class Chapter3Sequence : Chapter
         string human = "Human null ";
         return new string[]
         {
-            "$sound convo-music start",
-            "$sound convo-music loop",
+            "$sound convo-music playMusic",
             human + "Hey, whenever you're done littering stones everywhere, could you try and pick up after yourselves?",
             human + "Those rocks are no good just scattered over the ground. Maybe you can use them for something."
         };
@@ -548,11 +542,10 @@ public class Chapter3Sequence : Chapter
         string human = "Human null ";
         return new string[]
         {
-            "$sound convo-music start",
-            "$sound convo-music loop",
+            "$sound convo-music playMusic",
             human + "This ancient robe has the power to prolong life. May it bless you for visiting our humble village.",
             "$reward 19",
-            "$sound itemget start",
+            "$sound itemget play",
             "_ null Received Snerson Robe"
         };
     }
@@ -561,8 +554,7 @@ public class Chapter3Sequence : Chapter
         string human = "Human null ";
         return new string[]
         {
-            "$sound convo-music start",
-            "$sound convo-music loop",
+            "$sound convo-music playMusic",
             human + "Know the Weapon Triangle!",
             human + "Swords and Fists beat Axes and Whips",
             human + "Axes and Whips beat Lances and Armor",

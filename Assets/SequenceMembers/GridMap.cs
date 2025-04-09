@@ -3089,7 +3089,12 @@ public class GridMap : SequenceMember
         }
         if (teams[teamPhase] == player)
         {
+            enableChild("HUD", true);
             turn++;
+        }
+        else
+        {
+            enableChild("HUD", false);
         }
 
         enableChild("PhaseBack", true);
@@ -3595,7 +3600,6 @@ public class GridMap : SequenceMember
         }
         else if (selectionMode == SelectionMode.ENEMYPHASE_MOVE && selectedUnit.model.reachedDestination())
         {
-            Debug.Log($"{selectedUnit.unitName} got to {moveDest.getName()}. Her target is {targetTile.getName()}");
             finalizeMove();
             setCameraPosition();
             if ((Unit.AIType)npcAction[0] == Unit.AIType.GUARD || (Unit.AIType)npcAction[0] == Unit.AIType.ATTACK
